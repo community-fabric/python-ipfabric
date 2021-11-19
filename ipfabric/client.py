@@ -43,12 +43,12 @@ class IPFClient(Client):
         try:
             base_url = urljoin(base_url or os.environ["IPF_URL"], "api/v1/")
         except KeyError:
-            raise RuntimeError(f"IP Fabric base_url not provided or IPF_URL not set")
+            raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
 
         try:
             token = token or os.environ["IPF_TOKEN"]
         except KeyError:
-            raise RuntimeError(f"IP Fabric token not provided or IPF_TOKEN not set")
+            raise RuntimeError("IP Fabric token not provided or IPF_TOKEN not set")
 
         super().__init__(base_url=base_url, *vargs, **kwargs)
         self.headers.update({'Content-Type': 'application/json', 'X-API-Token': token})
@@ -113,7 +113,7 @@ class IPFClient(Client):
     def fetch(
         self,
         url,
-        columns: Optional[list[str]] = None,
+        columns: Optional[list] = None,
         filters: Optional[Union[dict, str]] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
@@ -153,7 +153,7 @@ class IPFClient(Client):
     def fetch_all(
             self,
             url: str,
-            columns: Optional[list[str]] = None,
+            columns: Optional[list] = None,
             filters: Optional[Union[dict, str]] = None,
             snapshot_id: Optional[str] = None,
             reports: Optional[str] = None
