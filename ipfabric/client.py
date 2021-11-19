@@ -113,7 +113,7 @@ class IPFClient(Client):
     def fetch(
         self,
         url,
-        columns: Optional[list[str]] = None,
+        columns: Optional[list] = None,
         filters: Optional[Union[dict, str]] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
@@ -153,7 +153,7 @@ class IPFClient(Client):
     def fetch_all(
             self,
             url: str,
-            columns: Optional[list[str]] = None,
+            columns: Optional[list] = None,
             filters: Optional[Union[dict, str]] = None,
             snapshot_id: Optional[str] = None,
             reports: Optional[str] = None
