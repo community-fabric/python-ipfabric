@@ -1,6 +1,6 @@
 import datetime
 import unittest
-import models
+from ipfabric import models
 from unittest.mock import MagicMock, patch
 
 

@@ -1,14 +1,15 @@
 import datetime
 import unittest
-import client
-from models import Snapshot
+from ipfabric import IPFClient
+from ipfabric.client import check_format
+from ipfabric.models import Snapshot
 from unittest.mock import MagicMock, patch
 import os
 
 
 class Decorator(unittest.TestCase):
     def test_check_format(self):
-        @client.check_format
+        @check_format
         def tester(self, url, **kwargs):
             return (url, kwargs)
 
@@ -22,23 +23,23 @@ class FailedClient(unittest.TestCase):
     def test_no_url(self):
         env = dict()
         with self.assertRaises(RuntimeError) as err:
-            ipf = client.IPFClient()
+            ipf = IPFClient()
 
     @patch.dict(os.environ, {}, clear=True)
     def test_no_token(self):
         env = dict()
         with self.assertRaises(RuntimeError) as err:
-            ipf = client.IPFClient('http://google.com')
+            ipf = IPFClient('http://google.com')
 
 
 
 class Client(unittest.TestCase):
-    @patch("client.Client.__init__", return_value=None)
-    @patch("client.Client.headers")
-    @patch("client.Client.base_url")
-    @patch("client.IPFClient.fetch_os_version")
-    @patch("client.IPFClient.get_snapshots")
-    @patch("models.Inventory")
+    @patch("httpx.Client.__init__", return_value=None)
+    @patch("httpx.Client.headers")
+    @patch("httpx.Client.base_url")
+    @patch("ipfabric.IPFClient.fetch_os_version")
+    @patch("ipfabric.IPFClient.get_snapshots")
+    @patch("ipfabric.models.Inventory")
     def setUp(self, inventory, snaps, os, base_url, headers, mock_client):
         snaps.return_value = {"$last": Snapshot(**{
             "name": None,
@@ -52,28 +53,28 @@ class Client(unittest.TestCase):
             "id": "631ac652-1f72-417f-813f-b8a8c8730157"
         })}
         mock_client._headers = dict()
-        self.ipf = client.IPFClient('google.com', 'token')
+        self.ipf = IPFClient('google.com', 'token')
 
 
-    @patch("client.IPFClient.get")
+    @patch("httpx.Client.get")
     def test_os(self, get):
         get().is_error = None
         get().json.return_value = dict(version="test")
         self.assertEqual(self.ipf.fetch_os_version(), 'test')
 
-    @patch("client.IPFClient.get")
+    @patch("httpx.Client.get")
     def test_os_version_failed(self, get):
         get().is_error = None
         get().json.return_value = dict()
         with self.assertRaises(ConnectionError) as err:
             self.ipf.fetch_os_version()
 
-    @patch("client.IPFClient.get")
+    @patch("httpx.Client.get")
     def test_os_failed(self, get):
         with self.assertRaises(ConnectionRefusedError) as err:
             self.ipf.fetch_os_version()
 
-    @patch("client.IPFClient.get")
+    @patch("httpx.Client.get")
     def test_snapshots(self, get):
         get().is_error = None
         get().json.return_value = [{
@@ -116,40 +117,40 @@ class Client(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
             self.ipf.snapshot_id = 'bad'
 
-    @patch("client.IPFClient.post")
+    @patch("httpx.Client.post")
     def test_fetch(self, post):
         post().json.return_value = {"data": list()}
         self.assertEqual(self.ipf.fetch('test', columns=['*'], filters=dict(a="b"), reports='hello'), [])
 
-    @patch("client.IPFClient._ipf_pager")
+    @patch("ipfabric.IPFClient._ipf_pager")
     def test_fetch_all(self, pager):
         pager.return_value = list()
         self.assertEqual(self.ipf.fetch_all('test', columns=['*'], filters=dict(a="b"), reports='hello'), [])
 
-    @patch("client.IPFClient.post")
+    @patch("httpx.Client.post")
     def test_query(self, post):
         post().json.return_value = {"data": list()}
         self.assertEqual(self.ipf.query('test', '{"data": "hello"}', all=False), [])
 
-    @patch("client.IPFClient._ipf_pager")
+    @patch("ipfabric.IPFClient._ipf_pager")
     def test_query_all(self, pager):
         pager.return_value = list()
         self.assertEqual(self.ipf.query('test', '{"data": "hello"}'), [])
 
-    @patch("client.IPFClient.post")
+    @patch("httpx.Client.post")
     def test_get_columns(self, post):
         post().status_code = 422
         post().json.return_value = {"errors": [{"message": '"hello" [name, id]'}]}
         self.assertEqual(self.ipf._get_columns('test'), ["name", "id"])
 
-    @patch("client.IPFClient.post")
+    @patch("httpx.Client.post")
     def test_get_columns_failed(self, post):
         post().status_code = 400
         post().raise_for_status.side_effect = ConnectionError()
         with self.assertRaises(ConnectionError) as err:
             self.ipf._get_columns('test')
 
-    @patch("client.IPFClient.post")
+    @patch("httpx.Client.post")
     def test_ipf_pager(self, post):
         post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
         self.assertEqual(self.ipf._ipf_pager('test', dict()), ["hello"])

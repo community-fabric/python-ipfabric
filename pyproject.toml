@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "ipfabric"
-version = "0.0.3"
+version = "0.0.4"
 description = "Python package for interacting with IP Fabric"
 authors = [
     "Justin Jeffery <justin.jeffery@ipfabric.io>",
-    "Community Fabric <communityfabric@ipfabric.io>"]
+    "Community Fabric <communityfabric@ipfabric.io>"
+]
 license = "MIT"
 readme = "README.md"
 homepage = "https://ipfabric.io/"
@@ -16,10 +17,9 @@ python = "^3.6"
 httpx = "^0.21.1"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-test = 'scripts:test'

@@ -4,7 +4,7 @@ from collections import OrderedDict
 from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
 from json import loads
-import models
+from ipfabric import models
 
 from httpx import Client
 
