@@ -32,9 +32,10 @@ To install a virtual environment run the following command in the root of this d
 poetry install
 ```
 
-To build and publish:
+To test, build, and publish:
 
 ```
+poetry run pytest
 poetry build
 poetry publish
 ```

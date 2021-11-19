@@ -4,9 +4,9 @@ from collections import OrderedDict
 from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
 from json import loads
-from .models import Snapshot, Inventory
+from ipfabric import models
 
-from httpx import Client as httpxClient
+from httpx import Client
 
 
 def check_format(func):
@@ -22,7 +22,7 @@ def check_format(func):
     return wrapper
 
 
-class IPFClient(httpxClient):
+class IPFClient(Client):
     def __init__(
             self,
             base_url: Optional[str] = None,
@@ -56,7 +56,7 @@ class IPFClient(httpxClient):
         self.os_version = self.fetch_os_version()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
-        self.inventory = Inventory(self)
+        self.inventory = models.Inventory(self)
 
     @property
     def snapshot_id(self):
@@ -95,7 +95,7 @@ class IPFClient(httpxClient):
 
         snap_dict = OrderedDict()
         for s in res.json():
-            snap = Snapshot(**s)
+            snap = models.Snapshot(**s)
             snap_dict[snap.id] = snap
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
