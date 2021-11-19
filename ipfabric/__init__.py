@@ -25,3 +25,5 @@ SOFTWARE.
 from .client import IPFClient
 
 __all__ = [IPFClient]
+
+__version__ = "0.0.5"
