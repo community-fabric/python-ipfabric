@@ -161,7 +161,7 @@ class IPFPath:
                 pathLookupType="hostToDefaultGW",
                 groupBy=grouping
             ),
-            snapshot_id=snapshot_id or self.client.snapshot_id
+            snapshot=snapshot_id or self.client.snapshot_id
         )
         return self._query(payload)
 

@@ -130,3 +130,7 @@ dmypy.json
 
 # Intellij
 .idea/
+
+# Examples
+examples/*.svg
+examples/*.png

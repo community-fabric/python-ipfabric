@@ -58,7 +58,7 @@ class IPFClient(Client):
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
         self.inventory = models.Inventory(self)
-        self.graph = IPFPath(self)
+        self.graphs = IPFPath(self)
 
     @property
     def snapshot_id(self):
