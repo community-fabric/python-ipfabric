@@ -5,12 +5,12 @@ from typing import Optional
 class Snapshot:
     def __init__(self, **kwargs):
         self.id: str = kwargs["id"]
-        self.name: str = kwargs["name"]
+        self.name: Optional[str] = kwargs.get("name", None)
         self.count: int = kwargs["totalDevCount"]
         self.loaded: bool = True if kwargs["state"] == 'loaded' else False
         self.locked: str = kwargs["locked"]
         self.start = datetime.fromtimestamp(kwargs["tsStart"] / 1000.0)
-        self.end = datetime.fromtimestamp(kwargs["tsEnd"] / 1000.0)
+        self.end = datetime.fromtimestamp(kwargs["tsEnd"] / 1000.0) if kwargs["tsEnd"] else None
 
 
 class Table:

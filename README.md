@@ -4,11 +4,11 @@ IPFabric is a Python module for connecting to and communicating against an IP Fa
 
 ## About
 
-Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructure visibility and analytics
-solution to help enterprise network and security teams with network assurance and automation across multi-domain
-heterogeneous environments. From in-depth discovery, through graph visualization, to packet walks and complete network
-history, IP Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by
-relentless digital transformation.
+Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructure visibility and analytics solution to
+help enterprise network and security teams with network assurance and automation across multi-domain heterogeneous
+environments. From in-depth discovery, through graph visualization, to packet walks and complete network history, IP
+Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless
+digital transformation.
 
 ## Installation
 
@@ -32,10 +32,15 @@ To install a virtual environment run the following command in the root of this d
 poetry install
 ```
 
-To test, build, and publish:
+To test and build:
 
 ```
 poetry run pytest
 poetry build
-poetry publish
 ```
+
+GitHub Actions will publish and release. Make sure to tag your commits:
+fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning). 
+feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning). 
+BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking
+API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
