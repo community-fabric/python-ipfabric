@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.7 (2021-11-22)
+
+
 ## v0.0.6 (2021-11-22)
 ### Fix
 * Pipeline fixes. ([`5da0fd8`](https://github.com/justinjeffery-ipf/python-ipfabric/commit/5da0fd8312d3d16047761c0a5ecae3717fa9fc2b))
