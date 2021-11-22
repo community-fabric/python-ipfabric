@@ -11,9 +11,6 @@ readme = "README.md"
 homepage = "https://ipfabric.io/"
 repository = "https://github.com/community-fabric/python-ipfabric"
 keywords = ["ipfabric", "ip-fabric", "community-fabric"]
-packages = [
-    { include = "ipfabric", from = "src" },
-]
 
 
 [tool.poetry.dependencies]
@@ -32,7 +29,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.semantic_release]
 version_variable = [
-    "src/ipfabric/__init__.py:__version__"
+    "ipfabric/__init__.py:__version__"
 ]
 version_toml = [
     "pyproject.toml:tool.poetry.version"
