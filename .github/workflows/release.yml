@@ -28,8 +28,9 @@ jobs:
 
       - name: Semantic Release
         env:
-          PYPI_TOKEN: ${{ secrets.PYPI }}
+          REPOSITORY_PASSWORD: ${{ secrets.PYPI }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          REPOSITORY_USERNAME: __token__
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com

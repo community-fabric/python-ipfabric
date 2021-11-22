@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ipfabric"
-version = "0.0.5"
+version = "0.0.6"
 description = "Python package for interacting with IP Fabric"
 authors = [
     "Justin Jeffery <justin.jeffery@ipfabric.io>",
@@ -14,13 +14,13 @@ keywords = ["ipfabric", "ip-fabric", "community-fabric"]
 
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 httpx = "^0.21.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
-python-semantic-release = "^7.19.2"
+python-semantic-release = "^7.22.0"
 flake8 = "^4.0.1"
 
 [build-system]
@@ -36,6 +36,8 @@ version_toml = [
 ]
 major_on_zero = false
 branch = "main"
-upload_to_pypi = true
+upload_to_repository = true
+repository = "pypi"
 upload_to_release = true
 build_command = "poetry build"
+patch_without_tag = true
