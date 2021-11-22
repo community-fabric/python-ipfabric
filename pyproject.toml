@@ -40,4 +40,3 @@ upload_to_repository = true
 repository = "pypi"
 upload_to_release = true
 build_command = "poetry build"
-patch_without_tag = true
