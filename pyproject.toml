@@ -33,7 +33,8 @@ version_variable = [
 version_toml = [
     "pyproject.toml:tool.poetry.version"
 ]
+major_on_zero = false
 branch = "main"
-upload_to_PyPI = true
+upload_to_pypi = true
 upload_to_release = true
-build_command = "poetry build"
+build_command = "poetry install && poetry build"
