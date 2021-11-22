@@ -9,12 +9,9 @@ on:
 jobs:
   release:
     # https://github.community/t/how-do-i-specify-job-dependency-running-in-another-workflow/16482
-    if: |
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      github.repository == 'community-fabric/python-ipfabric' &&
-      !contains(github.event.head_commit.message, 'chore(release):')
+    if: github.repository == 'community-fabric/python-ipfabric'
     runs-on: ubuntu-latest
+    concurrency: release
     steps:
       - name: Set up Python 3.8
         uses: actions/setup-python@v2

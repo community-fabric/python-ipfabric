@@ -15,6 +15,7 @@ keywords = ["ipfabric", "ip-fabric", "community-fabric"]
 [tool.poetry.dependencies]
 python = "^3.6"
 httpx = "^0.21.1"
+tabulate = "^0.8.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -33,7 +34,8 @@ version_variable = [
 version_toml = [
     "pyproject.toml:tool.poetry.version"
 ]
+major_on_zero = false
 branch = "main"
-upload_to_PyPI = true
+upload_to_pypi = true
 upload_to_release = true
 build_command = "poetry build"
