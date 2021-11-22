@@ -11,6 +11,10 @@ readme = "README.md"
 homepage = "https://ipfabric.io/"
 repository = "https://github.com/community-fabric/python-ipfabric"
 keywords = ["ipfabric", "ip-fabric", "community-fabric"]
+packages = [
+    { include = "ipfabric", from = "src" },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -37,4 +41,4 @@ major_on_zero = false
 branch = "main"
 upload_to_pypi = true
 upload_to_release = true
-build_command = "poetry install && poetry build"
+build_command = "poetry build"
