@@ -15,21 +15,24 @@ if __name__ == '__main__':
     """
 
     print(f"Class snapshot id is set to {ipf.snapshot_id}")
-    print(f"Latest snapshot id is \t\t{ipf.snapshots['$last'].id}")
+    print(f"Latest snapshot id is \t\t{ipf.snapshots['$last'].snapshot_id}")
     """
     Class snapshot id is set to d3bd033e-1ba6-4b27-86f5-18824a1a495e
     Latest snapshot id is	    c8684ea9-dfd8-400d-a4b8-ba1c4bc7c185
     """
 
     print("Print a snapshot object: ")
-    pprint(ipf.snapshots[ipf.snapshot_id].__dict__)
+    pprint(ipf.snapshots[ipf.snapshot_id])
     """
     Print a snapshot object: 
-    {'count': 640,
+    {
+     'count': 640,
      'end': datetime.datetime(2021, 10, 21, 12, 37, 3, 513000),
-     'id': 'd3bd033e-1ba6-4b27-86f5-18824a1a495e',
-     'loaded': True,
+     'snapshot_id': 'd3bd033e-1ba6-4b27-86f5-18824a1a495e',
+     'state': 'loaded',
      'locked': True,
      'name': 'Baseline 10-21',
-     'start': datetime.datetime(2021, 10, 21, 11, 59, 54, 941000)}
+     'start': datetime.datetime(2021, 10, 21, 11, 59, 54, 941000)
+     'loaded': True # Class Property
+     }
     """

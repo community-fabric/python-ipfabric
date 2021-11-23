@@ -57,7 +57,7 @@ class IPFClient(Client):
         self.os_version = self.fetch_os_version()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
-        self.inventory = models.Inventory(self)
+        self.inventory = models.Inventory(client=self)
         self.graphs = IPFPath(self)
 
     @property
@@ -71,7 +71,7 @@ class IPFClient(Client):
             # Verify snapshot ID is valid
             raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
         else:
-            self._snapshot_id = self.snapshots[snapshot_id].id
+            self._snapshot_id = self.snapshots[snapshot_id].snapshot_id
 
     def fetch_os_version(self):
         """
@@ -98,7 +98,7 @@ class IPFClient(Client):
         snap_dict = OrderedDict()
         for s in res.json():
             snap = models.Snapshot(**s)
-            snap_dict[snap.id] = snap
+            snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
                     snap_dict["$lastLocked"] = snap
