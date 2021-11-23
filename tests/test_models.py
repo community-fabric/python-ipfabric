@@ -38,3 +38,10 @@ class Models(unittest.TestCase):
     def test_inventory(self):
         i = models.Inventory(client=MagicMock())
         self.assertIsInstance(i.vendors, models.Table)
+        self.assertIsInstance(i.sites, models.Table)
+        self.assertIsInstance(i.devices, models.Table)
+        self.assertIsInstance(i.platforms, models.Table)
+        self.assertIsInstance(i.families, models.Table)
+        self.assertIsInstance(i.pn, models.Table)
+        self.assertIsInstance(i.interfaces, models.Table)
+        self.assertIsInstance(i.models, models.Table)
