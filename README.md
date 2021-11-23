@@ -40,7 +40,14 @@ poetry build
 ```
 
 GitHub Actions will publish and release. Make sure to tag your commits:
-fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning). 
-feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning). 
-BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking
+
+* ci: Changes to our CI configuration files and scripts
+* docs: No changes just documentation
+* test: Added test cases
+* perf: A code change that improves performance
+* refactor: A code change that neither fixes a bug nor adds a feature
+* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning). 
+* feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning). 
+* BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking
 API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
