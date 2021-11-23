@@ -26,15 +26,15 @@ class Models(unittest.TestCase):
         self.assertIsInstance(s.start, datetime.datetime)
 
     def test_table(self):
-        table = models.Table(MagicMock(), '/network/ip')
+        table = models.Table(client=MagicMock(), endpoint='/network/ip')
         self.assertEqual(table.name, 'ip')
 
     @patch('ipfabric.IPFClient')
     def test_table_all(self, MockClient):
-        table = models.Table(MockClient, '/network/ip')
+        table = models.Table(client=MockClient, endpoint='/network/ip')
         MockClient.fetch_all.return_value = list()
         self.assertEqual(table.all(), list())
 
     def test_inventory(self):
-        i = models.Inventory(MagicMock())
+        i = models.Inventory(client=MagicMock())
         self.assertIsInstance(i.vendors, models.Table)

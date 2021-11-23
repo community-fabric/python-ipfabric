@@ -109,9 +109,9 @@ class Client(unittest.TestCase):
             "id": "631ac652-1f72-417f-813f-b8a8c8730159"
         }]
         self.assertIsInstance(self.ipf.get_snapshots()["$last"], Snapshot)
-        self.assertEqual(self.ipf.get_snapshots()["$last"].id, "631ac652-1f72-417f-813f-b8a8c8730157")
-        self.assertEqual(self.ipf.get_snapshots()["$lastLocked"].id, "631ac652-1f72-417f-813f-b8a8c8730159")
-        self.assertEqual(self.ipf.get_snapshots()["$prev"].id, "631ac652-1f72-417f-813f-b8a8c8730159")
+        self.assertEqual(self.ipf.get_snapshots()["$last"].snapshot_id, "631ac652-1f72-417f-813f-b8a8c8730157")
+        self.assertEqual(self.ipf.get_snapshots()["$lastLocked"].snapshot_id, "631ac652-1f72-417f-813f-b8a8c8730159")
+        self.assertEqual(self.ipf.get_snapshots()["$prev"].snapshot_id, "631ac652-1f72-417f-813f-b8a8c8730159")
 
     def test_bad_snapshot(self):
         with self.assertRaises(ValueError) as err:

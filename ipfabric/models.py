@@ -1,23 +1,29 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
+from pydantic import BaseModel, Field
 
 
-class Snapshot:
-    def __init__(self, **kwargs):
-        self.id: str = kwargs["id"]
-        self.name: Optional[str] = kwargs.get("name", None)
-        self.count: int = kwargs["totalDevCount"]
-        self.loaded: bool = True if kwargs["state"] == 'loaded' else False
-        self.locked: str = kwargs["locked"]
-        self.start = datetime.fromtimestamp(kwargs["tsStart"] / 1000.0)
-        self.end = datetime.fromtimestamp(kwargs["tsEnd"] / 1000.0) if kwargs["tsEnd"] else None
+class Snapshot(BaseModel):
+    snapshot_id: str = Field(alias="id")
+    name: Optional[str]
+    count: int = Field(alias="totalDevCount")
+    state: str
+    locked: bool
+    start: datetime = Field(alias="tsStart")
+    end: Optional[datetime] = Field(alias="tsEnd")
+
+    @property
+    def loaded(self):
+        return self.state == 'loaded'
 
 
-class Table:
-    def __init__(self, client, name: str):
-        self.endpoint = name
-        self.name = name.split('/')[-1]
-        self.client = client
+class Table(BaseModel):
+    endpoint: str
+    client: Any
+
+    @property
+    def name(self):
+        return self.endpoint.split('/')[-1]
 
     def all(
             self,
@@ -43,13 +49,37 @@ class Table:
         )
 
 
-class Inventory:
-    def __init__(self, client):
-        self.sites = Table(client, '/tables/inventory/sites')
-        self.devices = Table(client, '/tables/inventory/devices')
-        self.models = Table(client, '/tables/inventory/summary/models')
-        self.platforms = Table(client, '/tables/inventory/summary/platforms')
-        self.families = Table(client, '/tables/inventory/summary/families')
-        self.vendors = Table(client, '/tables/inventory/summary/vendors')
-        self.part_numbers = Table(client, '/tables/inventory/pn')
-        self.interfaces = Table(client, '/tables/inventory/interfaces')
+class Inventory(BaseModel):
+    client: Any
+
+    @property
+    def sites(self):
+        return Table(client=self.client, endpoint='/tables/inventory/sites')
+
+    @property
+    def vendors(self):
+        return Table(client=self.client, endpoint='/tables/inventory/summary/vendors')
+
+    @property
+    def devices(self):
+        return Table(client=self.client, endpoint='/tables/inventory/devices')
+
+    @property
+    def models(self):
+        return Table(client=self.client, endpoint='/tables/inventory/summary/models')
+
+    @property
+    def platforms(self):
+        return Table(client=self.client, endpoint='/tables/inventory/summary/platforms')
+
+    @property
+    def pn(self):
+        return Table(client=self.client, endpoint='/tables/inventory/pn')
+
+    @property
+    def families(self):
+        return Table(client=self.client, endpoint='/tables/inventory/summary/families')
+
+    @property
+    def interfaces(self):
+        return Table(client=self.client, endpoint='/tables/inventory/interfaces')
