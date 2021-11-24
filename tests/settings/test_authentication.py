@@ -1,7 +1,7 @@
 import datetime
 import ipaddress
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from ipfabric.settings import authentication
 
 
@@ -65,6 +65,8 @@ class Authentication(unittest.TestCase):
             "username": "test"
         }
         self.auth = authentication.Authentication(client=MagicMock())
+        self.auth.credentials = {1: authentication.Credential(**self.cred)}
+        self.auth.enables = {1: authentication.Privilege(**self.priv)}
 
     def test_credentials(self):
         self.auth.client.get().json.return_value = dict(data=[self.cred])
@@ -91,3 +93,21 @@ class Authentication(unittest.TestCase):
     def test_create_payload_expires(self):
         payload = self.auth._create_payload('test', 'pass', None, None, None, '11-23-2021T23:59:59')
         self.assertEqual(payload["expirationDate"]["value"], '2021-11-23 23:59:59')
+
+    @patch('ipfabric.settings.authentication.Authentication.get_credentials')
+    def test_delete_cred(self, mock_call):
+        self.assertIsNone(self.auth.delete_credential('TEST'))
+
+    @patch('ipfabric.settings.authentication.Authentication.get_enables')
+    def test_delete_enable(self, mock_call):
+        self.assertIsNone(self.auth.delete_enable('TEST'))
+
+    @patch('ipfabric.settings.authentication.Authentication.get_credentials')
+    def test_update_cred(self, mock_call):
+        creds = self.auth.update_cred_priority(self.auth.credentials)
+        self.assertEqual(creds, self.auth.credentials)
+
+    @patch('ipfabric.settings.authentication.Authentication.get_enables')
+    def test_update_enable(self, mock_call):
+        priv = self.auth.update_enable_priority(self.auth.enables)
+        self.assertEqual(priv, self.auth.enables)
