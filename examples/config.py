@@ -8,7 +8,7 @@ if __name__ == "__main__":
     print(cfg.configs["L34R3"][0])  # cfg.configs holds a dictionary of lists with hostname as key.
     # Config list is desc date with 0 being latest
     """
-    Config(config_id='619d83a68eec5403579025b8', sn='a22ff67', hostname='L34R3', 
+    Config(config_id='619d83a68eec5403579025b8', sn='a22ff67', hostname='L34R3', text=None, 
     config_hash='2ec117a68eba80b1d0d644937cd3ab8d29fcde14', status='saved', 
     last_change=datetime.datetime(2021, 11, 24, 0, 13, 26, tzinfo=datetime.timezone.utc), 
     last_check=datetime.datetime(2021, 11, 24, 0, 13, 26, tzinfo=datetime.timezone.utc))
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     print()
 
     L34R3 = cfg.get_configuration('L34R3', sanitized=False)  # Display passwords
-    print(L34R3.timestamp)
+    print(L34R3.last_change)
     """
     2021-11-24 00:13:26+00:00
     """
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     L34R3 = cfg.get_configuration('10.34.255.103', date="$prev")  # Method can also accept any managed IP of the device
     # Date can be $last, $prev, $first; $last is default
-    print(L34R3.timestamp)
+    print(L34R3.last_change)
     """
     2021-10-18 23:14:27+00:00
     """

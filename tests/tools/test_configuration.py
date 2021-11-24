@@ -10,10 +10,6 @@ class Models(unittest.TestCase):
                                    lastCheck=1637629200, lastChange=1637629200)
         self.assertIsInstance(cfg, configuration.Config)
 
-    def test_result(self):
-        cfg = configuration.Result(timestamp=1637629200, text='CONFIG')
-        self.assertIsInstance(cfg, configuration.Result)
-
 
 class DeviceConfigs(unittest.TestCase):
     @patch('ipfabric.tools.configuration.DeviceConfigs._get_managed_ips')
@@ -51,7 +47,7 @@ class DeviceConfigs(unittest.TestCase):
     def test_get_configuration(self):
         self.dc.client.get().text = 'CONFIG'
         res = self.dc.get_configuration('test')
-        self.assertIsInstance(res, configuration.Result)
+        self.assertIsInstance(res, configuration.Config)
         self.assertEqual(res.text, 'CONFIG')
 
     def test_get_configuration_error(self):
@@ -98,7 +94,8 @@ class DeviceConfigs(unittest.TestCase):
             }
         ]
         configs = [configuration.Config(**c) for c in data]
-        self.assertEqual(self.dc._get_hash(configs, "$last")[0], "2ec117a68eba80b1d0d644937cd3ab8d29fcde14")
-        self.assertEqual(self.dc._get_hash(configs, "$prev")[0], "ea732ea21150a0d9f1826bc59b4023dcc609c853")
-        self.assertEqual(self.dc._get_hash(configs, "$first")[0], "0140c1010e60c5efe2eea68fd90282b21aa2ad3b")
-        self.assertEqual(self.dc._get_hash(configs, ('10/01/2021', 1635625544))[0], "ea732ea21150a0d9f1826bc59b4023dcc609c853")
+        self.assertEqual(self.dc._get_hash(configs, "$last").config_hash, "2ec117a68eba80b1d0d644937cd3ab8d29fcde14")
+        self.assertEqual(self.dc._get_hash(configs, "$prev").config_hash, "ea732ea21150a0d9f1826bc59b4023dcc609c853")
+        self.assertEqual(self.dc._get_hash(configs, "$first").config_hash, "0140c1010e60c5efe2eea68fd90282b21aa2ad3b")
+        self.assertEqual(self.dc._get_hash(configs, ('10/01/2021', 1635625544)).config_hash,
+                         "ea732ea21150a0d9f1826bc59b4023dcc609c853")

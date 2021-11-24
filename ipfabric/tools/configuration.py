@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from datetime import datetime, timezone
 from ipaddress import IPv4Address, AddressValueError
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 from dateutil import parser
 from pydantic import BaseModel, Field
@@ -19,11 +19,7 @@ class Config(BaseModel):
     status: str
     last_change: datetime = Field(alias="lastChange")
     last_check: datetime = Field(alias="lastCheck")
-
-
-class Result(BaseModel):
-    timestamp: datetime
-    text: str
+    text: Optional[str] = None
 
 
 @dataclass
@@ -63,11 +59,13 @@ class DeviceConfigs:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
 
         if device:
-            config_hash, config_date = self._get_hash(self.configs[device], date)
-            if config_hash:
+            cfg = self._get_hash(self.configs[device], date)
+            if cfg:
                 res = self.client.get('/tables/management/configuration/download',
-                                      params=dict(hash=config_hash, sanitized=sanitized))
-                return Result(timestamp=config_date, text=res.text)
+                                      params=dict(hash=cfg.config_hash, sanitized=sanitized))
+                res.raise_for_status()
+                cfg.text = res.text
+                return cfg
             else:
                 logger.error(f"Could not find a configuration with date {date}")
         return None
@@ -82,14 +80,14 @@ class DeviceConfigs:
                 parser.parse(end).replace(tzinfo=timezone.utc)
             for cfg in configs:
                 if start < cfg.last_change < end:
-                    return cfg.config_hash, cfg.last_change
+                    return cfg
         elif date == '$last':
-            return configs[0].config_hash, configs[0].last_change
+            return configs[0]
         elif date == '$prev' and len(configs) > 1:
-            return configs[1].config_hash, configs[1].last_change
+            return configs[1]
         elif date == '$first':
-            return configs[-1].config_hash, configs[-1].last_change
-        return None, None
+            return configs[-1]
+        return None
 
     def _validate_device(self, device: str):
         try:
