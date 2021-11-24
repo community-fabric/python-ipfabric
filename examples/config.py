@@ -13,7 +13,8 @@ if __name__ == "__main__":
     """
     print()
 
-    L34R3 = cfg.get_configuration('L34R3', date="$prev")  # Date can be $last, $prev, $first; $last is default
+    L34R3 = cfg.get_configuration('10.34.255.103', date="$prev")  # Method can also accept any managed IP of the device
+    # Date can be $last, $prev, $first; $last is default
     print(L34R3.timestamp)
     """
     2021-10-18 23:14:27+00:00
