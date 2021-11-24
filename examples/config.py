@@ -2,7 +2,7 @@ from ipfabric import IPFClient
 from ipfabric.tools import Configurations
 
 if __name__ == "__main__":
-    ipf = IPFClient('https://demo3.ipfabric.io', '07317f03dcfa56d978ede33f140262aa')
+    ipf = IPFClient('https://demo3.ipfabric.io')
     cfg = Configurations(ipf)
 
     print(cfg.configs["L34R3"][0])  # cfg.configs holds a dictionary of lists with hostname as key.
