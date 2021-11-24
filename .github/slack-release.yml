@@ -5,7 +5,7 @@ title: GitHub Actions
 title_link: https://support.github.com
 
 text: |
-  *<{{workflowRunUrl}}|Workflow _{{workflow}}_ job _{{jobName}}_ triggered by _{{eventName}}_ is _{{jobStatus}}_>* for <{{refUrl}}|`{{ref}}`>
+  *<{{refUrl}}|New _{{repositoryName}}_ Release _{{ref}}_>*
   {{#if description}}<{{diffUrl}}|`{{diffRef}}`> - {{description}}{{/if}}
   {{#if payload.commits}}
   *Commits*
@@ -30,7 +30,7 @@ fields:
     short: true
 
 footer: >-
-  <{{repositoryUrl}}|{{repositoryName}}> {{workflow}} #{{runNumber}}
+  <{{repositoryUrl}}|{{repositoryName}}>
 
 colors:
   success: '#5DADE2'
