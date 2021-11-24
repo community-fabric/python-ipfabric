@@ -102,5 +102,3 @@ class DeviceConfigs:
             logger.error(f"Device {device} not found in Configurations")
             return None
         return device
-
-

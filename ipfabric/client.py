@@ -132,6 +132,7 @@ class IPFClient(Client):
         :param start: int: Starts at 0
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionary objects.
         """
 
@@ -171,6 +172,7 @@ class IPFClient(Client):
         :param filters: dict: Optional dictionary of filters
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionary objects.
         """
 

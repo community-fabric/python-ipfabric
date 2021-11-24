@@ -120,12 +120,12 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.post")
     def test_fetch(self, post):
         post().json.return_value = {"data": list()}
-        self.assertEqual(self.ipf.fetch('test', columns=['*'], filters=dict(a="b"), reports='hello'), [])
+        self.assertEqual(self.ipf.fetch('test', columns=['*'], filters=dict(a="b"), reports='a', sort=dict(a="b")), [])
 
     @patch("ipfabric.IPFClient._ipf_pager")
     def test_fetch_all(self, pager):
         pager.return_value = list()
-        self.assertEqual(self.ipf.fetch_all('test', columns=['*'], filters=dict(a="b"), reports='hello'), [])
+        self.assertEqual(self.ipf.fetch_all('a', columns=['*'], filters=dict(a="b"), reports='1', sort=dict(a="b")), [])
 
     @patch("httpx.Client.post")
     def test_query(self, post):
