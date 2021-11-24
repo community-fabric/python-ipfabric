@@ -1,10 +1,19 @@
 from ipfabric import IPFClient
 from ipfabric.tools import Configurations
 
-
 if __name__ == "__main__":
     ipf = IPFClient('https://demo3.ipfabric.io', '07317f03dcfa56d978ede33f140262aa')
     cfg = Configurations(ipf)
+
+    print(cfg.configs["L34R3"][0])  # cfg.configs holds a dictionary of lists with hostname as key.
+    # Config list is desc date with 0 being latest
+    """
+    Config(config_id='619d83a68eec5403579025b8', sn='a22ff67', hostname='L34R3', 
+    config_hash='2ec117a68eba80b1d0d644937cd3ab8d29fcde14', status='saved', 
+    last_change=datetime.datetime(2021, 11, 24, 0, 13, 26, tzinfo=datetime.timezone.utc), 
+    last_check=datetime.datetime(2021, 11, 24, 0, 13, 26, tzinfo=datetime.timezone.utc))
+    """
+    print()
 
     L34R3 = cfg.get_configuration('L34R3', sanitized=False)  # Display passwords
     print(L34R3.timestamp)
@@ -40,4 +49,3 @@ if __name__ == "__main__":
     None
     Device bad-device-name not found in Configurations
     """
-
