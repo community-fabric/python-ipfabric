@@ -9,6 +9,8 @@ from ipfabric.graphs import IPFPath
 
 from httpx import Client
 
+DEFAULT_ID = '$last'
+
 
 def check_format(func):
     """
@@ -28,7 +30,7 @@ class IPFClient(Client):
             self,
             base_url: Optional[str] = None,
             token: Optional[str] = None,
-            snapshot_id: str = "$last",
+            snapshot_id: str = DEFAULT_ID,
             *vargs,
             **kwargs
     ):
@@ -66,7 +68,7 @@ class IPFClient(Client):
 
     @snapshot_id.setter
     def snapshot_id(self, snapshot_id):
-        snapshot_id = "$last" if not snapshot_id else snapshot_id
+        snapshot_id = DEFAULT_ID if not snapshot_id else snapshot_id
         if snapshot_id not in self.snapshots:
             # Verify snapshot ID is valid
             raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
@@ -203,7 +205,7 @@ class IPFClient(Client):
         r = self.post(url, json=dict(snapshot=self.snapshot_id, columns=["*"]))
         if r.status_code == 422:
             msg = r.json()["errors"][0]["message"]
-            return [x.strip() for x in re.match(r'".*".*\[(.*)\]$', msg).group(1).split(',')]
+            return [x.strip() for x in re.match(r"\".*\".*\[(.*)]$", msg).group(1).split(',')]
         else:
             r.raise_for_status()
 

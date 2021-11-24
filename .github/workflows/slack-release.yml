@@ -24,3 +24,4 @@ jobs:
           # Configuration file
           config: .github/slack-release.yml
           status: starting
+          channel: '#community-fabric-updates'
