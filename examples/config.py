@@ -1,9 +1,9 @@
 from ipfabric import IPFClient
-from ipfabric.tools import Configurations
+from ipfabric.tools import DeviceConfigs
 
 if __name__ == "__main__":
     ipf = IPFClient('https://demo3.ipfabric.io')
-    cfg = Configurations(ipf)
+    cfg = DeviceConfigs(ipf)
 
     print(cfg.configs["L34R3"][0])  # cfg.configs holds a dictionary of lists with hostname as key.
     # Config list is desc date with 0 being latest

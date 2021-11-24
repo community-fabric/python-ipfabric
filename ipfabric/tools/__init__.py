@@ -1,3 +1,3 @@
-from .configuration import Configurations
+from .configuration import DeviceConfigs
 
-__all__ = [Configurations]
+__all__ = [DeviceConfigs]

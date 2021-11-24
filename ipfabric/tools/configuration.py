@@ -27,7 +27,7 @@ class Result(BaseModel):
 
 
 @dataclass
-class Configurations:
+class DeviceConfigs:
     client: Any
     managed_ip: dict = Field(default=dict())
     configs: dict = Field(default=dict())
