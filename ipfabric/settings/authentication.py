@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from ipaddress import IPv4Network
-from typing import Optional, Any, Union
+from typing import Optional, Any, Union, ClassVar
 
 from dateutil import parser
 from pydantic import BaseModel, Field
@@ -43,8 +43,8 @@ class Authentication:
     client: Any
     credentials: dict = Field(default=dict(), const=True)
     enables: dict = Field(default=dict(), const=True)
-    _cred_url: str = Field('settings/credentials', const=True)
-    _priv_url: str = Field('settings/privileges', const=True)
+    _cred_url: ClassVar[str] = 'settings/credentials'
+    _priv_url: ClassVar[str] = 'settings/privileges'
 
     def __post_init__(self):
         self.get_credentials()
