@@ -12,7 +12,7 @@ if __name__ == "__main__":
     {'updated': [('MPLS', 'MPLS-NEW')], 'errors': []}
     """
 
-    upd = UpdateSiteNames(ipf, 'site_updates.csv')  # CSV file: oldSiteName, newSiteName
+    upd.dry_run = False
     res = upd.update_sites()
     print(res)
     """
