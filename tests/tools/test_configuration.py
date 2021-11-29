@@ -19,7 +19,7 @@ class DeviceConfigs(unittest.TestCase):
         example = {'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0', 'hostname': 'McastRouter2',
                    'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3', 'lastChange': 1637712996000,
                    'lastCheck': 1637712996000, 'status': 'saved'}
-        self.dc.client.fetch_all.return_value = [example]
+        self.dc.ipf.fetch_all.return_value = [example]
         cfg = configuration.Config(**example)
         self.assertEqual(self.dc.get_all_configurations(), {'McastRouter2': [cfg]})
 
@@ -27,22 +27,22 @@ class DeviceConfigs(unittest.TestCase):
         example = {'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0', 'hostname': 'McastRouter2',
                    'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3', 'lastChange': 1637712996000,
                    'lastCheck': 1637712996000, 'status': 'saved'}
-        self.dc.client.fetch_all.return_value = [example]
+        self.dc.ipf.fetch_all.return_value = [example]
         cfg = configuration.Config(**example)
         self.assertEqual(self.dc.get_all_configurations('McastRouter2'), {'McastRouter2': [cfg]})
 
     def test_get_all_configurations_none(self):
-        self.dc.client.fetch_all.return_value = []
+        self.dc.ipf.fetch_all.return_value = []
         self.assertIsNone(self.dc.get_all_configurations('McastRouter2'))
 
     def test_search_ip(self):
-        self.dc.client.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}]
+        self.dc.ipf.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}]
         self.assertEqual(self.dc._search_ip('test'), "test")
 
     def test_search_ip_none(self):
-        self.dc.client.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}, None]
+        self.dc.ipf.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}, None]
         self.assertIsNone(self.dc._search_ip('test'))
-        self.dc.client.fetch_all.return_value = []
+        self.dc.ipf.fetch_all.return_value = []
         self.assertIsNone(self.dc._search_ip('test'))
 
     @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
@@ -55,7 +55,7 @@ class DeviceConfigs(unittest.TestCase):
                                                                  'lastChange': 1637712996000,
                                                                  'lastCheck': 1637712996000})]
                                 }
-        self.dc.client.get().text = 'CONFIG'
+        self.dc.ipf.get().text = 'CONFIG'
         res = self.dc.get_configuration('test')
         self.assertIsInstance(res, configuration.Config)
         self.assertEqual(res.text, 'CONFIG')
@@ -136,13 +136,13 @@ class DeviceConfigs(unittest.TestCase):
         self.assertEqual(self.dc._validate_device('10.0.0.0'), 'test')
 
     def test_validate_device_by_hostname(self):
-        self.dc.client.inventory.devices.all.return_value = [{'hostname': 'test'}]
+        self.dc.ipf.inventory.devices.all.return_value = [{'hostname': 'test'}]
         self.assertEqual(self.dc._validate_device('test'), 'test')
 
     def test_validate_device_by_hostname_none(self):
-        self.dc.client.inventory.devices.all.return_value = []
+        self.dc.ipf.inventory.devices.all.return_value = []
         self.assertIsNone(self.dc._validate_device('test'))
-        self.dc.client.inventory.devices.all.return_value = [None, None]
+        self.dc.ipf.inventory.devices.all.return_value = [None, None]
         self.assertIsNone(self.dc._validate_device('test'))
 
     def test_regex(self):
