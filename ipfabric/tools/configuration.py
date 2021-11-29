@@ -38,7 +38,7 @@ class DeviceConfigs:
                                         columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"],
                                         filters=dict(hostname=["eq", device]))
             if len(res) == 0:
-                logger.warning(f"Could not find any configurations for device {device}.")
+                logger.warning(f"Could not find any configurations for device '{device}'.")
                 return None
         else:
             res = self.client.fetch_all('tables/management/configuration',
@@ -55,9 +55,9 @@ class DeviceConfigs:
         if len(res) == 1:
             return res[0]['hostname']
         elif len(res) > 1:
-            logger.warning(f"Found multiple entries for IP {ip}.")
+            logger.warning(f"Found multiple entries for IP '{ip}'.")
         elif len(res) == 0:
-            logger.warning(f"Could not find a matching IP for {ip}.")
+            logger.warning(f"Could not find a matching IP for '{ip}'.")
         return None
 
     def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = '$last'):
@@ -121,9 +121,9 @@ class DeviceConfigs:
         if len(res) == 1:
             return res[0]['hostname']
         elif len(res) == 0:
-            logger.warning(f"Could not find a matching device for {device} using regex {hostname}.")
+            logger.warning(f"Could not find a matching device for '{device}' using regex '{hostname}'.")
         elif len(res) > 1:
-            logger.warning(f"Found multiple devices matching {device} using regex {hostname}.")
+            logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
         return None
 
     @staticmethod
