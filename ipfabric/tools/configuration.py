@@ -25,24 +25,40 @@ class Config(BaseModel):
 @dataclass
 class DeviceConfigs:
     client: Any
-    managed_ip: dict = Field(default=dict())
-    configs: dict = Field(default=dict())
 
-    def __post_init__(self):
-        self._get_managed_ips()
-        self._get_all_configurations()
-
-    def _get_all_configurations(self):
-        res = self.client.fetch_all('tables/management/configuration', sort={"order": "desc", "column": "lastChange"},
-                                    columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"])
+    def get_all_configurations(self, device: Optional[str] = None):
+        """
+        Get all configurations in IP Fabric
+        :param device: str: Hostname (case sensitive) filter
+        :return: dict: {Hostname: [Config, Config]}
+        """
+        if device:
+            res = self.client.fetch_all('tables/management/configuration',
+                                        sort={"order": "desc", "column": "lastChange"},
+                                        columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"],
+                                        filters=dict(hostname=["eq", device]))
+            if len(res) == 0:
+                logger.warning(f"Could not find any configurations for device {device}.")
+                return None
+        else:
+            res = self.client.fetch_all('tables/management/configuration',
+                                        sort={"order": "desc", "column": "lastChange"},
+                                        columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"])
         results = defaultdict(list)
         [results[cfg['hostname']].append(Config(**cfg)) for cfg in res]
-        self.configs = results
+        return results
 
-    def _get_managed_ips(self):
+    def _search_ip(self, ip):
         res = self.client.fetch_all('tables/addressing/managed-devs', columns=['ip', 'hostname'],
-                                    reports='/technology/addressing/managed-ip')
-        self.managed_ip = {ip['ip']: ip['hostname'] for ip in res}
+                                    reports='/technology/addressing/managed-ip',
+                                    filters=dict(ip=["eq", ip]))
+        if len(res) == 1:
+            return res[0]['hostname']
+        elif len(res) > 1:
+            logger.warning(f"Found multiple entries for IP {ip}.")
+        elif len(res) == 0:
+            logger.warning(f"Could not find a matching IP for {ip}.")
+        return None
 
     def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = '$last'):
         """
@@ -54,12 +70,17 @@ class DeviceConfigs:
                                         Date can be string or int in seconds ("11/22/ 1:30", 1637629200)
         :return: Result: Returns a result or None
         """
-        device = self._validate_device(device)
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
+        device = self._validate_device(device)
+        if not device:
+            return None
+        cfgs = self.get_all_configurations(device)
+        if not cfgs:
+            return None
 
         if device:
-            cfg = self._get_hash(self.configs[device], date)
+            cfg = self._get_hash(cfgs[device], date)
             if cfg:
                 res = self.client.get('/tables/management/configuration/download',
                                       params=dict(hash=cfg.config_hash, sanitized=sanitized))
@@ -92,13 +113,19 @@ class DeviceConfigs:
     def _validate_device(self, device: str):
         try:
             if IPv4Address(device):
-                device = self.managed_ip[device]
+                return self._search_ip(device)
         except AddressValueError:
             pass
-        except KeyError:
-            logger.error(f"IP {device} not found in Managed IP's.")
-            return None
-        if device not in self.configs:
-            logger.error(f"Device {device} not found in Configurations")
-            return None
-        return device
+        res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["like", device]))
+        if len(res) == 1:
+            return res[0]['hostname']
+        elif len(res) == 0:
+            logger.warning(f"Could not find a matching device for {device}.")
+        elif len(res) > 1:
+            res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["eq", device]))
+            if len(res) == 1:
+                return res[0]['hostname']
+            elif len(res) > 1:
+                logger.warning(f"Found multiple devices matching {device}.")
+        return None
+

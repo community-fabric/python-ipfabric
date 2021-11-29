@@ -12,28 +12,8 @@ class Models(unittest.TestCase):
 
 
 class DeviceConfigs(unittest.TestCase):
-    @patch('ipfabric.tools.configuration.DeviceConfigs._get_managed_ips')
-    @patch('ipfabric.tools.configuration.DeviceConfigs._get_all_configurations')
-    def setUp(self, config, ips) -> None:
+    def setUp(self) -> None:
         self.dc = configuration.DeviceConfigs(MagicMock())
-        self.dc.configs = {
-            'test': [configuration.Config(_id='test', sn='test', hostname='test', hash='test',  status='test',
-                                          lastCheck=1637629200, lastChange=1637629200)]
-        }
-        self.dc.managed_ip = {'10.0.0.1': 'test'}
-
-    def test_validate_device(self):
-        self.assertEqual(self.dc._validate_device('test'), 'test')
-        self.assertEqual(self.dc._validate_device('10.0.0.1'), 'test')
-
-    def test_validate_device_failed(self):
-        self.assertIsNone(self.dc._validate_device('bad'))
-        self.assertIsNone(self.dc._validate_device('10.0.0.2'))
-
-    def test_get_managed_ips(self):
-        self.dc.client.fetch_all.return_value = [{'ip': '10.46.120.7', 'hostname': 'L46DR7'}]
-        self.dc._get_managed_ips()
-        self.assertEqual(self.dc.managed_ip, {'10.46.120.7': 'L46DR7'})
 
     def test_get_all_configurations(self):
         example = {'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0', 'hostname': 'McastRouter2',
@@ -41,10 +21,40 @@ class DeviceConfigs(unittest.TestCase):
                    'lastCheck': 1637712996000, 'status': 'saved'}
         self.dc.client.fetch_all.return_value = [example]
         cfg = configuration.Config(**example)
-        self.dc._get_all_configurations()
-        self.assertEqual(self.dc.configs, {'McastRouter2': [cfg]})
+        self.assertEqual(self.dc.get_all_configurations(), {'McastRouter2': [cfg]})
 
-    def test_get_configuration(self):
+    def test_get_all_configurations_device(self):
+        example = {'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0', 'hostname': 'McastRouter2',
+                   'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3', 'lastChange': 1637712996000,
+                   'lastCheck': 1637712996000, 'status': 'saved'}
+        self.dc.client.fetch_all.return_value = [example]
+        cfg = configuration.Config(**example)
+        self.assertEqual(self.dc.get_all_configurations('McastRouter2'), {'McastRouter2': [cfg]})
+
+    def test_get_all_configurations_none(self):
+        self.dc.client.fetch_all.return_value = []
+        self.assertIsNone(self.dc.get_all_configurations('McastRouter2'))
+
+    def test_search_ip(self):
+        self.dc.client.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}]
+        self.assertEqual(self.dc._search_ip('test'), "test")
+
+    def test_search_ip_none(self):
+        self.dc.client.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}, None]
+        self.assertIsNone(self.dc._search_ip('test'))
+        self.dc.client.fetch_all.return_value = []
+        self.assertIsNone(self.dc._search_ip('test'))
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
+    @patch('ipfabric.tools.configuration.DeviceConfigs.get_all_configurations')
+    def test_get_configuration(self, configs, device):
+        device.return_value = 'test'
+        configs.return_value = {'test': [configuration.Config(**{'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0',
+                                                                 'hostname': 'McastRouter2', 'status': 'saved',
+                                                                 'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3',
+                                                                 'lastChange': 1637712996000,
+                                                                 'lastCheck': 1637712996000})]
+                                }
         self.dc.client.get().text = 'CONFIG'
         res = self.dc.get_configuration('test')
         self.assertIsInstance(res, configuration.Config)
@@ -52,10 +62,29 @@ class DeviceConfigs(unittest.TestCase):
 
     def test_get_configuration_error(self):
         with self.assertRaises(SyntaxError) as err:
-            res = self.dc.get_configuration('test', date='bad')
+            self.dc.get_configuration('test', date='bad')
 
-    def test_get_configuration_none(self):
+    def test_get_configuration_device_none(self):
         self.assertIsNone(self.dc.get_configuration('test', date='$prev'))
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
+    def test_get_configuration_cfgs_none(self, device):
+        device.return_value = 'test'
+        self.assertIsNone(self.dc.get_configuration('test', date='$prev'))
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
+    @patch('ipfabric.tools.configuration.DeviceConfigs.get_all_configurations')
+    @patch('ipfabric.tools.configuration.DeviceConfigs._get_hash')
+    def test_get_configuration_hash_none(self, hash, configs, device):
+        device.return_value = 'test'
+        configs.return_value = {'test': [configuration.Config(**{'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0',
+                                                                 'hostname': 'McastRouter2', 'status': 'saved',
+                                                                 'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3',
+                                                                 'lastChange': 1637712996000,
+                                                                 'lastCheck': 1637712996000})]
+                                }
+        hash.return_value = None
+        self.assertIsNone(self.dc.get_configuration('test'))
 
     def test_get_hash(self):
         data = [
@@ -99,3 +128,19 @@ class DeviceConfigs(unittest.TestCase):
         self.assertEqual(self.dc._get_hash(configs, "$first").config_hash, "0140c1010e60c5efe2eea68fd90282b21aa2ad3b")
         self.assertEqual(self.dc._get_hash(configs, ('10/01/2021', 1635625544)).config_hash,
                          "ea732ea21150a0d9f1826bc59b4023dcc609c853")
+        self.assertIsNone(self.dc._get_hash(configs, ('01/01/2021', '01/01/2021')))
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._search_ip')
+    def test_validate_device_by_ip(self, ip):
+        ip.return_value = 'test'
+        self.assertEqual(self.dc._validate_device('10.0.0.0'), 'test')
+
+    def test_validate_device_by_hostname(self):
+        self.dc.client.inventory.devices.all.return_value = [{'hostname': 'test'}]
+        self.assertEqual(self.dc._validate_device('test'), 'test')
+
+    def test_validate_device_by_hostname_none(self):
+        self.dc.client.inventory.devices.all.return_value = []
+        self.assertIsNone(self.dc._validate_device('test'))
+        self.dc.client.inventory.devices.all.return_value = [None, None]
+        self.assertIsNone(self.dc._validate_device('test'))
