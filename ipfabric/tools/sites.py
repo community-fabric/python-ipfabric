@@ -13,6 +13,7 @@ logger = logging.getLogger()
 class UpdateSiteNames:
     ipf: Any
     sites: Union[str, list] = Field(description="List of tuples [(oldName, newName)] or CSV filename to import.")
+    dry_run: bool = False
 
     def __post_init__(self):
         if isinstance(self.sites, str) and exists(self.sites):
@@ -22,6 +23,8 @@ class UpdateSiteNames:
             raise SyntaxError("Sites is not a list of tuples or a filename.")
 
     def _patch_site(self, key, old, new):
+        if self.dry_run:
+            return True
         res = self.ipf.patch('sites/'+key, json=dict(name=new))
         if res.status_code == 200:
             logger.warning(f"Changed {old} to {new}")

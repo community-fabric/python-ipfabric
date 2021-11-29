@@ -38,3 +38,9 @@ class UpdateSiteNames(unittest.TestCase):
         self.usn.sites = [('old1', 'new1'), ('uid2', 'new2'), ('new3', 'new3'), ('bad', 'new4')]
         test = {'updated': [('old1', 'new1'), ('new3', 'new3')], 'errors': [('uid2', 'new2'), ('bad', 'new4')]}
         self.assertEqual(self.usn.update_sites(), test)
+
+    def test_update_sites_dry(self):
+        self.usn.dry_run = True
+        self.usn.ipf.inventory.sites.all.return_value = [dict(siteName='old1', siteKey='key', siteUid='uid1')]
+        self.usn.sites = [('old1', 'new1')]
+        self.assertEqual(self.usn.update_sites(), {'updated': [('old1', 'new1')], 'errors': []})
