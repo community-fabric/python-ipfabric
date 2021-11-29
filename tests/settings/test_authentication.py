@@ -1,4 +1,3 @@
-import datetime
 import ipaddress
 import unittest
 from unittest.mock import MagicMock, patch

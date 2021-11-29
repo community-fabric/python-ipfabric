@@ -120,7 +120,8 @@ class IPFClient(Client):
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
         snapshot_id: Optional[str] = None,
-        reports: Optional[str] = None
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None
     ):
         """
         Gets data from IP Fabric for specified endpoint
@@ -131,6 +132,7 @@ class IPFClient(Client):
         :param start: int: Starts at 0
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionary objects.
         """
 
@@ -145,7 +147,9 @@ class IPFClient(Client):
         if filters:
             payload["filters"] = filters
         if reports:
-            payload["report"] = reports
+            payload["reports"] = reports
+        if sort:
+            payload["sort"] = sort
 
         res = self.post(url, json=payload)
         res.raise_for_status()
@@ -158,7 +162,8 @@ class IPFClient(Client):
             columns: Optional[list] = None,
             filters: Optional[Union[dict, str]] = None,
             snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None
     ):
         """
         Gets all data from IP Fabric for specified endpoint
@@ -167,6 +172,7 @@ class IPFClient(Client):
         :param filters: dict: Optional dictionary of filters
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionary objects.
         """
 
@@ -174,7 +180,9 @@ class IPFClient(Client):
         if filters:
             payload["filters"] = filters
         if reports:
-            payload["report"] = reports
+            payload["reports"] = reports
+        if sort:
+            payload["sort"] = sort
 
         return self._ipf_pager(url, payload)
 
