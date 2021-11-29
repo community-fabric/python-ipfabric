@@ -22,7 +22,7 @@ class Config(BaseModel):
 
 
 class DeviceConfigs(BaseModel):
-    client: Any
+    ipf: Any
 
     def get_all_configurations(self, device: Optional[str] = None):
         """
@@ -31,25 +31,25 @@ class DeviceConfigs(BaseModel):
         :return: dict: {Hostname: [Config, Config]}
         """
         if device:
-            res = self.client.fetch_all('tables/management/configuration',
-                                        sort={"order": "desc", "column": "lastChange"},
-                                        columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"],
-                                        filters=dict(hostname=["eq", device]))
+            res = self.ipf.fetch_all('tables/management/configuration',
+                                     sort={"order": "desc", "column": "lastChange"},
+                                     columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"],
+                                     filters=dict(hostname=["eq", device]))
             if len(res) == 0:
                 logger.warning(f"Could not find any configurations for device '{device}'.")
                 return None
         else:
-            res = self.client.fetch_all('tables/management/configuration',
-                                        sort={"order": "desc", "column": "lastChange"},
-                                        columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"])
+            res = self.ipf.fetch_all('tables/management/configuration',
+                                     sort={"order": "desc", "column": "lastChange"},
+                                     columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"])
         results = defaultdict(list)
         [results[cfg['hostname']].append(Config(**cfg)) for cfg in res]
         return results
 
     def _search_ip(self, ip):
-        res = self.client.fetch_all('tables/addressing/managed-devs', columns=['ip', 'hostname'],
-                                    reports='/technology/addressing/managed-ip',
-                                    filters=dict(ip=["eq", ip]))
+        res = self.ipf.fetch_all('tables/addressing/managed-devs', columns=['ip', 'hostname'],
+                                 reports='/technology/addressing/managed-ip',
+                                 filters=dict(ip=["eq", ip]))
         if len(res) == 1:
             return res[0]['hostname']
         elif len(res) > 1:
@@ -80,8 +80,8 @@ class DeviceConfigs(BaseModel):
         if device:
             cfg = self._get_hash(cfgs[device], date)
             if cfg:
-                res = self.client.get('/tables/management/configuration/download',
-                                      params=dict(hash=cfg.config_hash, sanitized=sanitized))
+                res = self.ipf.get('/tables/management/configuration/download',
+                                   params=dict(hash=cfg.config_hash, sanitized=sanitized))
                 res.raise_for_status()
                 cfg.text = res.text
                 return cfg
@@ -115,7 +115,7 @@ class DeviceConfigs(BaseModel):
         except AddressValueError:
             pass
         hostname = self._create_regex(device)
-        res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["reg", hostname]))
+        res = self.ipf.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["reg", hostname]))
         if len(res) == 1:
             return res[0]['hostname']
         elif len(res) == 0:
