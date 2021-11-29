@@ -116,16 +116,24 @@ class DeviceConfigs:
                 return self._search_ip(device)
         except AddressValueError:
             pass
-        res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["like", device]))
+        hostname = self._create_regex(device)
+        res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["reg", hostname]))
         if len(res) == 1:
             return res[0]['hostname']
         elif len(res) == 0:
-            logger.warning(f"Could not find a matching device for {device}.")
+            logger.warning(f"Could not find a matching device for {device} using regex {hostname}.")
         elif len(res) > 1:
-            res = self.client.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["eq", device]))
-            if len(res) == 1:
-                return res[0]['hostname']
-            elif len(res) > 1:
-                logger.warning(f"Found multiple devices matching {device}.")
+            logger.warning(f"Found multiple devices matching {device} using regex {hostname}.")
         return None
 
+    @staticmethod
+    def _create_regex(device):
+        regex = '^'
+        hostname = device.upper()
+        for i in hostname:
+            if i.isalpha():
+                regex += f"[{i}{i.lower()}]"
+            else:
+                regex += i
+        regex += '$'
+        return regex
