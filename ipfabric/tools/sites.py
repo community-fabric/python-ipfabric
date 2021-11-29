@@ -40,7 +40,7 @@ class UpdateSiteNames:
         uid = {s["siteUid"]: s for s in ipf_sites}
         updates = dict(updated=list(), errors=list())
         for site in self.sites:
-            old, new = site[0], site[1]
+            old, new = site[0].strip(), site[1].strip()
             changed = False
             if old in names and names[old]['siteName'] != new:
                 changed = self._patch_site(names[old]['siteKey'], old, new)
