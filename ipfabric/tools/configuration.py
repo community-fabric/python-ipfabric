@@ -6,7 +6,6 @@ from typing import Any, Union, Optional
 
 from dateutil import parser
 from pydantic import BaseModel, Field
-from pydantic.dataclasses import dataclass
 
 logger = logging.getLogger()
 
@@ -22,8 +21,7 @@ class Config(BaseModel):
     text: Optional[str] = None
 
 
-@dataclass
-class DeviceConfigs:
+class DeviceConfigs(BaseModel):
     client: Any
 
     def get_all_configurations(self, device: Optional[str] = None):
