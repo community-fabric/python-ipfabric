@@ -144,7 +144,3 @@ class DeviceConfigs(unittest.TestCase):
         self.assertIsNone(self.dc._validate_device('test'))
         self.dc.ipf.inventory.devices.all.return_value = [None, None]
         self.assertIsNone(self.dc._validate_device('test'))
-
-    def test_regex(self):
-        test = self.dc._create_regex('TeSt1234.')
-        self.assertEqual(test, '^[Tt][Ee][Ss][Tt]1234.$')
