@@ -8,6 +8,8 @@ from dateutil import parser
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
 
+from .helpers import create_regex
+
 logger = logging.getLogger()
 
 
@@ -116,7 +118,7 @@ class DeviceConfigs:
                 return self._search_ip(device)
         except AddressValueError:
             pass
-        hostname = self._create_regex(device)
+        hostname = create_regex(device)
         res = self.ipf.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["reg", hostname]))
         if len(res) == 1:
             return res[0]['hostname']
@@ -125,15 +127,3 @@ class DeviceConfigs:
         elif len(res) > 1:
             logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
         return None
-
-    @staticmethod
-    def _create_regex(device):
-        regex = '^'
-        hostname = device.upper()
-        for i in hostname:
-            if i.isalpha():
-                regex += f"[{i}{i.lower()}]"
-            else:
-                regex += i
-        regex += '$'
-        return regex

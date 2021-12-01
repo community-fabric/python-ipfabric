@@ -1,13 +1,15 @@
 import os
 import re
 from collections import OrderedDict
+from json import loads
 from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
-from json import loads
-from ipfabric import models
-from ipfabric.graphs import IPFPath
 
 from httpx import Client
+
+from ipfabric import models
+from ipfabric.graphs import IPFPath
+from ipfabric.security import Security
 
 DEFAULT_ID = '$last'
 
@@ -61,6 +63,7 @@ class IPFClient(Client):
         self.snapshot_id = snapshot_id
         self.inventory = models.Inventory(client=self)
         self.graphs = IPFPath(self)
+        self.security = Security(client=self)
 
     @property
     def snapshot_id(self):
