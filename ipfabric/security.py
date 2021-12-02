@@ -5,9 +5,29 @@ from pydantic import BaseModel, Field
 from .tools.helpers import create_regex
 
 
-class Policy(BaseModel):
-    hostname: str
-    security: dict
+class RuleChain:
+    def __init__(self, **kwargs):
+        self.default_action: dict = kwargs.get('defaultAction')
+        self.name: str = kwargs.get('name')
+        self.rules: list = kwargs.get('rules')
+        self.hidden: bool = kwargs.get('hideInUi', False)
+
+
+class Policy:
+    def __init__(self, **kwargs):
+        self.hostname: str = kwargs.get('hostname')
+        security = kwargs.get('security')
+        self.machine_acl: dict = {
+            name: RuleChain(**rule) for name, rule in security['machineAcl']['ruleChains'].items()
+        } if 'machineAcl' in security else None
+        self.machine_zones: dict = {
+            name: RuleChain(**rule) for name, rule in security['machineZones']['ruleChains'].items()
+        } if 'machineZones' in security else None
+        self.named_tests = security['machineZones']['namedTests'] \
+            if 'machineZones' in security and 'namedTests' in security['machineZones'] else None
+        self.named_values = security['machineZones']['namedValues'] \
+            if 'machineZones' in security and 'namedValues' in security['machineZones'] else None
+        self.zones = security['zones'] if 'zones' in security else None
 
 
 class Security(BaseModel):
