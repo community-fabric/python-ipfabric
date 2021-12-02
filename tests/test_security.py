@@ -27,4 +27,3 @@ class SecurityModel(unittest.TestCase):
         res = self.security.get_policy({'sn': 'a48ff83'})
         self.assertIsInstance(res, Policy)
         self.assertEqual(res.hostname, 'TEST')
-        self.assertIsInstance(res.security, dict)
