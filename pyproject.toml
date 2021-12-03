@@ -39,8 +39,8 @@ version_toml = [
 ]
 major_on_zero = false
 branch = "main"
-upload_to_repository = true
+upload_to_repository = false
 repository = "pypi"
 upload_to_release = true
 build_command = "poetry build"
-patch_without_tag = true
+# patch_without_tag = true
