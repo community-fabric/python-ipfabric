@@ -50,17 +50,21 @@ class DeviceConfigs:
         [results[cfg['hostname']].append(Config(**cfg)) for cfg in res]
         return results
 
-    def _search_ip(self, ip):
+    def _search_ip(self, ip: str, snapshot_id: str = None, log: bool = False) -> dict:
         res = self.ipf.fetch_all('tables/addressing/managed-devs', columns=['ip', 'hostname'],
                                  reports='/technology/addressing/managed-ip',
                                  filters=dict(ip=["eq", ip]))
-        if len(res) == 1:
-            return res[0]['hostname']
+        if len(res) == 1 and not log:
+            return {'hostname': res[0]['hostname']}
+        if len(res) == 1 and log:
+            res = self.ipf.inventory.devices.all(columns=['hostname', 'taskKey'], snapshot_id=snapshot_id,
+                                                 filters=dict(hostname=["eq", res[0]['hostname']]))
+            return {'hostname': res[0]['hostname'], 'taskKey': res[0]['taskKey']}
         elif len(res) > 1:
             logger.warning(f"Found multiple entries for IP '{ip}'.")
         elif len(res) == 0:
             logger.warning(f"Could not find a matching IP for '{ip}'.")
-        return None
+        return {'hostname': None}
 
     def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = '$last'):
         """
@@ -74,13 +78,12 @@ class DeviceConfigs:
         """
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
-        device = self._validate_device(device)
+        device = self._validate_device(device)['hostname']
         if not device:
             return None
         cfgs = self.get_all_configurations(device)
         if not cfgs:
             return None
-
         if device:
             cfg = self._get_hash(cfgs[device], date)
             if cfg:
@@ -112,18 +115,27 @@ class DeviceConfigs:
             return configs[-1]
         return None
 
-    def _validate_device(self, device: str):
+    def _validate_device(self, device: str, snapshot_id: str = None, log: bool = False) -> dict:
         try:
             if IPv4Address(device):
-                return self._search_ip(device)
+                return self._search_ip(device, snapshot_id=snapshot_id, log=log)
         except AddressValueError:
             pass
         hostname = create_regex(device)
-        res = self.ipf.inventory.devices.all(columns=['hostname'], filters=dict(hostname=["reg", hostname]))
+        res = self.ipf.inventory.devices.all(columns=['hostname', 'taskKey'], filters=dict(hostname=["reg", hostname]),
+                                             snapshot_id=snapshot_id)
         if len(res) == 1:
-            return res[0]['hostname']
+            return {'hostname': res[0]['hostname'], 'taskKey': res[0]['taskKey']}
         elif len(res) == 0:
             logger.warning(f"Could not find a matching device for '{device}' using regex '{hostname}'.")
         elif len(res) > 1:
             logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
-        return None
+        return {'hostname': None}
+
+    def get_log(self, device: str, snapshot_id: str = None):
+        device = self._validate_device(device, snapshot_id=snapshot_id, log=True)
+        if not device['hostname']:
+            return None
+        res = self.ipf.get('/os/logs/task/' + device['taskKey'])
+        res.raise_for_status()
+        return res.text

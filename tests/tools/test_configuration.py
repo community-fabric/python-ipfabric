@@ -37,18 +37,23 @@ class DeviceConfigs(unittest.TestCase):
 
     def test_search_ip(self):
         self.dc.ipf.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}]
-        self.assertEqual(self.dc._search_ip('test'), "test")
+        self.assertEqual(self.dc._search_ip('test'), {'hostname': 'test'})
+
+    def test_search_ip_log(self):
+        self.dc.ipf.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}]
+        self.dc.ipf.inventory.devices.all.return_value = [{'hostname': 'test', 'taskKey': 'task'}]
+        self.assertEqual(self.dc._search_ip('test', log=True), {'hostname': 'test', 'taskKey': 'task'})
 
     def test_search_ip_none(self):
         self.dc.ipf.fetch_all.return_value = [{"ip": "10.0.0.0", "hostname": "test"}, None]
-        self.assertIsNone(self.dc._search_ip('test'))
+        self.assertIsNone(self.dc._search_ip('test')['hostname'])
         self.dc.ipf.fetch_all.return_value = []
-        self.assertIsNone(self.dc._search_ip('test'))
+        self.assertIsNone(self.dc._search_ip('test')['hostname'])
 
     @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
     @patch('ipfabric.tools.configuration.DeviceConfigs.get_all_configurations')
     def test_get_configuration(self, configs, device):
-        device.return_value = 'test'
+        device.return_value = {'hostname': 'test'}
         configs.return_value = {'test': [configuration.Config(**{'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0',
                                                                  'hostname': 'McastRouter2', 'status': 'saved',
                                                                  'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3',
@@ -69,14 +74,14 @@ class DeviceConfigs(unittest.TestCase):
 
     @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
     def test_get_configuration_cfgs_none(self, device):
-        device.return_value = 'test'
+        device.return_value = {'hostname': 'test'}
         self.assertIsNone(self.dc.get_configuration('test', date='$prev'))
 
     @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
     @patch('ipfabric.tools.configuration.DeviceConfigs.get_all_configurations')
     @patch('ipfabric.tools.configuration.DeviceConfigs._get_hash')
     def test_get_configuration_hash_none(self, hash, configs, device):
-        device.return_value = 'test'
+        device.return_value = {'hostname': 'test'}
         configs.return_value = {'test': [configuration.Config(**{'_id': '619d84648eec5403579025bf', 'sn': 'OVAEB9DD0',
                                                                  'hostname': 'McastRouter2', 'status': 'saved',
                                                                  'hash': 'be6ae3d00363cd034be33e16e0623c25fe03c3c3',
@@ -136,11 +141,22 @@ class DeviceConfigs(unittest.TestCase):
         self.assertEqual(self.dc._validate_device('10.0.0.0'), 'test')
 
     def test_validate_device_by_hostname(self):
-        self.dc.ipf.inventory.devices.all.return_value = [{'hostname': 'test'}]
-        self.assertEqual(self.dc._validate_device('test'), 'test')
+        self.dc.ipf.inventory.devices.all.return_value = [{'hostname': 'test', 'taskKey': 'task'}]
+        self.assertEqual(self.dc._validate_device('test'), {'hostname': 'test', 'taskKey': 'task'})
 
     def test_validate_device_by_hostname_none(self):
         self.dc.ipf.inventory.devices.all.return_value = []
-        self.assertIsNone(self.dc._validate_device('test'))
+        self.assertIsNone(self.dc._validate_device('test')['hostname'])
         self.dc.ipf.inventory.devices.all.return_value = [None, None]
-        self.assertIsNone(self.dc._validate_device('test'))
+        self.assertIsNone(self.dc._validate_device('test')['hostname'])
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
+    def test_get_log(self, device):
+        device.return_value = {'hostname': 'test', 'taskKey': 'task'}
+        self.dc.ipf.get().text = 'LOG'
+        self.assertEqual(self.dc.get_log('TEST'), 'LOG')
+
+    @patch('ipfabric.tools.configuration.DeviceConfigs._validate_device')
+    def test_get_log_device_none(self, device):
+        device.return_value = {'hostname': None}
+        self.assertIsNone(self.dc.get_log('test'))
