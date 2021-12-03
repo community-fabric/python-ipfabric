@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (2021-12-03)
+### Feature
+* Added Tokens ([`e0c4471`](https://github.com/community-fabric/python-ipfabric/commit/e0c4471588ac91f336d8e39d6e740aedb4bc34e4))
+
 ## v0.0.18 (2021-12-03)
 ### Fix
 * Added log download to config ([`213baf2`](https://github.com/community-fabric/python-ipfabric/commit/213baf29b1b6314dca779cb63087547f2f3d0d11))
