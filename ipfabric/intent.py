@@ -1,4 +1,3 @@
-from typing import Any
 import logging
 from typing import Any
 from typing import Union
@@ -15,14 +14,16 @@ class Intent:
         self.intent_checks: list = self.get_intent_checks()
         self.groups: list = self.get_groups()
 
-    def get_intent_checks(self):
+    def get_intent_checks(self, snapshot_id: str = None):
         """
         Gets all intent checks and returns a list of them.  You can also:
             ipf.intent()  # Loads the intents to intent_checks
             print(len(ipf.intent.intent_checks))
+        :param snapshot_id: str: Optional snapshot ID to get different data
         :return: list: List of intent checks
         """
-        res = self.client.get('reports', params=dict(snapshot=self.client.snapshot_id))
+        snapshot_id = self.client.snapshots[snapshot_id].snapshot_id if snapshot_id else self.client.snapshot_id
+        res = self.client.get('reports', params=dict(snapshot=snapshot_id))
         res.raise_for_status()
         return [IntentCheck(**check) for check in res.json()]
 
@@ -60,3 +61,14 @@ class Intent:
             color = dict(green=0, blue=10, amber=20, red=30)[color]
         return self.client.fetch_all(intent.api_endpoint, snapshot_id=snapshot_id, reports=intent.web_endpoint,
                                      filters={intent.column: ['color', 'eq', color]})
+
+    def compare_snapshot(self, snapshot_id: str = None):
+        new_intents = {i.name: i for i in self.get_intent_checks(snapshot_id)}
+        comparison = list()
+        for name, intent in new_intents.items():
+            old = self.intent_by_name[name].result
+            compare = old.compare(intent.result)
+            for desc, value in compare.items():
+                n = desc if desc != 'count' else 'total'
+                comparison.append((name, n, *value))
+        return comparison

@@ -3,6 +3,8 @@ intent.py
 """
 from pprint import pprint
 
+from tabulate import tabulate
+
 from ipfabric import IPFClient
 
 if __name__ == '__main__':
@@ -71,4 +73,19 @@ if __name__ == '__main__':
     'routeBased': True, 'selectorLocalAddress': '10.71.200.1/32', 'selectorLocalPort': None, 'selectorProtocol': None, 
     'selectorRemoteAddress': '10.64.200.1/32', 'selectorRemotePort': None, 'siteKey': '885963247', 'siteName': 'L71', 
     'sn': 'FOSVM1QWZRUM4EB7', 'status': {'data': 'up', 'severity': 0}, 'tunnelIntName': 'ipsec_L64_mtik'}
+    """
+    print()
+
+    compare = ipf.intent.compare_snapshot('$lastLocked')
+    print(tabulate(compare, headers=['Intent Name', 'Check', 'Current', 'Other', 'Difference']))
+    """
+    Intent Name                                   Check      Current    Other    Difference
+    --------------------------------------------  -------  ---------  -------  ------------
+    CDP/LLDP unidirectional                       total           21       25             4
+    CDP/LLDP unidirectional                       blue            21       25             4
+    BGP Session Age                               total          344      367            23
+    BGP Session Age                               green          254      309            55
+    BGP Session Age                               blue            56       22           -34
+    BGP Session Age                               amber            0        3             3
+    BGP Session Age                               red             34       33            -1
     """

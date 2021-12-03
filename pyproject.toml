@@ -24,6 +24,7 @@ pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 flake8 = "^4.0.1"
 python-semantic-release = "^7.23.0"
+tabulate = "^0.8.9"
 
 
 [build-system]

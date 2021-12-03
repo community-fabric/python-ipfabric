@@ -17,7 +17,26 @@ class Description(BaseModel):
 
 class Result(BaseModel):
     count: Union[int, None]
-    checks: Union[Checks, None]
+    checks: Checks = Field(default_factory=Checks)
+
+    def compare(self, other):
+
+        old = self.checks
+        new = other.checks
+        data = dict()
+        if self.count is not None or other.count is not None:
+            data['count'] = (self.count or 0, other.count or 0, (other.count or 0) - (self.count or 0))
+
+        for value in ['green', 'blue', 'amber', 'red']:
+            if getattr(old, value) is not None and getattr(new, value) is not None:
+                o = self.get_value(old, value)
+                n = self.get_value(new, value)
+                data[value] = (o, n, (n - o))
+        return data
+
+    @staticmethod
+    def get_value(data: Checks, value: str):
+        return int(getattr(data, value) if data else 0)
 
 
 class Child(BaseModel):
