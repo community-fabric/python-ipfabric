@@ -9,6 +9,7 @@ from httpx import Client
 
 from ipfabric import models
 from ipfabric.graphs import IPFPath
+from ipfabric.intent import Intent
 from ipfabric.security import Security
 
 DEFAULT_ID = '$last'
@@ -64,6 +65,7 @@ class IPFClient(Client):
         self.inventory = models.Inventory(client=self)
         self.graphs = IPFPath(self)
         self.security = Security(client=self)
+        self.intent = Intent(client=self)
 
     @property
     def snapshot_id(self):
