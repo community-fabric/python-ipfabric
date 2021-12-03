@@ -1,10 +1,10 @@
 """
 credentials.py
 """
-from ipfabric import IPFClient
-from ipfabric.settings import Authentication
 from pprint import pprint
 
+from ipfabric import IPFClient
+from ipfabric.settings import Authentication
 
 if __name__ == '__main__':
     ipf = IPFClient('https://demo3.ipfabric.io/')  # Token must have Setting Permissions
