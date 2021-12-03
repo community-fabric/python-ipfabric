@@ -34,4 +34,6 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
+          git describe --tags
+          git log --oneline $(git describe --tags --abbrev=0 @^)..@
           semantic-release publish -v DEBUG -D commit_author="github-actions <action@github.com>"
