@@ -11,7 +11,7 @@ class TestToken(unittest.TestCase):
                       "usage": 9585, "maxScope": ["read", "write", "settings"], "id": "1158890326",
                       "userId": "1108612054", "username": "justin", "isExpired": False}
         self.token.client.get().json.return_value = [self.token_data]
-        self.token.client.post.return_value = self.token_data
+        self.token.client.post().json.return_value = self.token_data
 
     def test_add_token(self):
         res = self.token.add_token('TEST', ['read'], token='LONGTOKEN')
