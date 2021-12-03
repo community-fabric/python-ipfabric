@@ -25,13 +25,14 @@ class Result(BaseModel):
         new = other.checks
         data = dict()
         if self.count is not None or other.count is not None:
-            data['count'] = (self.count or 0, other.count or 0, (other.count or 0) - (self.count or 0))
+            data['count'] = dict(current=self.count or 0, other=other.count or 0,
+                                 diff=(other.count or 0) - (self.count or 0))
 
         for value in ['green', 'blue', 'amber', 'red']:
             if getattr(old, value) is not None and getattr(new, value) is not None:
                 o = self.get_value(old, value)
                 n = self.get_value(new, value)
-                data[value] = (o, n, (n - o))
+                data[value] = dict(current=o, other=n, diff=(n - o))
         return data
 
     @staticmethod

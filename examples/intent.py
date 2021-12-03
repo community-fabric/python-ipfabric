@@ -77,15 +77,15 @@ if __name__ == '__main__':
     print()
 
     compare = ipf.intent.compare_snapshot('$lastLocked')
-    print(tabulate(compare, headers=['Intent Name', 'Check', 'Current', 'Other', 'Difference']))
+    print(tabulate(compare, headers="keys"))
     """
-    Intent Name                                   Check      Current    Other    Difference
-    --------------------------------------------  -------  ---------  -------  ------------
-    CDP/LLDP unidirectional                       total           21       25             4
-    CDP/LLDP unidirectional                       blue            21       25             4
-    BGP Session Age                               total          344      367            23
-    BGP Session Age                               green          254      309            55
-    BGP Session Age                               blue            56       22           -34
-    BGP Session Age                               amber            0        3             3
-    BGP Session Age                               red             34       33            -1
+    name                                                  id  check      current    other    diff
+    --------------------------------------------  ----------  -------  ---------  -------  ------
+    CDP/LLDP unidirectional                        320633253  total           21       25       4
+    CDP/LLDP unidirectional                        320633253  blue            21       25       4
+    BGP Session Age                                322316677  total          344      367      23
+    BGP Session Age                                322316677  green          254      309      55
+    BGP Session Age                                322316677  blue            56       22     -34
+    BGP Session Age                                322316677  amber            0        3       3
+    BGP Session Age                                322316677  red             34       33      -1
     """

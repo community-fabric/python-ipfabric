@@ -70,5 +70,5 @@ class Intent:
             compare = old.compare(intent.result)
             for desc, value in compare.items():
                 n = desc if desc != 'count' else 'total'
-                comparison.append((name, n, *value))
+                comparison.append({"name": name, "id": intent.intent_id, "check": n, **value})
         return comparison
