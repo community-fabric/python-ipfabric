@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.17 (2021-12-03)
+### Fix
+* Test ([`fb941d8`](https://github.com/community-fabric/python-ipfabric/commit/fb941d81913cb984732f60af28f87f1c579a1c97))
+* Test ([`8be9b5d`](https://github.com/community-fabric/python-ipfabric/commit/8be9b5dd05ec290716ad2f46985bcf6329a68bd5))
+* Pipeline ([`4fcf5d1`](https://github.com/community-fabric/python-ipfabric/commit/4fcf5d1580bde480a13be6ff59148b2d969df41f))
+
 ## v0.0.16 (2021-12-02)
 
 
