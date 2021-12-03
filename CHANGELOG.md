@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.18 (2021-12-03)
+### Fix
+* Added log download to config ([`213baf2`](https://github.com/community-fabric/python-ipfabric/commit/213baf29b1b6314dca779cb63087547f2f3d0d11))
+
 ## v0.0.17 (2021-12-03)
 ### Fix
 * Test ([`fb941d8`](https://github.com/community-fabric/python-ipfabric/commit/fb941d81913cb984732f60af28f87f1c579a1c97))
