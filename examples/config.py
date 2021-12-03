@@ -43,5 +43,17 @@ if __name__ == "__main__":
     print(bad)
     """
     None
-    Device bad-device-name not found in Configurations
+    Could not find a matching device for 'bad-device-name' using regex \
+        '^[Bb][Aa][Dd]-[Dd][Ee][Vv][Ii][Cc][Ee]-[Nn][Aa][Mm][Ee]$'.
+    """
+    print()
+
+    log = cfg.get_log('L1LB1', snapshot_id='$last')
+    print(log)
+    """
+    admin15@(L1LB1)(cfg-sync Standalone)(Active)(/Common)(tmos)# show version
+    Syntax Error: "version" unexpected argument
+    admin15@(L1LB1)(cfg-sync Standalone)(Active)(/Common)(tmos)# uname -a
+    Syntax Error: unexpected argument "uname"
+    ...
     """
