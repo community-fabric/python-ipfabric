@@ -9,8 +9,10 @@ from ipfabric import IPFClient
 
 if __name__ == '__main__':
     ipf = IPFClient('https://demo3.ipfabric.io/')
+    ipf.intent.load_intent()  # Load Intent Checks
+    # ipf.intent.load_intent('$prev') Load a different snapshot into the class overriding the client.
 
-    # ipf.intent.get_intent_checks('$prev') Load a different snapshot then the client.
+    intents = ipf.intent.get_intent_checks('$lastLocked')  # Returns checks for a snapshot, does not load in the class
 
     pprint(ipf.intent.intent_checks[0].__dict__)
     """

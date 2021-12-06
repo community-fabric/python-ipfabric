@@ -4,10 +4,10 @@ from pydantic import BaseModel, Field
 
 
 class Checks(BaseModel):
-    green: Union[str, dict, int] = Field(alias='0', default=None)
-    blue: Union[str, dict, int] = Field(alias='10', default=None)
-    amber: Union[str, dict, int] = Field(alias='20', default=None)
-    red: Union[str, dict, int] = Field(alias='30', default=None)
+    green: Union[int, str, dict] = Field(alias='0', default=None)
+    blue: Union[int, str, dict] = Field(alias='10', default=None)
+    amber: Union[int, str, dict] = Field(alias='20', default=None)
+    red: Union[int, str, dict] = Field(alias='30', default=None)
 
 
 class Description(BaseModel):
@@ -29,7 +29,7 @@ class Result(BaseModel):
                                  diff=(other.count or 0) - (self.count or 0))
 
         for value in ['green', 'blue', 'amber', 'red']:
-            if getattr(old, value) is not None and getattr(new, value) is not None:
+            if getattr(old, value) is not None or getattr(new, value) is not None:
                 o = self.get_value(old, value)
                 n = self.get_value(new, value)
                 data[value] = dict(current=o, other=n, diff=(n - o))
@@ -37,7 +37,7 @@ class Result(BaseModel):
 
     @staticmethod
     def get_value(data: Checks, value: str):
-        return int(getattr(data, value) if data else 0)
+        return int((getattr(data, value) if data else 0) or 0)
 
 
 class Child(BaseModel):
