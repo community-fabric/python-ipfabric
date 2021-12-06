@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2021-12-06)
+### Feature
+* Made comparison a dictionary ([`4b4258d`](https://github.com/community-fabric/python-ipfabric/commit/4b4258d6d19ceac6dc6e890b136a666d7b981818))
+* Added a comparison for snapshot intents ([`b8028d5`](https://github.com/community-fabric/python-ipfabric/commit/b8028d5888726923a1f71f1642f15224e0b72a2d))
+* Intent Checks ([`c606802`](https://github.com/community-fabric/python-ipfabric/commit/c6068028f972b00c57e24a63099f586f640eb0b2))
+
 ## v0.1.0 (2021-12-03)
 ### Feature
 * Added Tokens ([`e0c4471`](https://github.com/community-fabric/python-ipfabric/commit/e0c4471588ac91f336d8e39d6e740aedb4bc34e4))
