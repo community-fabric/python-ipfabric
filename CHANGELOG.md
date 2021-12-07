@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2021-12-07)
+### Fix
+* Added more data to snapshots ([`1f58a63`](https://github.com/community-fabric/python-ipfabric/commit/1f58a638edaddcfc588763558629412bcbfe07e1))
+
 ## v0.2.0 (2021-12-06)
 ### Feature
 * Made comparison a dictionary ([`4b4258d`](https://github.com/community-fabric/python-ipfabric/commit/4b4258d6d19ceac6dc6e890b136a666d7b981818))
