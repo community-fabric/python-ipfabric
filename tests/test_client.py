@@ -1,10 +1,10 @@
-import datetime
+import os
 import unittest
+from unittest.mock import patch
+
 from ipfabric import IPFClient
 from ipfabric.client import check_format
 from ipfabric.models import Snapshot
-from unittest.mock import MagicMock, patch
-import os
 
 
 class Decorator(unittest.TestCase):
@@ -50,7 +50,17 @@ class Client(unittest.TestCase):
             "totalDevCount": 642,
             "tsEnd": 1637156346509,
             "tsStart": 1637154608164,
-            "id": "631ac652-1f72-417f-813f-b8a8c8730157"
+            "id": "631ac652-1f72-417f-813f-b8a8c8730157",
+            "version": "4.1.1",
+            "sites": [{
+                "siteName": "BRANCH",
+                "uid": "BRANCH",
+                "id": "2342875"
+            }],
+            "errors": [{
+                "errorType": "ABMapResultError",
+                "count": 1
+            }]
         })}
         mock_client._headers = dict()
         self.ipf = IPFClient('google.com', 'token')
@@ -86,7 +96,17 @@ class Client(unittest.TestCase):
             "totalDevCount": 642,
             "tsEnd": 1637156346509,
             "tsStart": 1637154608164,
-            "id": "631ac652-1f72-417f-813f-b8a8c8730157"
+            "id": "631ac652-1f72-417f-813f-b8a8c8730157",
+            "version": "4.1.1",
+            "sites": [{
+                "siteName": "BRANCH",
+                "uid": "BRANCH",
+                "id": "2342875"
+            }],
+            "errors": [{
+                "errorType": "ABMapResultError",
+                "count": 1
+            }]
         }, {
             "name": None,
             "state": "done",
@@ -96,7 +116,17 @@ class Client(unittest.TestCase):
             "totalDevCount": 642,
             "tsEnd": 1637156346509,
             "tsStart": 1637154608164,
-            "id": "631ac652-1f72-417f-813f-b8a8c8730158"
+            "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+            "version": "4.1.1",
+            "sites": [{
+                "siteName": "BRANCH",
+                "uid": "BRANCH",
+                "id": "2342875"
+            }],
+            "errors": [{
+                "errorType": "ABMapResultError",
+                "count": 1
+            }]
         }, {
             "name": None,
             "state": "loaded",
@@ -106,7 +136,17 @@ class Client(unittest.TestCase):
             "totalDevCount": 642,
             "tsEnd": 1637156346509,
             "tsStart": 1637154608164,
-            "id": "631ac652-1f72-417f-813f-b8a8c8730159"
+            "id": "631ac652-1f72-417f-813f-b8a8c8730159",
+            "version": "4.1.1",
+            "sites": [{
+                "siteName": "BRANCH",
+                "uid": "BRANCH",
+                "id": "2342875"
+            }],
+            "errors": [{
+                "errorType": "ABMapResultError",
+                "count": 1
+            }]
         }]
         self.assertIsInstance(self.ipf.get_snapshots()["$last"], Snapshot)
         self.assertEqual(self.ipf.get_snapshots()["$last"].snapshot_id, "631ac652-1f72-417f-813f-b8a8c8730157")
