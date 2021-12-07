@@ -1,6 +1,18 @@
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional, Any, List
+
 from pydantic import BaseModel, Field
+
+
+class Site(BaseModel):
+    site_name: str = Field(alias='siteName')
+    uid: str
+    site_id: str = Field(alias='id')
+
+
+class Error(BaseModel):
+    error_type: str = Field(alias='errorType')
+    count: int
 
 
 class Snapshot(BaseModel):
@@ -11,6 +23,9 @@ class Snapshot(BaseModel):
     locked: bool
     start: datetime = Field(alias="tsStart")
     end: Optional[datetime] = Field(alias="tsEnd")
+    version: str
+    sites: List[Site]
+    errors: List[Error]
 
     @property
     def loaded(self):

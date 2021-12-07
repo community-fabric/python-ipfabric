@@ -1,7 +1,8 @@
 import datetime
 import unittest
-from ipfabric import models
 from unittest.mock import MagicMock, patch
+
+from ipfabric import models
 
 
 class Models(unittest.TestCase):
@@ -20,7 +21,16 @@ class Models(unittest.TestCase):
             "totalDevCount": 642,
             "tsEnd": 1637156346509,
             "tsStart": 1637154608164,
-            "id": "631ac652-1f72-417f-813f-b8a8c8730157"
+            "id": "631ac652-1f72-417f-813f-b8a8c8730157",
+            "sites": [{
+                "siteName": "BRANCH",
+                "uid": "BRANCH",
+                "id": "2342875"
+            }],
+            "errors": [{
+                "errorType": "ABMapResultError",
+                "count": 1
+            }]
         })
         self.assertIsInstance(s, models.Snapshot)
         self.assertIsInstance(s.start, datetime.datetime)
