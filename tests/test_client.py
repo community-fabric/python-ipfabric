@@ -40,7 +40,7 @@ class Client(unittest.TestCase):
     @patch("ipfabric.IPFClient.fetch_os_version")
     @patch("ipfabric.IPFClient.get_snapshots")
     @patch("ipfabric.models.Inventory")
-    def setUp(self, inventory, snaps, os, base_url, headers, mock_client):
+    def setUp(self, inventory, snaps, os_version, base_url, headers, mock_client):
         snaps.return_value = {"$last": Snapshot(**{
             "name": None,
             "state": "loaded",
@@ -194,3 +194,12 @@ class Client(unittest.TestCase):
     def test_ipf_pager(self, post):
         post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
         self.assertEqual(self.ipf._ipf_pager('test', dict()), ["hello"])
+
+    @patch("ipfabric.IPFClient.fetch_os_version")
+    @patch("ipfabric.IPFClient.get_snapshots")
+    def test_update(self, snap, os_v):
+        self.ipf.get_snapshots.return_value = 1
+        self.ipf.fetch_os_version.return_value = 2
+        self.ipf.update()
+        self.assertEqual(self.ipf.snapshots, 1)
+        self.assertEqual(self.ipf.os_version, 2)

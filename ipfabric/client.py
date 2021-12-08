@@ -67,6 +67,10 @@ class IPFClient(Client):
         self.security = Security(client=self)
         self.intent = Intent(client=self)
 
+    def update(self):
+        self.os_version = self.fetch_os_version()
+        self.snapshots = self.get_snapshots()
+
     @property
     def snapshot_id(self):
         return self._snapshot_id

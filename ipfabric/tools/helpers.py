@@ -1,4 +1,4 @@
-def create_regex(string):
+def create_regex(string: str) -> str:
     regex = '^'
     upper_string = string.upper()
     for i in upper_string:

@@ -25,7 +25,7 @@ class Snapshot(BaseModel):
     end: Optional[datetime] = Field(alias="tsEnd")
     version: str
     sites: List[Site]
-    errors: List[Error]
+    errors: Optional[List[Error]]
 
     @property
     def loaded(self):
