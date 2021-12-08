@@ -23,7 +23,7 @@ class Snapshot(BaseModel):
     locked: bool
     start: datetime = Field(alias="tsStart")
     end: Optional[datetime] = Field(alias="tsEnd")
-    version: str
+    version: Optional[str] = None
     sites: List[Site]
     errors: Optional[List[Error]]
 
