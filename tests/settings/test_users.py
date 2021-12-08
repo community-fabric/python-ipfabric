@@ -20,5 +20,14 @@ class TestUsers(unittest.TestCase):
                                                 'ssoProvider': None, 'domainSuffixes': '',
                                                 'email': 'justin.jeffrey@ipfabric.io', 'customScope': True,
                                                 'scope': ['read', 'write', 'settings']}]
-        u = user.get_users('test', '123')[0]
+        u = user.get_users('test')[0]
+        self.assertIsInstance(u, users.User)
+
+    def test_get_user_by_id(self):
+        user = users.Users(MagicMock())
+        user.client._ipf_pager.return_value = [{'id': '1108612054', 'isLocal': True, 'username': 'justin',
+                                                'ssoProvider': None, 'domainSuffixes': '',
+                                                'email': 'justin.jeffrey@ipfabric.io', 'customScope': True,
+                                                'scope': ['read', 'write', 'settings']}]
+        u = user.get_user_by_id('1108612054')
         self.assertIsInstance(u, users.User)

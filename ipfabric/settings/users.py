@@ -28,11 +28,10 @@ class Users:
     def users(self):
         return self.get_users()
 
-    def get_users(self, username: str = None, user_id: str = None):
+    def get_users(self, username: str = None):
         """
         Gets all users or filters on one of the options.
         :param username: str: Username to filter
-        :param user_id: Union[str, int]: User ID to filter
         :return: List of users
         """
         payload = {
@@ -40,7 +39,16 @@ class Users:
         }
         if username:
             payload['filters'] = {"username": ["reg", create_regex(username)]}
-        if user_id:
-            payload['filters'] = {"id": ["=", str(user_id)]}
         users = self.client._ipf_pager('tables/users', payload)
         return [User(**user) for user in users]
+
+    def get_user_by_id(self, user_id: str):
+        """
+        Gets a user by ID
+        :param user_id: Union[str, int]: User ID to filter
+        :return: User
+        """
+        for user in self.get_users():
+            if user.user_id == str(user_id):
+                return user
+        return None
