@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.4 (2021-12-08)
+### Fix
+* Fix for usermgmt ([`7777dc8`](https://github.com/community-fabric/python-ipfabric/commit/7777dc867398540cf9274badcd82129bbfb4b94c))
+
 ## v0.2.3 (2021-12-08)
 ### Fix
 * Fix for snapshot missing version ([`d09b1b1`](https://github.com/community-fabric/python-ipfabric/commit/d09b1b1fb2daf147924690acd14f49446e4675ab))
