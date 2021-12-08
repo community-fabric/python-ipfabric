@@ -31,12 +31,12 @@ class Models(unittest.TestCase):
     @patch('ipfabric.graphs.IPFPath._query')
     def test_unicast(self, query, proto, subnets):
         query.return_value = True
-        self.assertTrue(self.graph.unicast('ip', 'ip'))
+        self.assertTrue(self.graph.unicast('ip', 'ip', overlay=dict(test=1)))
 
     @patch('ipfabric.graphs.IPFPath._query')
     def test_site(self, query):
         query.return_value = True
-        self.assertTrue(self.graph.site('ip'))
+        self.assertTrue(self.graph.site('ip', overlay=dict(test=1)))
 
     @patch('ipfabric.graphs.IPFPath.check_subnets')
     @patch('ipfabric.graphs.IPFPath.check_proto')
@@ -44,7 +44,7 @@ class Models(unittest.TestCase):
     def test_multicast(self, query, proto, subnets):
         subnets.return_value = False
         query.return_value = True
-        self.assertTrue(self.graph.multicast('ip', 'ip', rec_ip='ip'))
+        self.assertTrue(self.graph.multicast('ip', 'ip', rec_ip='ip', overlay=dict(test=1)))
 
     @patch('ipfabric.graphs.IPFPath.check_proto')
     def test_multicast_failed(self, proto):
