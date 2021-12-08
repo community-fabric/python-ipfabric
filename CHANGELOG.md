@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.3 (2021-12-08)
+### Fix
+* Fix for snapshot missing version ([`d09b1b1`](https://github.com/community-fabric/python-ipfabric/commit/d09b1b1fb2daf147924690acd14f49446e4675ab))
+* Fix for users by id ([`e5edaf7`](https://github.com/community-fabric/python-ipfabric/commit/e5edaf73a93cc50e175c46bb181a0336740f3360))
+
 ## v0.2.2 (2021-12-08)
 ### Fix
 * Fix for unloaded snapshots ([`9aca3fd`](https://github.com/community-fabric/python-ipfabric/commit/9aca3fdb27a3f3a1a3dd4cbd4faad3417398048e))
