@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.2 (2021-12-08)
+### Fix
+* Fix for unloaded snapshots ([`9aca3fd`](https://github.com/community-fabric/python-ipfabric/commit/9aca3fdb27a3f3a1a3dd4cbd4faad3417398048e))
+
 ## v0.2.1 (2021-12-07)
 ### Fix
 * Added more data to snapshots ([`1f58a63`](https://github.com/community-fabric/python-ipfabric/commit/1f58a638edaddcfc588763558629412bcbfe07e1))
