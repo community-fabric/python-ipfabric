@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2021-12-08)
+### Feature
+* Pull builtin checks from IP Fabric ([`0f4d385`](https://github.com/community-fabric/python-ipfabric/commit/0f4d3853c7b7313c0d60953f8ccc0b9bf2ab6217))
+
+### Fix
+* Fix graphing a site(s) ([`1df418e`](https://github.com/community-fabric/python-ipfabric/commit/1df418ed34b87e60340faecb6c2790d46b026eac))
+
 ## v0.2.4 (2021-12-08)
 ### Fix
 * Fix for usermgmt ([`7777dc8`](https://github.com/community-fabric/python-ipfabric/commit/7777dc867398540cf9274badcd82129bbfb4b94c))
