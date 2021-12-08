@@ -1,13 +1,25 @@
 """
 graphs.py
 """
-from ipfabric import IPFClient
 from pprint import pprint
 
+from ipfabric import IPFClient
 
 if __name__ == '__main__':
     ipf = IPFClient('https://demo3.ipfabric.io/')
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
+
+    site = ipf.graphs.site('MPLS')
+    print(site)
+    """
+    {'graphResult': {'graphData': {'edges': {'1155361666': {'direction': 'bidirected', 'shift': -0.5, 
+    'source': 'a15ff01', 'target': 'a15ff0b', 'circle': False, 'edgeSettingsId': 'c406f1d0-3ec5-4469-8449-a3265e55fe38',
+     'children': ['1155361666'], 'id': '1155361666', 'style': {'line': {'pattern': 'solid', 'color': 7321967, 
+     'thickness': 1}}, 'labels': {'center': [{'type': 'protocol', 'visible': True, 'text': 'L1'}], 'source': 
+     [{'type': 'intName', 'visible': False, 'text': 'Et0/1'}], 'target': 
+     [{'type': 'intName', 'visible': False, 'text': 'Et0/0'}]}, 'protocol': 'xdp', 'positions': 
+     {'arrowHeads': {'target': [{'x': 379.076321934...
+    """
 
     data = ipf.graphs.host_to_gw('10.47.117.112')
     pprint(data)

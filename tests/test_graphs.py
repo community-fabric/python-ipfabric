@@ -1,7 +1,8 @@
 import ipaddress
 import unittest
-from ipfabric.graphs import IPFPath
 from unittest.mock import MagicMock, patch
+
+from ipfabric.graphs import IPFPath
 
 
 class Models(unittest.TestCase):
@@ -31,6 +32,11 @@ class Models(unittest.TestCase):
     def test_unicast(self, query, proto, subnets):
         query.return_value = True
         self.assertTrue(self.graph.unicast('ip', 'ip'))
+
+    @patch('ipfabric.graphs.IPFPath._query')
+    def test_site(self, query):
+        query.return_value = True
+        self.assertTrue(self.graph.site('ip'))
 
     @patch('ipfabric.graphs.IPFPath.check_subnets')
     @patch('ipfabric.graphs.IPFPath.check_proto')

@@ -36,6 +36,24 @@ class IPFPath:
         else:
             return res.content
 
+    def site(self, site_name: Union[str, list], snapshot_id: Optional[str] = None):
+        """
+        Returns a diagram for a site or sites
+        :param site_name: Union[str, list]: A single site name or a list of site names
+        :param snapshot_id: str: Optional Snapshot ID
+        :return:
+        """
+        payload = {
+            "parameters": {
+                "groupBy": "siteName",
+                "layouts": [],
+                "paths": [site_name] if isinstance(site_name, str) else site_name,
+                "type": "topology"
+            },
+            "snapshot": snapshot_id or self.client.snapshot_id,
+        }
+        return self._query(payload)
+
     def unicast(
             self,
             src_ip: str,
