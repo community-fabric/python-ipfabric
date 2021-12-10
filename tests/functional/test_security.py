@@ -4,7 +4,7 @@ import unittest
 import ipfabric.security
 from ipfabric import IPFClient
 
-condition = False if os.getenv('IPF_URL', None) and os.getenv('IPF_URL', None) else True
+condition = False if os.getenv('IPF_TOKEN', None) and os.getenv('IPF_URL', None) else True
 
 
 @unittest.skipIf(condition, "IPF_URL and IPF_TOKEN not set")

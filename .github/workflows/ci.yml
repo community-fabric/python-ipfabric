@@ -38,4 +38,6 @@ jobs:
         env:
           IPF_URL: ${{ secrets.IPF_URL }}
           IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
-        run: poetry run python -m pytest
+        run: |
+          echo $IPF_URL
+          poetry run python -m pytest
