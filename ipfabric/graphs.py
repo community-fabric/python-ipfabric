@@ -36,11 +36,12 @@ class IPFPath:
         else:
             return res.content
 
-    def site(self, site_name: Union[str, list], snapshot_id: Optional[str] = None):
+    def site(self, site_name: Union[str, list], snapshot_id: Optional[str] = None, overlay: dict = None):
         """
         Returns a diagram for a site or sites
         :param site_name: Union[str, list]: A single site name or a list of site names
         :param snapshot_id: str: Optional Snapshot ID
+        :param overlay: dict: Optional Overlay dictionary
         :return:
         """
         payload = {
@@ -52,6 +53,8 @@ class IPFPath:
             },
             "snapshot": snapshot_id or self.client.snapshot_id,
         }
+        if overlay:
+            payload['overlay'] = overlay
         return self._query(payload)
 
     def unicast(
@@ -64,7 +67,8 @@ class IPFPath:
             sec_drop: Optional[bool] = True,
             grouping: Optional[str] = "siteName",
             flags: Optional[list] = None,
-            snapshot_id: Optional[str] = None
+            snapshot_id: Optional[str] = None,
+            overlay: dict = None
     ) -> Union[dict, bytes]:
         """
         Execute an Unicast Path Lookup diagram query for the given set of parameters.
@@ -79,6 +83,7 @@ class IPFPath:
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
         :param snapshot_id: str: Snapshot ID to override class default
+        :param overlay: dict: Optional Overlay dictionary
         :return: Union[dict, str]: json contains a dictionary with 'graphResult' and 'pathlookup' primary keys.
                                     If not json then return bytes
         """
@@ -98,6 +103,8 @@ class IPFPath:
             parameters=self.check_proto(parameters, flags),
             snapshot=snapshot_id or self.client.snapshot_id
         )
+        if overlay:
+            payload['overlay'] = overlay
 
         return self._query(payload)
 
@@ -112,7 +119,8 @@ class IPFPath:
             sec_drop: Optional[bool] = True,
             grouping: Optional[str] = "siteName",
             flags: Optional[list] = None,
-            snapshot_id: Optional[str] = None
+            snapshot_id: Optional[str] = None,
+            overlay: dict = None
     ) -> Union[dict, bytes]:
         """
         Execute an Multicast Path Lookup diagram query for the given set of parameters.
@@ -128,6 +136,7 @@ class IPFPath:
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
         :param snapshot_id: str: Snapshot ID to override class default
+        :param overlay: dict: Optional Overlay dictionary
         :return: Union[dict, str]: json contains a dictionary with 'graphResult' and 'pathlookup' primary keys.
                                     If not json then return bytes
         """
@@ -154,6 +163,8 @@ class IPFPath:
             parameters=self.check_proto(parameters, flags),
             snapshot=snapshot_id or self.client.snapshot_id
         )
+        if overlay:
+            payload['overlay'] = overlay
 
         return self._query(payload)
 
