@@ -43,9 +43,10 @@ class Table(BaseModel):
     def all(
             self,
             columns: list = None,
-            filters: dict = None,
+            filters: Optional[dict] = None,
             snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None
     ):
         """
         Gets all data from corresponding endpoint
@@ -53,6 +54,7 @@ class Table(BaseModel):
         :param filters: dict: Optional filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionaries
         """
         return self.client.fetch_all(
@@ -60,7 +62,8 @@ class Table(BaseModel):
             columns=columns,
             filters=filters,
             snapshot_id=snapshot_id,
-            reports=reports
+            reports=reports,
+            sort=sort
         )
 
 

@@ -18,7 +18,7 @@ class Intent:
     def get_intent_checks(self, snapshot_id: str = None):
         """
         Gets all intent checks and returns a list of them.  You can also:
-            ipf.intent()  # Loads the intents to intent_checks
+            ipf.load_intent()  # Loads the intents to intent_checks
             print(len(ipf.intent.intent_checks))
         :param snapshot_id: str: Optional snapshot ID to get different data
         :return: list: List of intent checks

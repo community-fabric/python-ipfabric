@@ -27,6 +27,11 @@ jobs:
           poetry config experimental.new-installer false
           poetry config virtualenvs.create false
           poetry install
+      - name: Run functional tests
+        env:
+          IPF_URL: ${{ secrets.IPF_URL }}
+          IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
+        run: poetry run python -m pytest tests/functional
 
       - name: Semantic Release
         env:
