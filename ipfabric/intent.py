@@ -86,7 +86,15 @@ class Intent:
         return self.client.fetch_all(intent.api_endpoint, snapshot_id=snapshot_id, reports=intent.web_endpoint,
                                      filters={intent.column: ['color', 'eq', color]})
 
-    def compare_snapshot(self, snapshot_id: str = None, reverse: bool = False):
+    def compare_snapshot(self, snapshot_id: str, reverse: bool = False):
+        """
+        Compares all intents against another snapshot.
+        Current is the snapshot loaded into the class
+        Other is the snapshot specified in this method.  Use reverse=True to flip them.
+        :param snapshot_id: str: Snapshot ID to compare against this will be the "other" key
+        :param reverse: bool: Default False, setting to true will flip current and other.
+        :return: list: List of dictionaries
+        """
         new_intents = {i.name: i for i in self.get_intent_checks(snapshot_id)}
         comparison = list()
         for name, intent in new_intents.items():
