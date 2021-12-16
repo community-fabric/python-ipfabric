@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2021-12-16)
+### Fix
+* Added reverse to intent compare and some more explanations ([`fe26b3f`](https://github.com/community-fabric/python-ipfabric/commit/fe26b3f1955f30285c9390c70264b9785a336cfb))
+
 ## v0.3.0 (2021-12-08)
 ### Feature
 * Pull builtin checks from IP Fabric ([`0f4d385`](https://github.com/community-fabric/python-ipfabric/commit/0f4d3853c7b7313c0d60953f8ccc0b9bf2ab6217))
