@@ -1,12 +1,12 @@
 """
 basic.py
 """
-from ipfabric import IPFClient
 from pprint import pprint
 
+from ipfabric import IPFClient
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')
+    ipf = IPFClient()
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
 
     print([x for x in dir(ipf.inventory) if not x.startswith('_')])

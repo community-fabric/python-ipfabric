@@ -2,7 +2,8 @@ from ipfabric import IPFClient
 from ipfabric.tools import DeviceConfigs
 
 if __name__ == "__main__":
-    ipf = IPFClient('https://demo3.ipfabric.io')
+    ipf = IPFClient()
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     cfg = DeviceConfigs(ipf)
 
     cfgs = cfg.get_all_configurations()  # Get all Configurations

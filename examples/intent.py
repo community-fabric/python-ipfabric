@@ -8,7 +8,8 @@ from tabulate import tabulate
 from ipfabric import IPFClient
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')
+    ipf = IPFClient()
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     ipf.intent.load_intent()  # Load Intent Checks
     # ipf.intent.load_intent('$prev') Load a different snapshot into the class overriding the client.
 

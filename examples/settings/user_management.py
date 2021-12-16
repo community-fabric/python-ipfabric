@@ -6,7 +6,8 @@ from ipfabric.settings import UserMgmt
 
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')  # Token must have User Management Permissions
+    ipf = IPFClient()  # Token must have User Management Permissions
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     usermgmt = UserMgmt(client=ipf)
 
     print(usermgmt.users[0])
