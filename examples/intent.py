@@ -78,9 +78,15 @@ if __name__ == '__main__':
     """
     print()
 
-    compare = ipf.intent.compare_snapshot('$lastLocked')
+    compare = ipf.intent.compare_snapshot('$lastLocked', reverse=False)
     print(tabulate(compare, headers="keys"))
     """
+    Current: The snapshot loaded into the intent class:
+        ipf.intent.load_intent('$last')
+    Other: The snapshot in the comparison:
+        ipf.intent.compare_snapshot('$prev', reverse=True)
+    Reverse (Default: False): Will flip current and other.  Use when class is newest date and compare is an older date.
+    
     name                                                  id  check      current    other    diff
     --------------------------------------------  ----------  -------  ---------  -------  ------
     CDP/LLDP unidirectional                        320633253  total           21       25       4

@@ -86,12 +86,12 @@ class Intent:
         return self.client.fetch_all(intent.api_endpoint, snapshot_id=snapshot_id, reports=intent.web_endpoint,
                                      filters={intent.column: ['color', 'eq', color]})
 
-    def compare_snapshot(self, snapshot_id: str = None):
+    def compare_snapshot(self, snapshot_id: str = None, reverse: bool = False):
         new_intents = {i.name: i for i in self.get_intent_checks(snapshot_id)}
         comparison = list()
         for name, intent in new_intents.items():
             old = self.intent_by_name[name].result
-            compare = old.compare(intent.result)
+            compare = intent.result.compare(old) if reverse else old.compare(intent.result)
             for desc, value in compare.items():
                 n = desc if desc != 'count' else 'total'
                 comparison.append({"name": name, "id": intent.intent_id, "check": n, **value})
