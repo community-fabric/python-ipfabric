@@ -7,7 +7,8 @@ from ipfabric import IPFClient
 from ipfabric.settings import Authentication
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')  # Token must have Setting Permissions
+    ipf = IPFClient()  # Token must have Setting Permissions
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     ipf_auth = Authentication(client=ipf)
 
     credentials = ipf_auth.credentials

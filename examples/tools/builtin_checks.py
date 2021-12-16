@@ -6,7 +6,8 @@ from ipfabric.tools import SinglePointsFailure, NonRedundantLinks
 if __name__ == "__main__":
     # USE SPARINGLY THIS WILL CREATE A GRAPH OF ALL YOUR SITES.
     # NOT TESTED ON AN IP FABRIC INSTANCE WITH MORE THAN 1,000 DEVICES
-    ipf = IPFClient('https://demo3.ipfabric.io')
+    ipf = IPFClient()
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     nrl = NonRedundantLinks(ipf)
     links = nrl.list()
 

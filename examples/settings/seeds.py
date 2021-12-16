@@ -6,7 +6,8 @@ from ipfabric.settings import Seeds
 
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')  # Token must have Setting Permissions
+    ipf = IPFClient()  # Token must have Setting Permissions
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     ipf_seeds = Seeds(client=ipf)
 
     print(ipf_seeds.seeds)

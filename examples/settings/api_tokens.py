@@ -7,7 +7,7 @@ from ipfabric import IPFClient
 from ipfabric.settings import APIToken
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')  # Token must have Setting Permissions
+    ipf = IPFClient()  # Token must have Setting Permissions
     ipf_tokens = APIToken(client=ipf)
 
     pprint(ipf_tokens.tokens)

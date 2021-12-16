@@ -6,7 +6,8 @@ from pprint import pprint
 from ipfabric import IPFClient
 
 if __name__ == '__main__':
-    ipf = IPFClient('https://demo3.ipfabric.io/')
+    ipf = IPFClient()
+    # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     policies = ipf.security.search_acl_policies('L39EXR11')
     pprint(policies)
     """
