@@ -6,7 +6,9 @@ from ipfabric.tools import Vulnerabilities
 if __name__ == "__main__":
     ipf = IPFClient()
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
-    vuln = Vulnerabilities(ipf)
+    vuln = Vulnerabilities(ipf, timeout=30, cve_limit=20)
+    # Increasing cve_limit will increase the amount of time NIST responds
+
 
     device = vuln.check_device('L47R6')
     pprint(device)

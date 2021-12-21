@@ -15,9 +15,9 @@ class Version(BaseModel):
 
 
 class Vulnerabilities:
-    def __init__(self, ipf):
+    def __init__(self, ipf, timeout: int = 30, cve_limit: int = 20):
         self.ipf = ipf
-        self.nist = NIST(base_url='https://services.nvd.nist.gov/rest/json/cves/1.0', timeout=30)
+        self.nist = NIST(timeout=timeout, cve_limit=cve_limit)
 
     def __del__(self):
         try:
