@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.2 (2021-12-21)
+### Fix
+* Tests ([`b49e7fb`](https://github.com/community-fabric/python-ipfabric/commit/b49e7fb60e8bb13499d96d39e0c6f54079814254))
+* Tests ([`1e04368`](https://github.com/community-fabric/python-ipfabric/commit/1e04368975185a38054f3cd9ead0e07191fe1ac2))
+* CVE ([`87c7d7e`](https://github.com/community-fabric/python-ipfabric/commit/87c7d7efae9be6d72a9bf9769a2a4d8d4e11915d))
+* Intent comparison name changes ([`1059227`](https://github.com/community-fabric/python-ipfabric/commit/105922748eaf7cff38e5fb5afa42b9b3d409429f))
+* Intent comparison name changes ([`7439482`](https://github.com/community-fabric/python-ipfabric/commit/7439482a85727f7feba0c85480dedcfb091f912b))
+
+### Documentation
+* Added compare intent docs. ([`f8ee33d`](https://github.com/community-fabric/python-ipfabric/commit/f8ee33d786bdb6bf1e9604812886f41899ad5efa))
+
 ## v0.3.1 (2021-12-16)
 ### Fix
 * Added reverse to intent compare and some more explanations ([`fe26b3f`](https://github.com/community-fabric/python-ipfabric/commit/fe26b3f1955f30285c9390c70264b9785a336cfb))
