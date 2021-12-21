@@ -124,11 +124,11 @@ class TestIntent(unittest.TestCase):
         self.i_json["result"]["checks"]["30"] = 100
         mock_i.return_value = [imodels.IntentCheck(**self.i_json)]
         comp = self.i.compare_snapshot('$last')
-        data = [{'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'total', 'current': 21, 'other': 21,
-                 'diff': 0}, {'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'blue', 'current': 21,
-                              'other': 22, 'diff': 1}, {'name': 'CDP/LLDP unidirectional', 'id': '320633253',
-                                                        'check': 'amber', 'current': 10, 'other': 5, 'diff': -5},
-                {'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'red', 'current': 0, 'other': 100,
+        data = [{'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'total', 'loaded_snapshot': 21, 'compare_snapshot': 21,
+                 'diff': 0}, {'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'blue', 'loaded_snapshot': 21,
+                              'compare_snapshot': 22, 'diff': 1}, {'name': 'CDP/LLDP unidirectional', 'id': '320633253',
+                                                        'check': 'amber', 'loaded_snapshot': 10, 'compare_snapshot': 5, 'diff': -5},
+                {'name': 'CDP/LLDP unidirectional', 'id': '320633253', 'check': 'red', 'loaded_snapshot': 0, 'compare_snapshot': 100,
                  'diff': 100}]
 
         self.assertEqual(comp, data)

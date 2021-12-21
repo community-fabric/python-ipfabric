@@ -79,7 +79,7 @@ if __name__ == '__main__':
     """
     print()
 
-    compare = ipf.intent.compare_snapshot('$lastLocked', reverse=False)
+    compare = ipf.intent.compare_snapshot('$lastLocked', reverse=True)
     print(tabulate(compare, headers="keys"))
     """
     Current: The snapshot loaded into the intent class:
@@ -88,13 +88,13 @@ if __name__ == '__main__':
         ipf.intent.compare_snapshot('$prev', reverse=True)
     Reverse (Default: False): Will flip current and other.  Use when class is newest date and compare is an older date.
     
-    name                                                  id  check      current    other    diff
-    --------------------------------------------  ----------  -------  ---------  -------  ------
-    CDP/LLDP unidirectional                        320633253  total           21       25       4
-    CDP/LLDP unidirectional                        320633253  blue            21       25       4
-    BGP Session Age                                322316677  total          344      367      23
-    BGP Session Age                                322316677  green          254      309      55
-    BGP Session Age                                322316677  blue            56       22     -34
-    BGP Session Age                                322316677  amber            0        3       3
-    BGP Session Age                                322316677  red             34       33      -1
+    name                                                  id  check      loaded_snapshot    compare_snapshot    diff
+    --------------------------------------------  ----------  -------  -----------------  ------------------  ------
+    CDP/LLDP unidirectional                        320633253  total                   25                  18      -7
+    CDP/LLDP unidirectional                        320633253  blue                    25                  18      -7
+    BGP Session Age                                322316677  total                  367                 358      -9
+    BGP Session Age                                322316677  green                  309                 305      -4
+    BGP Session Age                                322316677  blue                    22                  19      -3
+    BGP Session Age                                322316677  amber                    3                   0      -3
+    BGP Session Age                                322316677  red                     33                  33       0
     """

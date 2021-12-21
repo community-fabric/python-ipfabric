@@ -9,12 +9,16 @@ class CVEs(BaseModel):
 
 
 class NIST(Client):
+    def __init__(self, timeout, cve_limit):
+        super().__init__(base_url='https://services.nvd.nist.gov/rest/json/cves/1.0', timeout=timeout)
+        self.cve_limit = cve_limit
+
     @property
     def params(self):
         return {
             'cpeMatchString': 'cpe:2.3:*:',
             'startIndex': 0,
-            'resultsPerPage': 50
+            'resultsPerPage': self.cve_limit
         }
 
     def check_cve(self, vendor: str, family: str, version: str):

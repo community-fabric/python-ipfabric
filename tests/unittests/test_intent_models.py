@@ -25,10 +25,10 @@ class Models(unittest.TestCase):
         result = imodels.Result(count=100, checks={'0': 1, '20': 5})
         result2 = imodels.Result(count=80, checks={'0': 2, '20': 1, '30': 10})
         comp = result.compare(result2)
-        self.assertEqual(comp['count'], {'current': 100, 'other': 80, 'diff': -20})
-        self.assertEqual(comp['green'], {'current': 1, 'other': 2, 'diff': 1})
-        self.assertEqual(comp['amber'], {'current': 5, 'other': 1, 'diff': -4})
-        self.assertEqual(comp['red'], {'current': 0, 'other': 10, 'diff': 10})
+        self.assertEqual(comp['count'], {'loaded_snapshot': 100, 'compare_snapshot': 80, 'diff': -20})
+        self.assertEqual(comp['green'], {'loaded_snapshot': 1, 'compare_snapshot': 2, 'diff': 1})
+        self.assertEqual(comp['amber'], {'loaded_snapshot': 5, 'compare_snapshot': 1, 'diff': -4})
+        self.assertEqual(comp['red'], {'loaded_snapshot': 0, 'compare_snapshot': 10, 'diff': 10})
 
     def test_child(self):
         child = imodels.Child(weight=10, id='TEST')
