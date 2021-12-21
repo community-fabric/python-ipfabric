@@ -13,9 +13,8 @@ class NIST(unittest.TestCase):
 
     def setUp(self) -> None:
         with patch("httpx.Client.__init__", return_value=None) as mock:
-            self.vuln = nist.NIST()
+            self.vuln = nist.NIST(30, 1)
         self.cve = dict(totalResults=1, result=dict(CVE_Items=[dict(cve=dict(CVE_data_meta=dict(ID='TEST')))]))
-
 
     def test_params(self):
         self.assertEqual(self.vuln.params, {'cpeMatchString': 'cpe:2.3:*:', 'startIndex': 0, 'resultsPerPage': 50})
