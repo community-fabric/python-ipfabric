@@ -17,7 +17,7 @@ class NIST(unittest.TestCase):
         self.cve = dict(totalResults=1, result=dict(CVE_Items=[dict(cve=dict(CVE_data_meta=dict(ID='TEST')))]))
 
     def test_params(self):
-        self.assertEqual(self.vuln.params, {'cpeMatchString': 'cpe:2.3:*:', 'startIndex': 0, 'resultsPerPage': 50})
+        self.assertEqual(self.vuln.params, {'cpeMatchString': 'cpe:2.3:*:', 'startIndex': 0, 'resultsPerPage': 1})
 
     @patch('httpx.Client.get')
     def test_check_juniper(self, get):
