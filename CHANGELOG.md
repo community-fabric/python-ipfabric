@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2021-12-30)
+### Feature
+* Added .env support and reworked environment variables ([`dc7b7f9`](https://github.com/community-fabric/python-ipfabric/commit/dc7b7f9011c4251bbf4e8caacc00795ee37271eb))
+
+### Fix
+* Dont env ([`b872bd3`](https://github.com/community-fabric/python-ipfabric/commit/b872bd3bc1f7f219a7557e5161b26034d8bbfe43))
+
 ## v0.3.2 (2021-12-21)
 ### Fix
 * Tests ([`b49e7fb`](https://github.com/community-fabric/python-ipfabric/commit/b49e7fb60e8bb13499d96d39e0c6f54079814254))
