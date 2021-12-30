@@ -63,7 +63,7 @@ class Client(unittest.TestCase):
             }]
         })}
         mock_client._headers = dict()
-        self.ipf = IPFClient('google.com', 'token')
+        self.ipf = IPFClient(base_url='https://google.com', token='token')
 
 
     @patch("httpx.Client.get")
