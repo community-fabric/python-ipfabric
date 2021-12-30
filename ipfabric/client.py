@@ -1,4 +1,3 @@
-import os
 import re
 from collections import OrderedDict
 from json import loads
@@ -6,13 +5,23 @@ from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
 
 from httpx import Client
-
 from ipfabric import models
 from ipfabric.graphs import IPFPath
 from ipfabric.intent import Intent
 from ipfabric.security import Security
+from pydantic import BaseSettings
 
 DEFAULT_ID = '$last'
+
+
+class Settings(BaseSettings):
+    ipf_url: str  = None
+    ipf_token: str = None
+    ipf_verify: bool = True
+
+    class Config:
+        env_file = '.env'
+        env_file_encoding = 'utf-8'
 
 
 def check_format(func):
@@ -34,7 +43,6 @@ class IPFClient(Client):
             base_url: Optional[str] = None,
             token: Optional[str] = None,
             snapshot_id: str = DEFAULT_ID,
-            *vargs,
             **kwargs
     ):
         """
@@ -45,17 +53,17 @@ class IPFClient(Client):
         :param vargs: list: List to pass to httpx
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        try:
-            base_url = urljoin(base_url or os.environ["IPF_URL"], "api/v1/")
-        except KeyError:
-            raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
+        settings = Settings()
+        kwargs['base_url'] = urljoin(base_url or settings.ipf_url, "api/v1/")
+        kwargs['verify'] = kwargs.get('verify', None) or settings.ipf_verify
+        token = token or settings.ipf_token
 
-        try:
-            token = token or os.environ["IPF_TOKEN"]
-        except KeyError:
+        if not kwargs['base_url']:
+            raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
+        if not token:
             raise RuntimeError("IP Fabric token not provided or IPF_TOKEN not set")
 
-        super().__init__(base_url=base_url, *vargs, **kwargs)
+        super().__init__(**kwargs)
         self.headers.update({'Content-Type': 'application/json', 'X-API-Token': token})
 
         # Request IP Fabric for the OS Version, by doing that we are also ensuring the token is valid
