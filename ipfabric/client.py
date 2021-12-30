@@ -23,6 +23,12 @@ class Settings(BaseSettings):
         env_file = '.env'
         env_file_encoding = 'utf-8'
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
 
 def check_format(func):
     """
@@ -53,10 +59,10 @@ class IPFClient(Client):
         :param vargs: list: List to pass to httpx
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        settings = Settings()
-        kwargs['base_url'] = urljoin(base_url or settings.ipf_url, "api/v1/")
-        kwargs['verify'] = kwargs.get('verify', None) or settings.ipf_verify
-        token = token or settings.ipf_token
+        with Settings() as settings:
+            kwargs['base_url'] = urljoin(base_url or settings.ipf_url, "api/v1/")
+            kwargs['verify'] = kwargs.get('verify') if 'verify' in kwargs else settings.ipf_verify
+            token = token or settings.ipf_token
 
         if not kwargs['base_url']:
             raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
