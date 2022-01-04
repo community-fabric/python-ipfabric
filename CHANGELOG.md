@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2022-01-04)
+### Fix
+* CVE for descriptions ([`c805e99`](https://github.com/community-fabric/python-ipfabric/commit/c805e99a766e9b22879c52f99cac24103c64fc13))
+* CVE for descriptions ([`7302a8f`](https://github.com/community-fabric/python-ipfabric/commit/7302a8fb56b013506e28a1292b3a0fc320d8aa0a))
+* CVE for descriptions ([`4353106`](https://github.com/community-fabric/python-ipfabric/commit/4353106d9fa852371df16a4c69eb0c012bfc32bb))
+
 ## v0.4.0 (2021-12-30)
 ### Feature
 * Added .env support and reworked environment variables ([`dc7b7f9`](https://github.com/community-fabric/python-ipfabric/commit/dc7b7f9011c4251bbf4e8caacc00795ee37271eb))
