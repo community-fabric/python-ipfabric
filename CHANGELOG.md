@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2022-01-04)
+### Fix
+* CVE for hashing ([`6e81c94`](https://github.com/community-fabric/python-ipfabric/commit/6e81c9416c36213903895606a8ebe2d50408e549))
+
 ## v0.4.1 (2022-01-04)
 ### Fix
 * CVE for descriptions ([`c805e99`](https://github.com/community-fabric/python-ipfabric/commit/c805e99a766e9b22879c52f99cac24103c64fc13))
