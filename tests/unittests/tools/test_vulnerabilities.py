@@ -17,7 +17,7 @@ class Vulnerabilities(unittest.TestCase):
         with patch('ipfabric.tools.vulnerabilities.NIST') as mock:
             self.vuln = vulnerabilities.Vulnerabilities(MagicMock())
         self.vuln.nist.check_cve.return_value = CVEs(total_results=1, cves=[], error='None')
-        self.cve = CVE(cve_id='TEST', description='test')
+        self.cve = CVE(cve_id='TEST', description='test', vendor='cisco', family='ios', version='15')
 
     def test_check_versions_cve(self):
         res = self.vuln._check_versions([dict(version='1', vendor='cisco', family='ios', hostname='TEST',
