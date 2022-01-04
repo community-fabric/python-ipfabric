@@ -11,6 +11,9 @@ class CVE(BaseModel):
     def __repr__(self):
         return self.cve_id
 
+    def __hash__(self):
+        return hash(self.cve_id)
+
 
 class CVEs(BaseModel):
     total_results: int
