@@ -1,3 +1,5 @@
+from typing import List
+
 from httpx import Client, ReadTimeout, HTTPStatusError
 from pydantic import BaseModel, Field
 
@@ -12,7 +14,7 @@ class CVE(BaseModel):
 
 class CVEs(BaseModel):
     total_results: int
-    cves: list[CVE]
+    cves: List[CVE]
     error: str = Field(default=None)
 
 
