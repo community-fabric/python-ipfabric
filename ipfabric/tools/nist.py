@@ -54,9 +54,7 @@ class NIST(Client):
             res = self.get('', params=params)
             res.raise_for_status()
             data = res.json()
-            for c in data['result']['CVE_Items']:
-                if len(c['cve']['description']['description_data']) > 1:
-                    print()
+
             cves = CVEs(
                 total_results=data['totalResults'],
                 cves=[CVE(cve_id=i['cve']['CVE_data_meta']['ID'],
