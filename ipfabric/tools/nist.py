@@ -2,9 +2,17 @@ from httpx import Client, ReadTimeout, HTTPStatusError
 from pydantic import BaseModel, Field
 
 
+class CVE(BaseModel):
+    cve_id: str
+    description: str
+
+    def __repr__(self):
+        return self.cve_id
+
+
 class CVEs(BaseModel):
     total_results: int
-    cves: list
+    cves: list[CVE]
     error: str = Field(default=None)
 
 
@@ -46,8 +54,15 @@ class NIST(Client):
             res = self.get('', params=params)
             res.raise_for_status()
             data = res.json()
-            cves = CVEs(total_results=data['totalResults'],
-                        cves=[i['cve']['CVE_data_meta']['ID'] for i in data['result']['CVE_Items']])
+            for c in data['result']['CVE_Items']:
+                if len(c['cve']['description']['description_data']) > 1:
+                    print()
+            cves = CVEs(
+                total_results=data['totalResults'],
+                cves=[CVE(cve_id=i['cve']['CVE_data_meta']['ID'],
+                          description=i['cve']['description']['description_data'][0]['value'])
+                      for i in data['result']['CVE_Items']]
+            )
             return cves
         except ReadTimeout:
             return CVEs(total_results=0, cves=[], error='Timeout')

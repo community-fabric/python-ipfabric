@@ -9,7 +9,6 @@ if __name__ == "__main__":
     vuln = Vulnerabilities(ipf, timeout=30, cve_limit=20)
     # Increasing cve_limit will increase the amount of time NIST responds
 
-
     device = vuln.check_device('L47R6')
     pprint(device)
     """

@@ -14,7 +14,10 @@ class NIST(unittest.TestCase):
     def setUp(self) -> None:
         with patch("httpx.Client.__init__", return_value=None) as mock:
             self.vuln = nist.NIST(30, 1)
-        self.cve = dict(totalResults=1, result=dict(CVE_Items=[dict(cve=dict(CVE_data_meta=dict(ID='TEST')))]))
+        self.cve = dict(totalResults=1, result=dict(CVE_Items=[dict(cve=dict(CVE_data_meta=dict(ID='TEST'),
+                                                                             description=dict(description_data=[
+                                                                                 dict(value='test')
+                                                                             ])))]))
 
     def test_params(self):
         self.assertEqual(self.vuln.params, {'cpeMatchString': 'cpe:2.3:*:', 'startIndex': 0, 'resultsPerPage': 1})
@@ -24,7 +27,8 @@ class NIST(unittest.TestCase):
         get().json.return_value = self.cve
         res = self.vuln.check_cve('juniper', 'junos', '17.2R1.13')
         self.assertIsInstance(res, nist.CVEs)
-        self.assertEqual(res.cves, ['TEST'])
+        self.assertEqual(res.cves[0].cve_id, 'TEST')
+        self.assertEqual(res.cves[0].description, 'test')
         self.assertEqual(res.total_results, 1)
         self.assertIsNone(res.error)
 
