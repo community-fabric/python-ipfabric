@@ -19,6 +19,8 @@ class Snapshot(BaseModel):
     snapshot_id: str = Field(alias="id")
     name: Optional[str]
     count: int = Field(alias="totalDevCount")
+    licensed_count: int = Field(alias="licensedDevCount")
+    status: str
     state: str
     locked: bool
     start: datetime = Field(alias="tsStart")
