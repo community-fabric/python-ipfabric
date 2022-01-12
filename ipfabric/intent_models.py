@@ -12,7 +12,7 @@ class Checks(BaseModel):
 
 class Description(BaseModel):
     general: Union[None, str]
-    checks: Union[None, Checks]
+    checks: Checks = Field(default_factory=Checks)
 
 
 class Result(BaseModel):
