@@ -5,11 +5,12 @@ from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
 
 from httpx import Client
+from pydantic import BaseSettings
+
 from ipfabric import models
 from ipfabric.graphs import IPFPath
 from ipfabric.intent import Intent
 from ipfabric.security import Security
-from pydantic import BaseSettings
 
 DEFAULT_ID = '$last'
 
@@ -245,7 +246,7 @@ class IPFClient(Client):
             url: str,
             payload: dict,
             data: Optional[Union[list, None]] = None,
-            limit: int = 10000,
+            limit: int = 1000,
             start: int = 0
     ):
         """
