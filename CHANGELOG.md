@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.5 (2022-01-13)
+### Fix
+* Default pagination limit.  Was told 10k was not great for performance ([`edd5ae4`](https://github.com/community-fabric/python-ipfabric/commit/edd5ae432fa4cce73c5b1170f7e992bb1cad73cc))
+
 ## v0.4.4 (2022-01-12)
 ### Fix
 * Intent descriptions ([`25d6c96`](https://github.com/community-fabric/python-ipfabric/commit/25d6c96eccfb6c105bed891107dfb8cedc8580fd))
