@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.4 (2022-01-12)
+### Fix
+* Intent descriptions ([`25d6c96`](https://github.com/community-fabric/python-ipfabric/commit/25d6c96eccfb6c105bed891107dfb8cedc8580fd))
+
+## v0.4.3 (2022-01-05)
+### Fix
+* Snapshot model ([`864d4c9`](https://github.com/community-fabric/python-ipfabric/commit/864d4c99e0acc3880cbaa56430e10b701ba768d8))
+
 ## v0.4.2 (2022-01-04)
 ### Fix
 * CVE for hashing ([`6e81c94`](https://github.com/community-fabric/python-ipfabric/commit/6e81c9416c36213903895606a8ebe2d50408e549))
