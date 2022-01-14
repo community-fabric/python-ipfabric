@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 class CVE(BaseModel):
     cve_id: str
     description: str
+    url: str
 
     def __repr__(self):
         return self.cve_id
@@ -63,7 +64,8 @@ class NIST(Client):
             cves = CVEs(
                 total_results=data['totalResults'],
                 cves=[CVE(cve_id=i['cve']['CVE_data_meta']['ID'],
-                          description=i['cve']['description']['description_data'][0]['value'])
+                          description=i['cve']['description']['description_data'][0]['value'],
+                          url=i['cve']['references']['reference_data'][0]['url'])
                       for i in data['result']['CVE_Items']]
             )
             return cves
