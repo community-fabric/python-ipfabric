@@ -17,7 +17,9 @@ class NIST(unittest.TestCase):
         self.cve = dict(totalResults=1, result=dict(CVE_Items=[dict(cve=dict(CVE_data_meta=dict(ID='TEST'),
                                                                              description=dict(description_data=[
                                                                                  dict(value='test')
-                                                                             ])))]))
+                                                                             ]), references=dict(reference_data=[
+                {'url': 'test'}
+            ])))]))
 
     def test_params(self):
         self.assertEqual(self.vuln.params, {'cpeMatchString': 'cpe:2.3:*:', 'startIndex': 0, 'resultsPerPage': 1})
