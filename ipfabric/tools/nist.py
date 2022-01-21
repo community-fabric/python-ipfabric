@@ -58,7 +58,12 @@ class NIST(Client):
         elif vendor == 'f5' and family == 'big-ip':
             params['cpeMatchString'] += vendor + ":" + 'big-ip_access_policy_manager' + ":" + version
         elif vendor == 'cisco':
-            family = 'wireless_lan_controller_software' if family == 'wlc-air' else family.replace('-', '_')
+            if family == 'wlc-air':
+                family = 'wireless_lan_controller_software'
+            elif family == 'nx-os':
+                family = family
+            else:
+                family.replace('-', '_')
             version = (version.replace('(', '.')).replace(')', '.')
             params['cpeMatchString'] += vendor + ":" + family + ':' + version
         elif vendor == 'fortinet' and family == 'fortigate':
