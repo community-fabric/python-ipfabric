@@ -45,13 +45,26 @@ class NIST(Client):
         """
         params = self.params
         if vendor == 'juniper':
-            params['cpeMatchString'] += vendor + ":" + family + ":" + version[:version.rfind('R') + 2].replace('R', ':r')
+            version = version[:version.rfind('R') + 2].replace('R', ':r')
+            params['cpeMatchString'] += vendor + ":" + family + ":" + version
         elif vendor == 'paloalto':
             params['cpeMatchString'] += 'palo_alto' + ":" + family + ":" + version
+        elif vendor == 'extreme':
+            if 'xos' in family:
+                family = 'extremexos'
+            params['cpeMatchString'] += 'extremenetworks' + ":" + family + ":" + version
+        elif 'aruba' in family:
+            params['cpeMatchString'] += 'arubanetworks:arubaos' + ":" + version
+        elif vendor == 'f5' and family == 'big-ip':
+            params['cpeMatchString'] += vendor + ":" + 'big-ip_access_policy_manager' + ":" + version
         elif vendor == 'cisco':
-            params['cpeMatchString'] += 'cisco:' + family + ':' + (version.replace('(', '.')).replace(')', '.')
+            family = 'wireless_lan_controller_software' if family == 'wlc-air' else family.replace('-', '_')
+            version = (version.replace('(', '.')).replace(')', '.')
+            params['cpeMatchString'] += vendor + ":" + family + ':' + version
         elif vendor == 'fortinet' and family == 'fortigate':
             params['cpeMatchString'] += 'fortinet:fortios:' + version.replace(',', '.')
+        elif vendor == 'checkpoint' and family == 'gaia':
+            params['cpeMatchString'] += vendor + ":" + 'gaia_os' + version.replace('R', ':r')
         else:
             v = str(version).split(',')[0]
             params['cpeMatchString'] += str(vendor) + ":" + str(family) + ":" + v
