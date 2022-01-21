@@ -60,10 +60,8 @@ class NIST(Client):
         elif vendor == 'cisco':
             if family == 'wlc-air':
                 family = 'wireless_lan_controller_software'
-            elif family == 'nx-os':
-                family = family
-            else:
-                family.replace('-', '_')
+            elif family != 'nx-os':
+                family = family.replace('-', '_')
             version = (version.replace('(', '.')).replace(')', '.')
             params['cpeMatchString'] += vendor + ":" + family + ':' + version
         elif vendor == 'fortinet' and family == 'fortigate':
