@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.7 (2022-01-21)
+### Fix
+* CVE searches ([`7ca91d4`](https://github.com/community-fabric/python-ipfabric/commit/7ca91d44d3f3c426f634b9021af5497b25e5f7b2))
+
 ## v0.4.6 (2022-01-14)
 ### Fix
 * CVE URL data ([`41762bc`](https://github.com/community-fabric/python-ipfabric/commit/41762bc2e0321e981e77c8158161261a8f336c8b))
