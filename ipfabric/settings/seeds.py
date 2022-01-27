@@ -13,7 +13,7 @@ class Seeds:
 
     @property
     def seeds(self):
-        res = self.client.get('settings/seed')
+        res = self.client.get("settings/seed")
         res.raise_for_status()
         return res.json()
 
@@ -35,9 +35,9 @@ class Seeds:
         :return: list: Updated list of configured seeds
         """
         if not isinstance(seeds, list):
-            raise SyntaxError('Seeds must be a list of IP Addresses or networks')
+            raise SyntaxError("Seeds must be a list of IP Addresses or networks")
         if self._check_seeds(seeds):
-            res = self.client.put('settings/seed', json=seeds)
+            res = self.client.put("settings/seed", json=seeds)
             res.raise_for_status()
             return res.json()
 

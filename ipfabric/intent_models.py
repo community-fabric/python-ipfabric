@@ -4,10 +4,10 @@ from pydantic import BaseModel, Field
 
 
 class Checks(BaseModel):
-    green: Union[int, str, dict] = Field(alias='0', default=None)
-    blue: Union[int, str, dict] = Field(alias='10', default=None)
-    amber: Union[int, str, dict] = Field(alias='20', default=None)
-    red: Union[int, str, dict] = Field(alias='30', default=None)
+    green: Union[int, str, dict] = Field(alias="0", default=None)
+    blue: Union[int, str, dict] = Field(alias="10", default=None)
+    amber: Union[int, str, dict] = Field(alias="20", default=None)
+    red: Union[int, str, dict] = Field(alias="30", default=None)
 
 
 class Description(BaseModel):
@@ -25,10 +25,13 @@ class Result(BaseModel):
         new = other.checks
         data = dict()
         if self.count is not None or other.count is not None:
-            data['count'] = dict(loaded_snapshot=self.count or 0, compare_snapshot=other.count or 0,
-                                 diff=(other.count or 0) - (self.count or 0))
+            data["count"] = dict(
+                loaded_snapshot=self.count or 0,
+                compare_snapshot=other.count or 0,
+                diff=(other.count or 0) - (self.count or 0),
+            )
 
-        for value in ['green', 'blue', 'amber', 'red']:
+        for value in ["green", "blue", "amber", "red"]:
             if getattr(old, value) is not None or getattr(new, value) is not None:
                 o = self.get_value(old, value)
                 n = self.get_value(new, value)
@@ -42,13 +45,13 @@ class Result(BaseModel):
 
 class Child(BaseModel):
     weight: int
-    intent_id: str = Field(alias='id')
+    intent_id: str = Field(alias="id")
 
 
 class Group(BaseModel):
     custom: bool
     name: str
-    group_id: str = Field(alias='id')
+    group_id: str = Field(alias="id")
     children: List[Child] = Field(default_factory=list)
 
 
@@ -61,7 +64,7 @@ class IntentCheck(BaseModel):
     name: str
     status: int
     result: Result
-    api_endpoint: str = Field(alias='apiEndpoint')
-    default_color: Union[None, int] = Field(alias='defaultColor')
-    web_endpoint: str = Field(alias='webEndpoint')
-    intent_id: str = Field(alias='id')
+    api_endpoint: str = Field(alias="apiEndpoint")
+    default_color: Union[None, int] = Field(alias="defaultColor")
+    web_endpoint: str = Field(alias="webEndpoint")
+    intent_id: str = Field(alias="id")

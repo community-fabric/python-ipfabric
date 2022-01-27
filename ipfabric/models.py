@@ -5,13 +5,13 @@ from pydantic import BaseModel, Field
 
 
 class Site(BaseModel):
-    site_name: str = Field(alias='siteName')
+    site_name: str = Field(alias="siteName")
     uid: str
-    site_id: str = Field(alias='id')
+    site_id: str = Field(alias="id")
 
 
 class Error(BaseModel):
-    error_type: str = Field(alias='errorType')
+    error_type: str = Field(alias="errorType")
     count: int
 
 
@@ -31,7 +31,7 @@ class Snapshot(BaseModel):
 
     @property
     def loaded(self):
-        return self.state == 'loaded'
+        return self.state == "loaded"
 
 
 class Table(BaseModel):
@@ -40,15 +40,15 @@ class Table(BaseModel):
 
     @property
     def name(self):
-        return self.endpoint.split('/')[-1]
+        return self.endpoint.split("/")[-1]
 
     def all(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -65,7 +65,7 @@ class Table(BaseModel):
             filters=filters,
             snapshot_id=snapshot_id,
             reports=reports,
-            sort=sort
+            sort=sort,
         )
 
 
@@ -74,32 +74,32 @@ class Inventory(BaseModel):
 
     @property
     def sites(self):
-        return Table(client=self.client, endpoint='/tables/inventory/sites')
+        return Table(client=self.client, endpoint="/tables/inventory/sites")
 
     @property
     def vendors(self):
-        return Table(client=self.client, endpoint='/tables/inventory/summary/vendors')
+        return Table(client=self.client, endpoint="/tables/inventory/summary/vendors")
 
     @property
     def devices(self):
-        return Table(client=self.client, endpoint='/tables/inventory/devices')
+        return Table(client=self.client, endpoint="/tables/inventory/devices")
 
     @property
     def models(self):
-        return Table(client=self.client, endpoint='/tables/inventory/summary/models')
+        return Table(client=self.client, endpoint="/tables/inventory/summary/models")
 
     @property
     def platforms(self):
-        return Table(client=self.client, endpoint='/tables/inventory/summary/platforms')
+        return Table(client=self.client, endpoint="/tables/inventory/summary/platforms")
 
     @property
     def pn(self):
-        return Table(client=self.client, endpoint='/tables/inventory/pn')
+        return Table(client=self.client, endpoint="/tables/inventory/pn")
 
     @property
     def families(self):
-        return Table(client=self.client, endpoint='/tables/inventory/summary/families')
+        return Table(client=self.client, endpoint="/tables/inventory/summary/families")
 
     @property
     def interfaces(self):
-        return Table(client=self.client, endpoint='/tables/inventory/interfaces')
+        return Table(client=self.client, endpoint="/tables/inventory/interfaces")

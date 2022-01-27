@@ -24,15 +24,15 @@ class CVEs(BaseModel):
 
 class NIST(Client):
     def __init__(self, timeout, cve_limit):
-        super().__init__(base_url='https://services.nvd.nist.gov/rest/json/cves/1.0', timeout=timeout)
+        super().__init__(base_url="https://services.nvd.nist.gov/rest/json/cves/1.0", timeout=timeout)
         self.cve_limit = cve_limit
 
     @property
     def params(self):
         return {
-            'cpeMatchString': 'cpe:2.3:*:',
-            'startIndex': 0,
-            'resultsPerPage': self.cve_limit
+            "cpeMatchString": "cpe:2.3:*:",
+            "startIndex": 0,
+            "resultsPerPage": self.cve_limit,
         }
 
     def check_cve(self, vendor: str, family: str, version: str):
@@ -44,48 +44,52 @@ class NIST(Client):
         :return:
         """
         params = self.params
-        if vendor == 'juniper':
-            version = version[:version.rfind('R') + 2].replace('R', ':r')
-            params['cpeMatchString'] += vendor + ":" + family + ":" + version
-        elif vendor == 'paloalto':
-            params['cpeMatchString'] += 'palo_alto' + ":" + family + ":" + version
-        elif vendor == 'extreme':
-            if 'xos' in family:
-                family = 'extremexos'
-            params['cpeMatchString'] += 'extremenetworks' + ":" + family + ":" + version
-        elif 'aruba' in family:
-            params['cpeMatchString'] += 'arubanetworks:arubaos' + ":" + version
-        elif vendor == 'f5' and family == 'big-ip':
-            params['cpeMatchString'] += vendor + ":" + 'big-ip_access_policy_manager' + ":" + version
-        elif vendor == 'cisco':
-            if family == 'wlc-air':
-                family = 'wireless_lan_controller_software'
-            elif family != 'nx-os':
-                family = family.replace('-', '_')
-            version = (version.replace('(', '.')).replace(')', '.')
-            params['cpeMatchString'] += vendor + ":" + family + ':' + version
-        elif vendor == 'fortinet' and family == 'fortigate':
-            params['cpeMatchString'] += 'fortinet:fortios:' + version.replace(',', '.')
-        elif vendor == 'checkpoint' and family == 'gaia':
-            params['cpeMatchString'] += vendor + ":" + 'gaia_os' + version.replace('R', ':r')
+        if vendor == "juniper":
+            version = version[: version.rfind("R") + 2].replace("R", ":r")
+            params["cpeMatchString"] += vendor + ":" + family + ":" + version
+        elif vendor == "paloalto":
+            params["cpeMatchString"] += "palo_alto" + ":" + family + ":" + version
+        elif vendor == "extreme":
+            if "xos" in family:
+                family = "extremexos"
+            params["cpeMatchString"] += "extremenetworks" + ":" + family + ":" + version
+        elif "aruba" in family:
+            params["cpeMatchString"] += "arubanetworks:arubaos" + ":" + version
+        elif vendor == "f5" and family == "big-ip":
+            params["cpeMatchString"] += vendor + ":" + "big-ip_access_policy_manager" + ":" + version
+        elif vendor == "cisco":
+            if family == "wlc-air":
+                family = "wireless_lan_controller_software"
+            elif family != "nx-os":
+                family = family.replace("-", "_")
+            version = (version.replace("(", ".")).replace(")", ".")
+            params["cpeMatchString"] += vendor + ":" + family + ":" + version
+        elif vendor == "fortinet" and family == "fortigate":
+            params["cpeMatchString"] += "fortinet:fortios:" + version.replace(",", ".")
+        elif vendor == "checkpoint" and family == "gaia":
+            params["cpeMatchString"] += vendor + ":" + "gaia_os" + version.replace("R", ":r")
         else:
-            v = str(version).split(',')[0]
-            params['cpeMatchString'] += str(vendor) + ":" + str(family) + ":" + v
+            v = str(version).split(",")[0]
+            params["cpeMatchString"] += str(vendor) + ":" + str(family) + ":" + v
 
         try:
-            res = self.get('', params=params)
+            res = self.get("", params=params)
             res.raise_for_status()
             data = res.json()
 
             cves = CVEs(
-                total_results=data['totalResults'],
-                cves=[CVE(cve_id=i['cve']['CVE_data_meta']['ID'],
-                          description=i['cve']['description']['description_data'][0]['value'],
-                          url=i['cve']['references']['reference_data'][0]['url'])
-                      for i in data['result']['CVE_Items']]
+                total_results=data["totalResults"],
+                cves=[
+                    CVE(
+                        cve_id=i["cve"]["CVE_data_meta"]["ID"],
+                        description=i["cve"]["description"]["description_data"][0]["value"],
+                        url=i["cve"]["references"]["reference_data"][0]["url"],
+                    )
+                    for i in data["result"]["CVE_Items"]
+                ],
             )
             return cves
         except ReadTimeout:
-            return CVEs(total_results=0, cves=[], error='Timeout')
+            return CVEs(total_results=0, cves=[], error="Timeout")
         except HTTPStatusError:
-            return CVEs(total_results=0, cves=[], error='HTTP Error')
+            return CVEs(total_results=0, cves=[], error="HTTP Error")

@@ -36,7 +36,12 @@ class IPFPath:
         else:
             return res.content
 
-    def site(self, site_name: Union[str, list], snapshot_id: Optional[str] = None, overlay: dict = None):
+    def site(
+        self,
+        site_name: Union[str, list],
+        snapshot_id: Optional[str] = None,
+        overlay: dict = None,
+    ):
         """
         Returns a diagram for a site or sites
         :param site_name: Union[str, list]: A single site name or a list of site names
@@ -49,26 +54,26 @@ class IPFPath:
                 "groupBy": "siteName",
                 "layouts": [],
                 "paths": [site_name] if isinstance(site_name, str) else site_name,
-                "type": "topology"
+                "type": "topology",
             },
             "snapshot": snapshot_id or self.client.snapshot_id,
         }
         if overlay:
-            payload['overlay'] = overlay
+            payload["overlay"] = overlay
         return self._query(payload)
 
     def unicast(
-            self,
-            src_ip: str,
-            dst_ip: str,
-            proto: str = "tcp",
-            src_port: Optional[int] = 10000,
-            dst_port: Optional[int] = 80,
-            sec_drop: Optional[bool] = True,
-            grouping: Optional[str] = "siteName",
-            flags: Optional[list] = None,
-            snapshot_id: Optional[str] = None,
-            overlay: dict = None
+        self,
+        src_ip: str,
+        dst_ip: str,
+        proto: str = "tcp",
+        src_port: Optional[int] = 10000,
+        dst_port: Optional[int] = 80,
+        sec_drop: Optional[bool] = True,
+        grouping: Optional[str] = "siteName",
+        flags: Optional[list] = None,
+        snapshot_id: Optional[str] = None,
+        overlay: dict = None,
     ) -> Union[dict, bytes]:
         """
         Execute an Unicast Path Lookup diagram query for the given set of parameters.
@@ -97,30 +102,30 @@ class IPFPath:
             securedPath=sec_drop,
             pathLookupType="unicast",
             groupBy=grouping,
-            networkMode=self.check_subnets(src_ip, dst_ip)
+            networkMode=self.check_subnets(src_ip, dst_ip),
         )
         payload = dict(
             parameters=self.check_proto(parameters, flags),
-            snapshot=snapshot_id or self.client.snapshot_id
+            snapshot=snapshot_id or self.client.snapshot_id,
         )
         if overlay:
-            payload['overlay'] = overlay
+            payload["overlay"] = overlay
 
         return self._query(payload)
 
     def multicast(
-            self,
-            src_ip: str,
-            grp_ip: str,
-            proto: str = "tcp",
-            rec_ip: Optional[str] = None,
-            src_port: Optional[int] = 10000,
-            grp_port: Optional[int] = 80,
-            sec_drop: Optional[bool] = True,
-            grouping: Optional[str] = "siteName",
-            flags: Optional[list] = None,
-            snapshot_id: Optional[str] = None,
-            overlay: dict = None
+        self,
+        src_ip: str,
+        grp_ip: str,
+        proto: str = "tcp",
+        rec_ip: Optional[str] = None,
+        src_port: Optional[int] = 10000,
+        grp_port: Optional[int] = 80,
+        sec_drop: Optional[bool] = True,
+        grouping: Optional[str] = "siteName",
+        flags: Optional[list] = None,
+        snapshot_id: Optional[str] = None,
+        overlay: dict = None,
     ) -> Union[dict, bytes]:
         """
         Execute an Multicast Path Lookup diagram query for the given set of parameters.
@@ -152,27 +157,27 @@ class IPFPath:
             type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="multicast",
-            groupBy=grouping
+            groupBy=grouping,
         )
         if rec_ip and self.check_subnets(rec_ip):
             raise SyntaxError("Multicast Receiver IP must be a single IP not subnet.")
         elif rec_ip:
-            parameters['receiver'] = rec_ip
+            parameters["receiver"] = rec_ip
 
         payload = dict(
             parameters=self.check_proto(parameters, flags),
-            snapshot=snapshot_id or self.client.snapshot_id
+            snapshot=snapshot_id or self.client.snapshot_id,
         )
         if overlay:
-            payload['overlay'] = overlay
+            payload["overlay"] = overlay
 
         return self._query(payload)
 
     def host_to_gw(
-            self,
-            src_ip: str,
-            grouping: Optional[str] = "siteName",
-            snapshot_id: Optional[str] = None
+        self,
+        src_ip: str,
+        grouping: Optional[str] = "siteName",
+        snapshot_id: Optional[str] = None,
     ) -> Union[dict, bytes]:
         """
         Execute an "Host to Gateway" diagram query for the given set of parameters.
@@ -188,9 +193,9 @@ class IPFPath:
                 startingPoint=src_ip,
                 type="pathLookup",
                 pathLookupType="hostToDefaultGW",
-                groupBy=grouping
+                groupBy=grouping,
             ),
-            snapshot=snapshot_id or self.client.snapshot_id
+            snapshot=snapshot_id or self.client.snapshot_id,
         )
         return self._query(payload)
 
@@ -202,16 +207,16 @@ class IPFPath:
         :param flags: list: List of optional TCP flags
         :return: dict: formatted parameters, removing ports if icmp
         """
-        if parameters['protocol'] == 'tcp' and flags:
-            if all(x in ['ack', 'fin', 'psh', 'rst', 'syn', 'urg'] for x in flags):
-                parameters['flags'] = flags
+        if parameters["protocol"] == "tcp" and flags:
+            if all(x in ["ack", "fin", "psh", "rst", "syn", "urg"] for x in flags):
+                parameters["flags"] = flags
             else:
                 raise SyntaxError("Only accepted TCP flags are ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']")
-        elif parameters['protocol'] == 'icmp':
-            parameters.pop('startingPort', None)
-            parameters.pop('destinationPort', None)
-            parameters.pop('sourcePort', None)
-            parameters.pop('groupPort', None)
+        elif parameters["protocol"] == "icmp":
+            parameters.pop("startingPort", None)
+            parameters.pop("destinationPort", None)
+            parameters.pop("sourcePort", None)
+            parameters.pop("groupPort", None)
         return parameters
 
     @staticmethod
