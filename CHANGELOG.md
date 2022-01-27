@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.9 (2022-01-21)
+### Fix
+* CVE nx-os ([`7e47df8`](https://github.com/community-fabric/python-ipfabric/commit/7e47df8c999551fcaaa2e68d3e819d66078c8236))
+
 ## v0.4.8 (2022-01-21)
 ### Fix
 * CVE nx-os ([`fb58d6a`](https://github.com/community-fabric/python-ipfabric/commit/fb58d6aee472502a743d62dec08ace3c2671e673))
