@@ -33,6 +33,9 @@ jobs:
           IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
         run: poetry run python -m pytest tests/functional
 
+      - name: Run black
+        run: poetry run black ipfabric
+
       - name: Semantic Release
         env:
           REPOSITORY_PASSWORD: ${{ secrets.PYPI }}

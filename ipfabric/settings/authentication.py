@@ -43,8 +43,8 @@ class Authentication:
     client: Any
     credentials: dict = Field(default=dict(), const=True)
     enables: dict = Field(default=dict(), const=True)
-    _cred_url: ClassVar[str] = 'settings/credentials'
-    _priv_url: ClassVar[str] = 'settings/privileges'
+    _cred_url: ClassVar[str] = "settings/credentials"
+    _priv_url: ClassVar[str] = "settings/privileges"
 
     def __post_init__(self):
         self.get_credentials()
@@ -76,7 +76,7 @@ class Authentication:
         if expiration:
             expires = dict(
                 enabled=True,
-                value=parser.parse(expiration).strftime('%Y-%m-%d %H:%M:%S')
+                value=parser.parse(expiration).strftime("%Y-%m-%d %H:%M:%S"),
             )
         else:
             expires = dict(enabled=False)
@@ -90,9 +90,16 @@ class Authentication:
         }
         return payload
 
-    def create_credential(self,
-                          username: str, password: str, networks: list = None, notes: str = None, excluded: list = None,
-                          config_mgmt: bool = False, expiration: str = None) -> Credential:
+    def create_credential(
+        self,
+        username: str,
+        password: str,
+        networks: list = None,
+        notes: str = None,
+        excluded: list = None,
+        config_mgmt: bool = False,
+        expiration: str = None,
+    ) -> Credential:
         """
         Creates a new credential. Requires username and password and will default to all networks with no expiration.
         Does not default to use for configuration management, please set to true if needed.
@@ -116,9 +123,15 @@ class Authentication:
         logger.info(f"Created credential with username {cred.username} and ID of {cred.credential_id}")
         return cred
 
-    def create_enable(self,
-                      username: str, password: str, networks: list = None, notes: str = None, excluded: list = None,
-                      expiration: str = None) -> Privilege:
+    def create_enable(
+        self,
+        username: str,
+        password: str,
+        networks: list = None,
+        notes: str = None,
+        excluded: list = None,
+        expiration: str = None,
+    ) -> Privilege:
         """
         Creates a new enable password (privilege account).
         Requires username and password and will default to all networks with no expiration.

@@ -24,7 +24,7 @@ class Intent:
         :return: list: List of intent checks
         """
         snapshot_id = self.client.snapshots[snapshot_id].snapshot_id if snapshot_id else self.client.snapshot_id
-        res = self.client.get('reports', params=dict(snapshot=snapshot_id))
+        res = self.client.get("reports", params=dict(snapshot=snapshot_id))
         res.raise_for_status()
         return [IntentCheck(**check) for check in res.json()]
 
@@ -39,7 +39,7 @@ class Intent:
         self.groups = self.get_groups()
 
     def get_groups(self):
-        res = self.client.get('reports/groups')
+        res = self.client.get("reports/groups")
         res.raise_for_status()
         return [Group(**group) for group in res.json()]
 
@@ -83,8 +83,12 @@ class Intent:
         if isinstance(color, str):
             color = dict(green=0, blue=10, amber=20, red=30)[color]
         snapshot_id = snapshot_id or self.snapshot_id
-        return self.client.fetch_all(intent.api_endpoint, snapshot_id=snapshot_id, reports=intent.web_endpoint,
-                                     filters={intent.column: ['color', 'eq', color]})
+        return self.client.fetch_all(
+            intent.api_endpoint,
+            snapshot_id=snapshot_id,
+            reports=intent.web_endpoint,
+            filters={intent.column: ["color", "eq", color]},
+        )
 
     def compare_snapshot(self, snapshot_id: str, reverse: bool = False):
         """
@@ -101,6 +105,6 @@ class Intent:
             old = self.intent_by_name[name].result
             compare = intent.result.compare(old) if reverse else old.compare(intent.result)
             for desc, value in compare.items():
-                n = desc if desc != 'count' else 'total'
+                n = desc if desc != "count" else "total"
                 comparison.append({"name": name, "id": intent.intent_id, "check": n, **value})
         return comparison

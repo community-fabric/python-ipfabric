@@ -27,6 +27,7 @@ pytest-cov = "^3.0.0"
 flake8 = "^4.0.1"
 python-semantic-release = "^7.23.0"
 tabulate = "^0.8.9"
+black = "^21.12b0"
 
 
 [build-system]
@@ -46,3 +47,28 @@ upload_to_repository = true
 repository = "pypi"
 upload_to_release = true
 build_command = "poetry build"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | examples
+  )/
+  | settings.py     # This is where you define files that should not be stylized by black
+                     # the root of the project
+)
+'''

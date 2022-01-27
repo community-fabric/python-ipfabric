@@ -35,38 +35,64 @@ class DeviceConfigs:
         :return: dict: {Hostname: [Config, Config]}
         """
         if device:
-            res = self.ipf.fetch_all('tables/management/configuration',
-                                     sort={"order": "desc", "column": "lastChange"},
-                                     columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"],
-                                     filters=dict(hostname=["eq", device]))
+            res = self.ipf.fetch_all(
+                "tables/management/configuration",
+                sort={"order": "desc", "column": "lastChange"},
+                columns=[
+                    "_id",
+                    "sn",
+                    "hostname",
+                    "lastChange",
+                    "lastCheck",
+                    "status",
+                    "hash",
+                ],
+                filters=dict(hostname=["eq", device]),
+            )
             if len(res) == 0:
                 logger.warning(f"Could not find any configurations for device '{device}'.")
                 return None
         else:
-            res = self.ipf.fetch_all('tables/management/configuration',
-                                     sort={"order": "desc", "column": "lastChange"},
-                                     columns=["_id", "sn", "hostname", "lastChange", "lastCheck", "status", "hash"])
+            res = self.ipf.fetch_all(
+                "tables/management/configuration",
+                sort={"order": "desc", "column": "lastChange"},
+                columns=[
+                    "_id",
+                    "sn",
+                    "hostname",
+                    "lastChange",
+                    "lastCheck",
+                    "status",
+                    "hash",
+                ],
+            )
         results = defaultdict(list)
-        [results[cfg['hostname']].append(Config(**cfg)) for cfg in res]
+        [results[cfg["hostname"]].append(Config(**cfg)) for cfg in res]
         return results
 
     def _search_ip(self, ip: str, snapshot_id: str = None, log: bool = False) -> dict:
-        res = self.ipf.fetch_all('tables/addressing/managed-devs', columns=['ip', 'hostname'],
-                                 reports='/technology/addressing/managed-ip',
-                                 filters=dict(ip=["eq", ip]))
+        res = self.ipf.fetch_all(
+            "tables/addressing/managed-devs",
+            columns=["ip", "hostname"],
+            reports="/technology/addressing/managed-ip",
+            filters=dict(ip=["eq", ip]),
+        )
         if len(res) == 1 and not log:
-            return {'hostname': res[0]['hostname']}
+            return {"hostname": res[0]["hostname"]}
         if len(res) == 1 and log:
-            res = self.ipf.inventory.devices.all(columns=['hostname', 'taskKey'], snapshot_id=snapshot_id,
-                                                 filters=dict(hostname=["eq", res[0]['hostname']]))
-            return {'hostname': res[0]['hostname'], 'taskKey': res[0]['taskKey']}
+            res = self.ipf.inventory.devices.all(
+                columns=["hostname", "taskKey"],
+                snapshot_id=snapshot_id,
+                filters=dict(hostname=["eq", res[0]["hostname"]]),
+            )
+            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"]}
         elif len(res) > 1:
             logger.warning(f"Found multiple entries for IP '{ip}'.")
         elif len(res) == 0:
             logger.warning(f"Could not find a matching IP for '{ip}'.")
-        return {'hostname': None}
+        return {"hostname": None}
 
-    def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = '$last'):
+    def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = "$last"):
         """
         Gets last configuration of a device based on hostname or IP
         :param device: str: Hostname or IP
@@ -78,7 +104,7 @@ class DeviceConfigs:
         """
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
-        device = self._validate_device(device)['hostname']
+        device = self._validate_device(device)["hostname"]
         if not device:
             return None
         cfgs = self.get_all_configurations(device)
@@ -87,8 +113,10 @@ class DeviceConfigs:
         if device:
             cfg = self._get_hash(cfgs[device], date)
             if cfg:
-                res = self.ipf.get('/tables/management/configuration/download',
-                                   params=dict(hash=cfg.config_hash, sanitized=sanitized))
+                res = self.ipf.get(
+                    "/tables/management/configuration/download",
+                    params=dict(hash=cfg.config_hash, sanitized=sanitized),
+                )
                 res.raise_for_status()
                 cfg.text = res.text
                 return cfg
@@ -100,18 +128,24 @@ class DeviceConfigs:
     def _get_hash(configs, date):
         if isinstance(date, tuple):
             start, end = date
-            start = datetime.fromtimestamp(start, tz=timezone.utc) if isinstance(start, int) else \
-                parser.parse(start).replace(tzinfo=timezone.utc)
-            end = datetime.fromtimestamp(end, tz=timezone.utc) if isinstance(end, int) else \
-                parser.parse(end).replace(tzinfo=timezone.utc)
+            start = (
+                datetime.fromtimestamp(start, tz=timezone.utc)
+                if isinstance(start, int)
+                else parser.parse(start).replace(tzinfo=timezone.utc)
+            )
+            end = (
+                datetime.fromtimestamp(end, tz=timezone.utc)
+                if isinstance(end, int)
+                else parser.parse(end).replace(tzinfo=timezone.utc)
+            )
             for cfg in configs:
                 if start < cfg.last_change < end:
                     return cfg
-        elif date == '$last':
+        elif date == "$last":
             return configs[0]
-        elif date == '$prev' and len(configs) > 1:
+        elif date == "$prev" and len(configs) > 1:
             return configs[1]
-        elif date == '$first':
+        elif date == "$first":
             return configs[-1]
         return None
 
@@ -122,20 +156,23 @@ class DeviceConfigs:
         except AddressValueError:
             pass
         hostname = create_regex(device)
-        res = self.ipf.inventory.devices.all(columns=['hostname', 'taskKey'], filters=dict(hostname=["reg", hostname]),
-                                             snapshot_id=snapshot_id)
+        res = self.ipf.inventory.devices.all(
+            columns=["hostname", "taskKey"],
+            filters=dict(hostname=["reg", hostname]),
+            snapshot_id=snapshot_id,
+        )
         if len(res) == 1:
-            return {'hostname': res[0]['hostname'], 'taskKey': res[0]['taskKey']}
+            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"]}
         elif len(res) == 0:
             logger.warning(f"Could not find a matching device for '{device}' using regex '{hostname}'.")
         elif len(res) > 1:
             logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
-        return {'hostname': None}
+        return {"hostname": None}
 
     def get_log(self, device: str, snapshot_id: str = None):
         device = self._validate_device(device, snapshot_id=snapshot_id, log=True)
-        if not device['hostname']:
+        if not device["hostname"]:
             return None
-        res = self.ipf.get('/os/logs/task/' + device['taskKey'])
+        res = self.ipf.get("/os/logs/task/" + device["taskKey"])
         res.raise_for_status()
         return res.text

@@ -12,17 +12,17 @@ from ipfabric.graphs import IPFPath
 from ipfabric.intent import Intent
 from ipfabric.security import Security
 
-DEFAULT_ID = '$last'
+DEFAULT_ID = "$last"
 
 
 class Settings(BaseSettings):
-    ipf_url: str  = None
+    ipf_url: str = None
     ipf_token: str = None
     ipf_verify: bool = True
 
     class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
     def __enter__(self):
         return self
@@ -35,22 +35,24 @@ def check_format(func):
     """
     Checks to make sure api/v1/ is not in the URL and converts filters from json str to dict
     """
+
     def wrapper(self, url, *args, **kwargs):
         if "filters" in kwargs and isinstance(kwargs["filters"], str):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
-        url = path.split('v1/')[1] if 'v1/' in path else path
+        url = path.split("v1/")[1] if "v1/" in path else path
         return func(self, url, *args, **kwargs)
+
     return wrapper
 
 
 class IPFClient(Client):
     def __init__(
-            self,
-            base_url: Optional[str] = None,
-            token: Optional[str] = None,
-            snapshot_id: str = DEFAULT_ID,
-            **kwargs
+        self,
+        base_url: Optional[str] = None,
+        token: Optional[str] = None,
+        snapshot_id: str = DEFAULT_ID,
+        **kwargs,
     ):
         """
         Initializes the IP Fabric Client
@@ -61,17 +63,17 @@ class IPFClient(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
-            kwargs['base_url'] = urljoin(base_url or settings.ipf_url, "api/v1/")
-            kwargs['verify'] = kwargs.get('verify') if 'verify' in kwargs else settings.ipf_verify
+            kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
+            kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
 
-        if not kwargs['base_url']:
+        if not kwargs["base_url"]:
             raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
         if not token:
             raise RuntimeError("IP Fabric token not provided or IPF_TOKEN not set")
 
         super().__init__(**kwargs)
-        self.headers.update({'Content-Type': 'application/json', 'X-API-Token': token})
+        self.headers.update({"Content-Type": "application/json", "X-API-Token": token})
 
         # Request IP Fabric for the OS Version, by doing that we are also ensuring the token is valid
         self.os_version = self.fetch_os_version()
@@ -145,7 +147,7 @@ class IPFClient(Client):
         start: Optional[int] = 0,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
-        sort: Optional[dict] = None
+        sort: Optional[dict] = None,
     ):
         """
         Gets data from IP Fabric for specified endpoint
@@ -163,10 +165,7 @@ class IPFClient(Client):
         payload = dict(
             columns=columns or self._get_columns(url),
             snapshot=snapshot_id or self.snapshot_id,
-            pagination=dict(
-                start=start,
-                limit=limit
-            )
+            pagination=dict(start=start, limit=limit),
         )
         if filters:
             payload["filters"] = filters
@@ -181,13 +180,13 @@ class IPFClient(Client):
 
     @check_format
     def fetch_all(
-            self,
-            url: str,
-            columns: Optional[list] = None,
-            filters: Optional[Union[dict, str]] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None
+        self,
+        url: str,
+        columns: Optional[list] = None,
+        filters: Optional[Union[dict, str]] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from IP Fabric for specified endpoint
@@ -200,7 +199,10 @@ class IPFClient(Client):
         :return: list: List of Dictionary objects.
         """
 
-        payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
+        payload = dict(
+            columns=columns or self._get_columns(url),
+            snapshot=snapshot_id or self.snapshot_id,
+        )
         if filters:
             payload["filters"] = filters
         if reports:
@@ -237,17 +239,17 @@ class IPFClient(Client):
         r = self.post(url, json=dict(snapshot=self.snapshot_id, columns=["*"]))
         if r.status_code == 422:
             msg = r.json()["errors"][0]["message"]
-            return [x.strip() for x in re.match(r"\".*\".*\[(.*)]$", msg).group(1).split(',')]
+            return [x.strip() for x in re.match(r"\".*\".*\[(.*)]$", msg).group(1).split(",")]
         else:
             r.raise_for_status()
 
     def _ipf_pager(
-            self,
-            url: str,
-            payload: dict,
-            data: Optional[Union[list, None]] = None,
-            limit: int = 1000,
-            start: int = 0
+        self,
+        url: str,
+        payload: dict,
+        data: Optional[Union[list, None]] = None,
+        limit: int = 1000,
+        start: int = 0,
     ):
         """
         Loops through and collects all the data from the tables
@@ -259,14 +261,11 @@ class IPFClient(Client):
         """
         data = data or list()
 
-        payload["pagination"] = dict(
-            limit=limit,
-            start=start
-        )
+        payload["pagination"] = dict(limit=limit, start=start)
         r = self.post(url, json=payload)
         r.raise_for_status()
         r = r.json()
-        data.extend(r['data'])
+        data.extend(r["data"])
         if limit + start < r["_meta"]["count"]:
-            self._ipf_pager(url, payload, data, start+limit)
+            self._ipf_pager(url, payload, data, start + limit)
         return data
