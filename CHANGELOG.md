@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2022-01-27)
+### Feature
+* Added black ([`b4f3de4`](https://github.com/community-fabric/python-ipfabric/commit/b4f3de4ae8b9bf09eead334b3c1e451115b82091))
+
+### Documentation
+* Updated README ([`89eac20`](https://github.com/community-fabric/python-ipfabric/commit/89eac2004df0f51f272baf562da38bc4549d6424))
+
 ## v0.4.9 (2022-01-21)
 ### Fix
 * CVE nx-os ([`7e47df8`](https://github.com/community-fabric/python-ipfabric/commit/7e47df8c999551fcaaa2e68d3e819d66078c8236))
