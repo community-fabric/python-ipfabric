@@ -5,6 +5,18 @@ from ipfabric.pathlookup.icmp import ICMP
 
 
 class DiagramV43(IPFPath):
+    CONSTANT_PARAMS = dict(
+        type="pathLookup",
+        groupBy="siteName",
+        otherOptions=dict(
+            applications=".*",
+            tracked=False
+        ),
+        firstHopAlgorithm=dict(type="automatic"),
+        srcRegions=".*",
+        dstRegions=".*",
+    )
+
     def __init__(self, client):
         super().__init__(client)
 
@@ -46,24 +58,16 @@ class DiagramV43(IPFPath):
             startingPoint=src_ip,
             destinationPoint=dst_ip,
             protocol=proto,
-            type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="unicast",
-            groupBy="siteName",
             networkMode=self.check_subnets(src_ip, dst_ip),
             l4Options=dict(
                 dstPorts=str(dst_port),
                 srcPorts=str(src_port)
             ),
-            otherOptions=dict(
-                applications=".*",
-                tracked=False
-            ),
-            firstHopAlgorithm=dict(type="automatic"),
-            srcRegions=".*",
-            dstRegions=".*",
             ttl=ttl,
-            fragmentOffset=fragment_offset
+            fragmentOffset=fragment_offset,
+            **DiagramV43.CONSTANT_PARAMS
         )
         payload = dict(
             parameters=self.check_proto(parameters, flags, icmp),
@@ -117,23 +121,15 @@ class DiagramV43(IPFPath):
             source=src_ip,
             group=grp_ip,
             protocol=proto,
-            type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="multicast",
-            groupBy="siteName",
             l4Options=dict(
                 dstPorts=str(grp_port),
                 srcPorts=str(src_port)
             ),
-            otherOptions=dict(
-                applications=".*",
-                tracked=False
-            ),
-            firstHopAlgorithm=dict(type="automatic"),
-            srcRegions=".*",
-            dstRegions=".*",
             ttl=ttl,
-            fragmentOffset=fragment_offset
+            fragmentOffset=fragment_offset,
+            **DiagramV43.CONSTANT_PARAMS
         )
         if rec_ip and self.check_subnets(rec_ip):
             raise SyntaxError("Multicast Receiver IP must be a single IP not subnet.")
