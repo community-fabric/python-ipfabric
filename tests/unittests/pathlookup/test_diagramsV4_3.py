@@ -54,3 +54,11 @@ class Models(unittest.TestCase):
         params = dict(protocol='icmp')
         with self.assertRaises(SyntaxError) as err:
             self.graph.check_proto(params, flags=None, icmp=None)
+
+    def test_ports_failed(self):
+        with self.assertRaises(SyntaxError) as err:
+            self.graph.check_ports('hello')
+
+    def test_ports_format(self):
+        ports = self.graph.check_ports('80, 255-512, 30, 1025 - 2048')
+        self.assertEqual(ports, '80,255-512,30,1025-2048')

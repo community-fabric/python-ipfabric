@@ -1,7 +1,10 @@
+import re
 from typing import Optional, Union
 
 from ipfabric.pathlookup.graphs import IPFPath
 from ipfabric.pathlookup.icmp import ICMP
+
+PORT_REGEX = re.compile(r'^\d*$|^\d*-\d*$')
 
 
 class DiagramV43(IPFPath):
@@ -21,19 +24,19 @@ class DiagramV43(IPFPath):
         super().__init__(client)
 
     def unicast(
-        self,
-        src_ip: str,
-        dst_ip: str,
-        proto: str = "tcp",
-        src_port: Optional[Union[str, int]] = "1024-65535",
-        dst_port: Optional[Union[str, int]] = "80,443",
-        sec_drop: Optional[bool] = True,
-        flags: Optional[list] = None,
-        icmp: Optional[ICMP] = None,
-        ttl: Optional[int] = 128,
-        fragment_offset: Optional[int] = 0,
-        snapshot_id: Optional[str] = None,
-        overlay: dict = None,
+            self,
+            src_ip: str,
+            dst_ip: str,
+            proto: str = "tcp",
+            src_port: Optional[Union[str, int]] = "1024-65535",
+            dst_port: Optional[Union[str, int]] = "80,443",
+            sec_drop: Optional[bool] = True,
+            flags: Optional[list] = None,
+            icmp: Optional[ICMP] = None,
+            ttl: Optional[int] = 128,
+            fragment_offset: Optional[int] = 0,
+            snapshot_id: Optional[str] = None,
+            overlay: dict = None,
     ) -> Union[dict, bytes]:
         """
         Execute an Unicast Path Lookup diagram query for the given set of parameters.
@@ -62,8 +65,8 @@ class DiagramV43(IPFPath):
             pathLookupType="unicast",
             networkMode=self.check_subnets(src_ip, dst_ip),
             l4Options=dict(
-                dstPorts=str(dst_port),
-                srcPorts=str(src_port)
+                dstPorts=self.check_ports(dst_port),
+                srcPorts=self.check_ports(src_port)
             ),
             ttl=ttl,
             fragmentOffset=fragment_offset,
@@ -79,20 +82,20 @@ class DiagramV43(IPFPath):
         return self._query(payload)
 
     def multicast(
-        self,
-        src_ip: str,
-        grp_ip: str,
-        proto: str = "tcp",
-        rec_ip: Optional[str] = None,
-        src_port: Optional[Union[str, int]] = "1024-65535",
-        grp_port: Optional[Union[str, int]] = "80,443",
-        sec_drop: Optional[bool] = True,
-        flags: Optional[list] = None,
-        icmp: Optional[ICMP] = None,
-        ttl: Optional[int] = 128,
-        fragment_offset: Optional[int] = 0,
-        snapshot_id: Optional[str] = None,
-        overlay: dict = None,
+            self,
+            src_ip: str,
+            grp_ip: str,
+            proto: str = "tcp",
+            rec_ip: Optional[str] = None,
+            src_port: Optional[Union[str, int]] = "1024-65535",
+            grp_port: Optional[Union[str, int]] = "80,443",
+            sec_drop: Optional[bool] = True,
+            flags: Optional[list] = None,
+            icmp: Optional[ICMP] = None,
+            ttl: Optional[int] = 128,
+            fragment_offset: Optional[int] = 0,
+            snapshot_id: Optional[str] = None,
+            overlay: dict = None,
     ) -> Union[dict, bytes]:
         """
         Execute an Multicast Path Lookup diagram query for the given set of parameters.
@@ -124,8 +127,8 @@ class DiagramV43(IPFPath):
             securedPath=sec_drop,
             pathLookupType="multicast",
             l4Options=dict(
-                dstPorts=str(grp_port),
-                srcPorts=str(src_port)
+                dstPorts=self.check_ports(grp_port),
+                srcPorts=self.check_ports(src_port)
             ),
             ttl=ttl,
             fragmentOffset=fragment_offset,
@@ -169,3 +172,12 @@ class DiagramV43(IPFPath):
             parameters["l4Options"]["type"] = icmp.type
             parameters["l4Options"]["code"] = icmp.code
         return parameters
+
+    @staticmethod
+    def check_ports(ports: str):
+        port = ports.replace(' ', '').split(',')
+        for p in port:
+            if not PORT_REGEX.match(p):
+                raise SyntaxError(f"Ports {ports} is not in the valid syntax, "
+                                  f"examples: ['80', '80,443', '0-1024', '80,8000-8100,8443']")
+        return str(','.join(port))
