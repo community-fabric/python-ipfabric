@@ -42,6 +42,8 @@ IPF_TOKEN=TOKEN
 IPF_VERIFY=true
 ```
 
+**`IPF_DEV` is an internal variable only, do not set to True.**
+
 ## Development
 
 IPFabric uses poetry for the python packaging module. Install poetry globally:

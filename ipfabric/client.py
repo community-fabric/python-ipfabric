@@ -85,7 +85,7 @@ class IPFClient(Client):
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
         self.inventory = models.Inventory(client=self)
-        self.graphs = DiagramV43(self) if parse_version(self.os_version) >= parse_version('4.3') else Diagram(self)
+        self.graphs = DiagramV43(self) if parse_version(self.os_version) >= parse_version("4.3") else Diagram(self)
         self.security = Security(client=self)
         self.intent = Intent(client=self)
 
