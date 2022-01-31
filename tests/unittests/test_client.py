@@ -64,6 +64,7 @@ class Client(unittest.TestCase):
             }]
         })}
         mock_client._headers = dict()
+        os_version.return_value = '4.2'
         self.ipf = IPFClient(base_url='https://google.com', token='token')
 
 

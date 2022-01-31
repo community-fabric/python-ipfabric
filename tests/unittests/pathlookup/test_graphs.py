@@ -2,7 +2,7 @@ import ipaddress
 import unittest
 from unittest.mock import MagicMock, patch
 
-from ipfabric.graphs import IPFPath
+from ipfabric.pathlookup import IPFPath
 
 
 class Models(unittest.TestCase):
@@ -26,32 +26,10 @@ class Models(unittest.TestCase):
         self.graph.style = 'svg'
         self.assertEqual(self.graph._query({}), b'Hello')
 
-    @patch('ipfabric.graphs.IPFPath.check_subnets')
-    @patch('ipfabric.graphs.IPFPath.check_proto')
-    @patch('ipfabric.graphs.IPFPath._query')
-    def test_unicast(self, query, proto, subnets):
-        query.return_value = True
-        self.assertTrue(self.graph.unicast('ip', 'ip', overlay=dict(test=1)))
-
     @patch('ipfabric.graphs.IPFPath._query')
     def test_site(self, query):
         query.return_value = True
         self.assertTrue(self.graph.site('ip', overlay=dict(test=1)))
-
-    @patch('ipfabric.graphs.IPFPath.check_subnets')
-    @patch('ipfabric.graphs.IPFPath.check_proto')
-    @patch('ipfabric.graphs.IPFPath._query')
-    def test_multicast(self, query, proto, subnets):
-        subnets.return_value = False
-        query.return_value = True
-        self.assertTrue(self.graph.multicast('ip', 'ip', rec_ip='ip', overlay=dict(test=1)))
-
-    @patch('ipfabric.graphs.IPFPath.check_proto')
-    def test_multicast_failed(self, proto):
-        with self.assertRaises(SyntaxError) as err:
-            self.graph.multicast('10.0.0.0/24', '10.0.0.1')
-        with self.assertRaises(SyntaxError) as err:
-            self.graph.multicast('10.0.0.0', '10.0.0.1', rec_ip='10.0.0.0/24')
 
     @patch('ipfabric.graphs.IPFPath.check_subnets')
     @patch('ipfabric.graphs.IPFPath._query')
