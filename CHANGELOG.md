@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2022-01-31)
+### Feature
+* Run black ([`dce4a1a`](https://github.com/community-fabric/python-ipfabric/commit/dce4a1a6c2cc3a0a3eab857c18572d961b9456b4))
+* Added port syntax checking ([`7453b8e`](https://github.com/community-fabric/python-ipfabric/commit/7453b8e71e167ad391d35a8ee221f4ef85147558))
+* Simplified Constant parameters. ([`652ed29`](https://github.com/community-fabric/python-ipfabric/commit/652ed291908a575a3463f790466060a81c5db470))
+* Remove grouping as users only use siteName. ([`175043b`](https://github.com/community-fabric/python-ipfabric/commit/175043b5d7b2014580ef82e0e6fb27f6ac8005fc))
+* Updated v4.3 graphing with tests. ([`b0a56e3`](https://github.com/community-fabric/python-ipfabric/commit/b0a56e3630ef9d8fcee1d7ff200dda36a549be64))
+* Updates for v4.3 diagrams ([`f002d91`](https://github.com/community-fabric/python-ipfabric/commit/f002d91ba65c213f4949e5ae777fbf4bdc7d79aa))
+* V4.3 diagrams ([`4fb3082`](https://github.com/community-fabric/python-ipfabric/commit/4fb308208381adeb58362dfcc5f8a68d9cc1ba25))
+
 ## v0.5.0 (2022-01-27)
 ### Feature
 * Added black ([`b4f3de4`](https://github.com/community-fabric/python-ipfabric/commit/b4f3de4ae8b9bf09eead334b3c1e451115b82091))
