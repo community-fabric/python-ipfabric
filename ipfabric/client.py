@@ -5,11 +5,12 @@ from typing import Optional, Union
 from urllib.parse import urljoin, urlparse
 
 from httpx import Client
+from pkg_resources import parse_version
 from pydantic import BaseSettings
 
 from ipfabric import models
-from ipfabric.graphs import IPFPath
 from ipfabric.intent import Intent
+from ipfabric.pathlookup import Diagram, DiagramV43
 from ipfabric.security import Security
 
 DEFAULT_ID = "$last"
@@ -19,6 +20,7 @@ class Settings(BaseSettings):
     ipf_url: str = None
     ipf_token: str = None
     ipf_verify: bool = True
+    ipf_dev: bool = False
 
     class Config:
         env_file = ".env"
@@ -63,7 +65,10 @@ class IPFClient(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
-            kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
+            if settings.ipf_dev:
+                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "v1/")
+            else:
+                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
             kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
 
@@ -80,7 +85,7 @@ class IPFClient(Client):
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
         self.inventory = models.Inventory(client=self)
-        self.graphs = IPFPath(self)
+        self.graphs = DiagramV43(self) if parse_version(self.os_version) >= parse_version("4.3") else Diagram(self)
         self.security = Security(client=self)
         self.intent = Intent(client=self)
 
@@ -130,8 +135,8 @@ class IPFClient(Client):
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
                     snap_dict["$lastLocked"] = snap
-                if "$last" not in snap_dict:
-                    snap_dict["$last"] = snap
+                if DEFAULT_ID not in snap_dict:
+                    snap_dict[DEFAULT_ID] = snap
                     continue
                 if "$prev" not in snap_dict:
                     snap_dict["$prev"] = snap
