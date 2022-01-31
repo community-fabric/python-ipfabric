@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from ipfabric.pathlookup import IPFPath
+from ipfabric.pathlookup.graphs import IPFPath
 
 
 class DiagramV43(IPFPath):
@@ -39,15 +39,21 @@ class DiagramV43(IPFPath):
         """
         parameters = dict(
             startingPoint=src_ip,
-            startingPort=src_port,
             destinationPoint=dst_ip,
-            destinationPort=dst_port,
             protocol=proto,
             type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="unicast",
             groupBy=grouping,
             networkMode=self.check_subnets(src_ip, dst_ip),
+            l4Options=dict(
+                dstPorts=dst_port,
+                srcPorts=src_port
+            ),
+            otherOptions=dict(
+                applications=".*",
+                tracked=False
+            )
         )
         payload = dict(
             parameters=self.check_proto(parameters, flags),
@@ -95,14 +101,20 @@ class DiagramV43(IPFPath):
 
         parameters = dict(
             source=src_ip,
-            sourcePort=src_port,
             group=grp_ip,
-            groupPort=grp_port,
             protocol=proto,
             type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="multicast",
             groupBy=grouping,
+            l4Options=dict(
+                dstPorts=grp_port,
+                srcPorts=src_port
+            ),
+            otherOptions=dict(
+                applications=".*",
+                tracked=False
+            )
         )
         if rec_ip and self.check_subnets(rec_ip):
             raise SyntaxError("Multicast Receiver IP must be a single IP not subnet.")
@@ -128,12 +140,12 @@ class DiagramV43(IPFPath):
         """
         if parameters["protocol"] == "tcp" and flags:
             if all(x in ["ack", "fin", "psh", "rst", "syn", "urg"] for x in flags):
-                parameters["flags"] = flags
+                parameters["l4Options"]["flags"] = flags
             else:
                 raise SyntaxError("Only accepted TCP flags are ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']")
+        elif parameters["protocol"] == "tcp" and not flags:
+            parameters["l4Options"]["flags"] = list()
         elif parameters["protocol"] == "icmp":
-            parameters.pop("startingPort", None)
-            parameters.pop("destinationPort", None)
-            parameters.pop("sourcePort", None)
-            parameters.pop("groupPort", None)
+            parameters["l4Options"].pop("srcPorts", None)
+            parameters["l4Options"].pop("dstPorts", None)
         return parameters

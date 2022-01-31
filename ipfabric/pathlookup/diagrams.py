@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from ipfabric.pathlookup import IPFPath
+from ipfabric.pathlookup.graphs import IPFPath
 
 
 class Diagram(IPFPath):

@@ -2,7 +2,7 @@ import ipaddress
 import unittest
 from unittest.mock import MagicMock, patch
 
-from ipfabric.pathlookup import IPFPath
+from ipfabric.pathlookup.graphs import IPFPath
 
 
 class Models(unittest.TestCase):
@@ -26,13 +26,13 @@ class Models(unittest.TestCase):
         self.graph.style = 'svg'
         self.assertEqual(self.graph._query({}), b'Hello')
 
-    @patch('ipfabric.graphs.IPFPath._query')
+    @patch('ipfabric.pathlookup.graphs.IPFPath._query')
     def test_site(self, query):
         query.return_value = True
         self.assertTrue(self.graph.site('ip', overlay=dict(test=1)))
 
-    @patch('ipfabric.graphs.IPFPath.check_subnets')
-    @patch('ipfabric.graphs.IPFPath._query')
+    @patch('ipfabric.pathlookup.graphs.IPFPath.check_subnets')
+    @patch('ipfabric.pathlookup.graphs.IPFPath._query')
     def test_host_to_gw(self, query, subnets):
         query.return_value = True
         self.assertTrue(self.graph.host_to_gw('ip'))
