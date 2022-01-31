@@ -16,7 +16,6 @@ class DiagramV43(IPFPath):
         src_port: Optional[Union[str, int]] = "1024-65535",
         dst_port: Optional[Union[str, int]] = "80,443",
         sec_drop: Optional[bool] = True,
-        grouping: Optional[str] = "siteName",
         flags: Optional[list] = None,
         icmp: Optional[ICMP] = None,
         ttl: Optional[int] = 128,
@@ -33,7 +32,6 @@ class DiagramV43(IPFPath):
         :param src_port: int: Source Port for tcp or udp
         :param dst_port: int: Destination Port for tcp or udp
         :param sec_drop: bool: True specifies Security Rules will Drop packets and not Continue
-        :param grouping: str:  Group by "siteName", "routingDomain", "stpDomain"
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
         :param icmp: ICMP: ICMP object
@@ -51,7 +49,7 @@ class DiagramV43(IPFPath):
             type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="unicast",
-            groupBy=grouping,
+            groupBy="siteName",
             networkMode=self.check_subnets(src_ip, dst_ip),
             l4Options=dict(
                 dstPorts=str(dst_port),
@@ -85,7 +83,6 @@ class DiagramV43(IPFPath):
         src_port: Optional[Union[str, int]] = "1024-65535",
         grp_port: Optional[Union[str, int]] = "80,443",
         sec_drop: Optional[bool] = True,
-        grouping: Optional[str] = "siteName",
         flags: Optional[list] = None,
         icmp: Optional[ICMP] = None,
         ttl: Optional[int] = 128,
@@ -103,7 +100,6 @@ class DiagramV43(IPFPath):
         :param src_port: int: Source Port for tcp or udp
         :param grp_port: int: Destination Port for tcp or udp
         :param sec_drop: bool: True specifies Security Rules will Drop packets and not Continue
-        :param grouping: str:  Group by "siteName", "routingDomain", "stpDomain"
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
         :param icmp: ICMP: ICMP object
@@ -124,7 +120,7 @@ class DiagramV43(IPFPath):
             type="pathLookup",
             securedPath=sec_drop,
             pathLookupType="multicast",
-            groupBy=grouping,
+            groupBy="siteName",
             l4Options=dict(
                 dstPorts=str(grp_port),
                 srcPorts=str(src_port)
