@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     ipf_url: str = None
     ipf_token: str = None
     ipf_verify: bool = True
+    ipf_dev: bool = False
 
     class Config:
         env_file = ".env"
@@ -64,7 +65,10 @@ class IPFClient(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
-            kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
+            if settings.ipf_dev:
+                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "v1/")
+            else:
+                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
             kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
 

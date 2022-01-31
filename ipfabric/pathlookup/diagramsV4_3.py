@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 from ipfabric.pathlookup.graphs import IPFPath
+from ipfabric.pathlookup.icmp import ICMP
 
 
 class DiagramV43(IPFPath):
@@ -12,11 +13,14 @@ class DiagramV43(IPFPath):
         src_ip: str,
         dst_ip: str,
         proto: str = "tcp",
-        src_port: Optional[int] = 10000,
-        dst_port: Optional[int] = 80,
+        src_port: Optional[Union[str, int]] = "1024-65535",
+        dst_port: Optional[Union[str, int]] = "80,443",
         sec_drop: Optional[bool] = True,
         grouping: Optional[str] = "siteName",
         flags: Optional[list] = None,
+        icmp: Optional[ICMP] = None,
+        ttl: Optional[int] = 128,
+        fragment_offset: Optional[int] = 0,
         snapshot_id: Optional[str] = None,
         overlay: dict = None,
     ) -> Union[dict, bytes]:
@@ -32,6 +36,9 @@ class DiagramV43(IPFPath):
         :param grouping: str:  Group by "siteName", "routingDomain", "stpDomain"
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
+        :param icmp: ICMP: ICMP object
+        :param ttl: int: Time to live, default 128
+        :param fragment_offset: int: Fragment offset, default 0
         :param snapshot_id: str: Snapshot ID to override class default
         :param overlay: dict: Optional Overlay dictionary
         :return: Union[dict, str]: json contains a dictionary with 'graphResult' and 'pathlookup' primary keys.
@@ -47,16 +54,21 @@ class DiagramV43(IPFPath):
             groupBy=grouping,
             networkMode=self.check_subnets(src_ip, dst_ip),
             l4Options=dict(
-                dstPorts=dst_port,
-                srcPorts=src_port
+                dstPorts=str(dst_port),
+                srcPorts=str(src_port)
             ),
             otherOptions=dict(
                 applications=".*",
                 tracked=False
-            )
+            ),
+            firstHopAlgorithm=dict(type="automatic"),
+            srcRegions=".*",
+            dstRegions=".*",
+            ttl=ttl,
+            fragmentOffset=fragment_offset
         )
         payload = dict(
-            parameters=self.check_proto(parameters, flags),
+            parameters=self.check_proto(parameters, flags, icmp),
             snapshot=snapshot_id or self.client.snapshot_id,
         )
         if overlay:
@@ -70,11 +82,14 @@ class DiagramV43(IPFPath):
         grp_ip: str,
         proto: str = "tcp",
         rec_ip: Optional[str] = None,
-        src_port: Optional[int] = 10000,
-        grp_port: Optional[int] = 80,
+        src_port: Optional[Union[str, int]] = "1024-65535",
+        grp_port: Optional[Union[str, int]] = "80,443",
         sec_drop: Optional[bool] = True,
         grouping: Optional[str] = "siteName",
         flags: Optional[list] = None,
+        icmp: Optional[ICMP] = None,
+        ttl: Optional[int] = 128,
+        fragment_offset: Optional[int] = 0,
         snapshot_id: Optional[str] = None,
         overlay: dict = None,
     ) -> Union[dict, bytes]:
@@ -91,6 +106,9 @@ class DiagramV43(IPFPath):
         :param grouping: str:  Group by "siteName", "routingDomain", "stpDomain"
         :param flags: list: TCP flags, defaults to None. Must be a list and only allowed values can be
                             subset of ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']
+        :param icmp: ICMP: ICMP object
+        :param ttl: int: Time to live, default 128
+        :param fragment_offset: int: Fragment offset, default 0
         :param snapshot_id: str: Snapshot ID to override class default
         :param overlay: dict: Optional Overlay dictionary
         :return: Union[dict, str]: json contains a dictionary with 'graphResult' and 'pathlookup' primary keys.
@@ -108,13 +126,18 @@ class DiagramV43(IPFPath):
             pathLookupType="multicast",
             groupBy=grouping,
             l4Options=dict(
-                dstPorts=grp_port,
-                srcPorts=src_port
+                dstPorts=str(grp_port),
+                srcPorts=str(src_port)
             ),
             otherOptions=dict(
                 applications=".*",
                 tracked=False
-            )
+            ),
+            firstHopAlgorithm=dict(type="automatic"),
+            srcRegions=".*",
+            dstRegions=".*",
+            ttl=ttl,
+            fragmentOffset=fragment_offset
         )
         if rec_ip and self.check_subnets(rec_ip):
             raise SyntaxError("Multicast Receiver IP must be a single IP not subnet.")
@@ -122,7 +145,7 @@ class DiagramV43(IPFPath):
             parameters["receiver"] = rec_ip
 
         payload = dict(
-            parameters=self.check_proto(parameters, flags),
+            parameters=self.check_proto(parameters, flags, icmp),
             snapshot=snapshot_id or self.client.snapshot_id,
         )
         if overlay:
@@ -131,11 +154,12 @@ class DiagramV43(IPFPath):
         return self._query(payload)
 
     @staticmethod
-    def check_proto(parameters, flags) -> dict:
+    def check_proto(parameters, flags, icmp) -> dict:
         """
         Checks parameters and flags
         :param parameters: dict: Data to Post
         :param flags: list: List of optional TCP flags
+        :param icmp: ICMP: ICMP object
         :return: dict: formatted parameters, removing ports if icmp
         """
         if parameters["protocol"] == "tcp" and flags:
@@ -146,6 +170,10 @@ class DiagramV43(IPFPath):
         elif parameters["protocol"] == "tcp" and not flags:
             parameters["l4Options"]["flags"] = list()
         elif parameters["protocol"] == "icmp":
+            if icmp is None:
+                raise SyntaxError("Please provide an ICMP type from ipfabric.pathlookup")
             parameters["l4Options"].pop("srcPorts", None)
             parameters["l4Options"].pop("dstPorts", None)
+            parameters["l4Options"]["type"] = icmp.type
+            parameters["l4Options"]["code"] = icmp.code
         return parameters

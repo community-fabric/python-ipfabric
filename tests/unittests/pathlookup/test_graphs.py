@@ -44,22 +44,3 @@ class Models(unittest.TestCase):
     def test_check_subnets_failed(self):
         with self.assertRaises(ipaddress.AddressValueError) as err:
             self.graph.check_subnets('bad ip')
-
-    def test_check_proto_failed(self):
-        with self.assertRaises(SyntaxError) as err:
-            self.graph.check_proto(dict(protocol='tcp'), flags=['bad'])
-
-    def test_check_proto_flags(self):
-        params = self.graph.check_proto(dict(protocol='tcp'), flags=['syn'])
-        self.assertEqual(params, {'protocol': 'tcp', 'flags': ['syn']})
-
-    def test_check_proto_icmp(self):
-        params = dict(
-            protocol='icmp',
-            startingPort=1,
-            destinationPort=2,
-            sourcePort=3,
-            groupPort=4
-        )
-        params = self.graph.check_proto(params, flags=['syn'])
-        self.assertEqual(params, {'protocol': 'icmp'})

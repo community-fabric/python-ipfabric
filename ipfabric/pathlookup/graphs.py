@@ -89,26 +89,6 @@ class IPFPath:
         return self._query(payload)
 
     @staticmethod
-    def check_proto(parameters, flags) -> dict:
-        """
-        Checks parameters and flags
-        :param parameters: dict: Data to Post
-        :param flags: list: List of optional TCP flags
-        :return: dict: formatted parameters, removing ports if icmp
-        """
-        if parameters["protocol"] == "tcp" and flags:
-            if all(x in ["ack", "fin", "psh", "rst", "syn", "urg"] for x in flags):
-                parameters["flags"] = flags
-            else:
-                raise SyntaxError("Only accepted TCP flags are ['ack', 'fin', 'psh', 'rst', 'syn', 'urg']")
-        elif parameters["protocol"] == "icmp":
-            parameters.pop("startingPort", None)
-            parameters.pop("destinationPort", None)
-            parameters.pop("sourcePort", None)
-            parameters.pop("groupPort", None)
-        return parameters
-
-    @staticmethod
     def check_subnets(*ips) -> bool:
         """
         Checks for valid IP Addresses or Subnet
