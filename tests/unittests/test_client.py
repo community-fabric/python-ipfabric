@@ -29,8 +29,7 @@ class FailedClient(unittest.TestCase):
     def test_no_token(self):
         env = dict()
         with self.assertRaises(RuntimeError) as err:
-            ipf = IPFClient('http://google.com')
-
+            ipf = IPFClient(base_url='http://google.com')
 
 
 class Client(unittest.TestCase):
