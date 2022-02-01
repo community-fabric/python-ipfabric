@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2022-02-01)
+### Feature
+* Graphs will be removed in next breaking release ([`7e39f9b`](https://github.com/community-fabric/python-ipfabric/commit/7e39f9be2be5c277e191de25cae25a52a929a8c4))
+
 ## v0.6.0 (2022-01-31)
 ### Feature
 * Run black ([`dce4a1a`](https://github.com/community-fabric/python-ipfabric/commit/dce4a1a6c2cc3a0a3eab857c18572d961b9456b4))
