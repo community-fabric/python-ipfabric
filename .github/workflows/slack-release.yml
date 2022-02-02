@@ -19,7 +19,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: slack - GitHub Actions Slack integration
-        uses: act10ns/slack@v1.5.0
+        uses: slackapi/slack-github-action@v1.18.0
         with:
           # Configuration file
           config: .github/slack-release.yml
