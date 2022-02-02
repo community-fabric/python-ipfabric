@@ -25,8 +25,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Read CHANGELOG file
-          id: changelog
-          run: echo "::set-output name=changelog::$(cat CHANGELOG.md)"
+        id: changelog
+        run: echo "::set-output name=changelog::$(cat CHANGELOG.md)"
 
       - name: Notify on Slack
         uses: bloodyowl/slack-message-release-action@v1.1.5
