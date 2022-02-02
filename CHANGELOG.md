@@ -6,47 +6,6 @@
 ### Fix
 * Slack ([`b85c00e`](https://github.com/community-fabric/python-ipfabric/commit/b85c00e894b2a550f270d1ca738b1c6f9e2b2111))
 
-## v0.7.11 (2022-02-02)
-### Fix
-* Slack ([`17027e0`](https://github.com/community-fabric/python-ipfabric/commit/17027e0be60e6d8e74567a3cdfd27af2dc42ab68))
-
-## v0.7.10 (2022-02-02)
-### Fix
-* Slack ([`a89f853`](https://github.com/community-fabric/python-ipfabric/commit/a89f85384dec5059b5ba0f11bf0f684e827e5cc4))
-
-## v0.7.9 (2022-02-02)
-### Fix
-* Slack ([`f339f6b`](https://github.com/community-fabric/python-ipfabric/commit/f339f6b1100fabd9ff22d337d3654ce3e3da16c1))
-
-## v0.7.8 (2022-02-02)
-### Fix
-* Slack ([`983a7b0`](https://github.com/community-fabric/python-ipfabric/commit/983a7b0fe7c3c77d6d9dc6a5c627fddafc1b96d8))
-* Slack ([`ca5a063`](https://github.com/community-fabric/python-ipfabric/commit/ca5a0635c75d60e7724bc90520d5a4d82b11f103))
-
-## v0.7.7 (2022-02-02)
-### Fix
-* Slack ([`31cafde`](https://github.com/community-fabric/python-ipfabric/commit/31cafde298bb91af988ad6b43867bc81cc9e0389))
-
-## v0.7.6 (2022-02-02)
-### Fix
-* Slack ([`988399a`](https://github.com/community-fabric/python-ipfabric/commit/988399a1444dce714be4affd509f8c398e200325))
-
-## v0.7.5 (2022-02-02)
-### Fix
-* Slack ([`8cbc250`](https://github.com/community-fabric/python-ipfabric/commit/8cbc2502cd1c9ac3be8c1345414260e1ba80b677))
-
-## v0.7.4 (2022-02-02)
-### Fix
-* Slack ([`b87c6f5`](https://github.com/community-fabric/python-ipfabric/commit/b87c6f548249432b88cd5276f6434e82b89bdf1c))
-
-## v0.7.3 (2022-02-02)
-### Fix
-* Slack ([`27e0684`](https://github.com/community-fabric/python-ipfabric/commit/27e0684c0f49b7594b0640a4112d4a30832fb251))
-
-## v0.7.2 (2022-02-02)
-### Fix
-* Slack ([`1b7bb61`](https://github.com/community-fabric/python-ipfabric/commit/1b7bb6134d063a0c3fc7768859fe5f036366826d))
-
 ## v0.7.1 (2022-02-02)
 ### Fix
 * Slack ([`7c5d7b2`](https://github.com/community-fabric/python-ipfabric/commit/7c5d7b2476c59a85d0567ee31daa3e1220acb3ae))
@@ -177,34 +136,6 @@
 * Pipeline ([`4fcf5d1`](https://github.com/community-fabric/python-ipfabric/commit/4fcf5d1580bde480a13be6ff59148b2d969df41f))
 
 ## v0.0.16 (2021-12-02)
-
-
-## v0.0.15 (2021-12-02)
-
-
-## v0.0.14 (2021-12-02)
-
-
-## v0.0.13 (2021-12-01)
-
-
-## v0.0.12 (2021-12-01)
-
-
-## v0.0.11 (2021-11-30)
-
-
-## v0.0.10 (2021-11-29)
-
-
-## v0.0.9 (2021-11-24)
-
-
-## v0.0.8 (2021-11-23)
-
-
-## v0.0.7 (2021-11-22)
-
 
 ## v0.0.6 (2021-11-22)
 ### Fix
