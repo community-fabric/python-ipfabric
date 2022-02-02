@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.17 (2022-02-02)
+### Fix
+* Slack ([`cdf58b1`](https://github.com/community-fabric/python-ipfabric/commit/cdf58b163cfd5b9ea351ac2b27a74318e10a55b1))
+
 ## v0.7.16 (2022-02-02)
 ### Fix
 * Slack ([`a33776b`](https://github.com/community-fabric/python-ipfabric/commit/a33776ba8b80341a46303c270cf35fe03f998d8a))
