@@ -46,25 +46,3 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
-
-      - name: Get changelog
-        id: changelog
-        shell: bash
-        # trick for multiline variables
-        run: |
-          changelog=$(head -100 CHANGELOG.md)
-          changelog="${changelog//'%'/'%25'}"
-          changelog="${changelog//$'\n'/'%0A'}"
-          changelog="${changelog//$'\r'/'%0D'}"
-          echo "::set-output name=changelog::$changelog"
-
-      - name: Get version
-        id: version
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
-
-      - name: Notify on Slack
-        uses: bloodyowl/slack-message-release-action@v1.1.5
-        with:
-          version: ${{ steps.version.outputs.version }}
-          changelog: ${{ steps.changelog.outputs.changelog }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
