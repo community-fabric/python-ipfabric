@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.1 (2022-02-02)
+### Fix
+* Slack ([`7c5d7b2`](https://github.com/community-fabric/python-ipfabric/commit/7c5d7b2476c59a85d0567ee31daa3e1220acb3ae))
+
 ## v0.7.0 (2022-02-01)
 ### Feature
 * Graphs will be removed in next breaking release ([`7e39f9b`](https://github.com/community-fabric/python-ipfabric/commit/7e39f9be2be5c277e191de25cae25a52a929a8c4))
