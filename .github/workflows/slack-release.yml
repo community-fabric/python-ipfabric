@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Get version from tag
         id: version
-        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
         shell: bash
 
       - name: Notify on Slack
