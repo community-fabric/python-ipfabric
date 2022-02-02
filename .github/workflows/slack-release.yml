@@ -21,16 +21,12 @@ jobs:
         run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
         shell: bash
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Read CHANGELOG file
-        id: changelog
-        run: echo "::set-output name=changelog::$(cat CHANGELOG.md)"
-
       - name: Notify on Slack
-        uses: bloodyowl/slack-message-release-action@v1.1.5
+        uses: act10ns/slack@v1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
+          status: ${{ job.status }}
+          platform: 'pypi'
           version: ${{ steps.version.outputs.version }}
-          changelog: ${{ cat CHANGELOG.md }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: success()
