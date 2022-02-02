@@ -52,7 +52,7 @@ jobs:
         shell: bash
         # trick for multiline variables
         run: |
-          changelog=$(head -100 HISTORY.md)
+          changelog=$(head -100 CHANGELOG.md)
           changelog="${changelog//'%'/'%25'}"
           changelog="${changelog//$'\n'/'%0A'}"
           changelog="${changelog//$'\r'/'%0D'}"
