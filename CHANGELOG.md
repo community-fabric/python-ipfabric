@@ -6,22 +6,6 @@
 ### Fix
 * Slack ([`43203ac`](https://github.com/community-fabric/python-ipfabric/commit/43203ac47aa1e609be961a51d8378c7078a0755e))
 
-## v0.7.17 (2022-02-02)
-### Fix
-* Slack ([`cdf58b1`](https://github.com/community-fabric/python-ipfabric/commit/cdf58b163cfd5b9ea351ac2b27a74318e10a55b1))
-
-## v0.7.16 (2022-02-02)
-### Fix
-* Slack ([`a33776b`](https://github.com/community-fabric/python-ipfabric/commit/a33776ba8b80341a46303c270cf35fe03f998d8a))
-
-## v0.7.12 (2022-02-02)
-### Fix
-* Slack ([`b85c00e`](https://github.com/community-fabric/python-ipfabric/commit/b85c00e894b2a550f270d1ca738b1c6f9e2b2111))
-
-## v0.7.1 (2022-02-02)
-### Fix
-* Slack ([`7c5d7b2`](https://github.com/community-fabric/python-ipfabric/commit/7c5d7b2476c59a85d0567ee31daa3e1220acb3ae))
-
 ## v0.7.0 (2022-02-01)
 ### Feature
 * Graphs will be removed in next breaking release ([`7e39f9b`](https://github.com/community-fabric/python-ipfabric/commit/7e39f9be2be5c277e191de25cae25a52a929a8c4))
