@@ -24,15 +24,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get Changelog Entry
-        id: changelog
-        uses: mindsers/changelog-reader-action@v2
-        with:
-          version: ${{ steps.version.outputs.version }}
+#      - name: Get Changelog Entry
+#        id: changelog
+#        uses: mindsers/changelog-reader-action@v2
+#        with:
+#          version: ${{ steps.version.outputs.version }}
+      - name: Parse Changelog
+          id: changelog
+          uses: ocavue/changelog-parser-action@v1
 
       - name: Notify on Slack
         uses: bloodyowl/slack-message-release-action@v1.1.5
         with:
           version: ${{ steps.version.outputs.version }}
-          changelog: ${{ steps.changelog.outputs.changes }}
+#          changelog: ${{ steps.changelog.outputs.changes }}
+          changelog: ${{ steps.changelog.outputs.latestBody }}
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
