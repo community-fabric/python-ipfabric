@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2022-02-08)
+### Feature
+* Remove Python 3.6 ([`1d8e6ea`](https://github.com/community-fabric/python-ipfabric/commit/1d8e6ea192d23397ca08bd9b0303e8f6a0923039))
+
+### Fix
+* Add example requirements as optional ([`5434eb4`](https://github.com/community-fabric/python-ipfabric/commit/5434eb42bcc31e3311f3c478e375a0cfe00ec89a))
+
 ## v0.7.18 (2022-02-02)
 ### Fix
 * Slack ([`43203ac`](https://github.com/community-fabric/python-ipfabric/commit/43203ac47aa1e609be961a51d8378c7078a0755e))
