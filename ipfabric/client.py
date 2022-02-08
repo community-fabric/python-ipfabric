@@ -3,13 +3,12 @@ from json import loads
 from typing import Optional, Union
 from urllib.parse import urlparse
 
-from pkg_resources import parse_version
-
 from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
 from ipfabric.pathlookup import Diagram, DiagramV43
 from ipfabric.security import Security
+from pkg_resources import parse_version
 
 DEFAULT_ID = "$last"
 
@@ -57,6 +56,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
+        snapshot: bool = True
     ):
         """
         Gets data from IP Fabric for specified endpoint
@@ -73,9 +73,10 @@ class IPFClient(IPFabricAPI):
 
         payload = dict(
             columns=columns or self._get_columns(url),
-            snapshot=snapshot_id or self.snapshot_id,
             pagination=dict(start=start, limit=limit),
         )
+        if snapshot:
+            payload["snapshot"] = snapshot_id or self.snapshot_id
         if filters:
             payload["filters"] = filters
         if reports:
@@ -96,6 +97,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
+        snapshot: bool = True
     ):
         """
         Gets all data from IP Fabric for specified endpoint
@@ -108,10 +110,9 @@ class IPFClient(IPFabricAPI):
         :return: list: List of Dictionary objects.
         """
 
-        payload = dict(
-            columns=columns or self._get_columns(url),
-            snapshot=snapshot_id or self.snapshot_id,
-        )
+        payload = dict(columns=columns or self._get_columns(url))
+        if snapshot:
+            payload["snapshot"] = snapshot_id or self.snapshot_id
         if filters:
             payload["filters"] = filters
         if reports:

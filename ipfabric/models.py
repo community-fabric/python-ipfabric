@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class Site(BaseModel):
     site_name: str = Field(alias="siteName")
     uid: str
-    site_id: str = Field(alias="id")
+    site_id: Optional[str] = Field(None, alias="id")
 
 
 class Error(BaseModel):

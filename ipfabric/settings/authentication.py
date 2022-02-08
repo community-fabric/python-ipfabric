@@ -161,7 +161,7 @@ class Authentication:
         :return:
         """
         cred = credential.credential_id if isinstance(credential, Credential) else credential
-        res = self.client.delete(self._cred_url, json=[cred])
+        res = self.client.request('DELETE', self._cred_url, json=[cred])
         res.raise_for_status()
         self.get_credentials()
         logger.warning(f"Deleted credential ID {cred}")
@@ -173,7 +173,7 @@ class Authentication:
         :return:
         """
         priv = enable.privilege_id if isinstance(enable, Privilege) else enable
-        res = self.client.delete(self._priv_url, json=[priv])
+        res = self.client.request('DELETE', self._priv_url, json=[priv])
         res.raise_for_status()
         self.get_enables()
         logger.warning(f"Deleted enable password ID {priv}")
