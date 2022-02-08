@@ -24,6 +24,15 @@ for instructions on creating an API token.
 Most of the methods and features can be located in [Examples](examples) to show how to use this package. 
 Another great introduction to this package can be found at [API Programmability - Part 2: Python](https://ipfabric.io/blog/api-programmability-python/)
 
+## Diagrams
+
+Diagraming in IP Fabric version v4.3 and above has been moved to it's own package.  The diagraming included in
+this package will work for version >= v4.0 and < v4.3.
+
+```
+pip install ipfabric-diagrams
+```
+
 ## Authentication
 ### Basic
 Please take a look at [basic.py](examples/basic.py) for basic authentication examples
