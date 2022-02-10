@@ -134,3 +134,4 @@ dmypy.json
 # Examples
 examples/*.svg
 examples/*.png
+examples/*.xlsx

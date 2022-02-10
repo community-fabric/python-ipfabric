@@ -1,6 +1,7 @@
 """
 intent_reports.py
 """
+import pandas as pd
 from tabulate import tabulate
 
 from ipfabric import IPFClient
@@ -35,5 +36,26 @@ if __name__ == "__main__":
     BGP Session Age                                322316677  red                     33                  33       0
     """
 
+    intents, intents_with_groups = list(), list()
 
+    for intent in ipf.intent.intent_checks:
+        row = [intent.name, intent.result.checks.green, intent.result.checks.blue,
+               intent.result.checks.amber, intent.result.checks.red]
+        intents.append(row)
+        if not intent.groups:
+            intents_with_groups.append([None, *row])
+        for group in intent.groups:
+            intents_with_groups.append([group.name, *row])
 
+    columns = ['Intent Name', 'Green', 'Blue', 'Amber', 'Red']
+    intent_df = pd.DataFrame(intents, columns=columns)
+    intent_with_groups_df = pd.DataFrame(intents_with_groups, columns=['Group Name', *columns])
+
+    writer = pd.ExcelWriter('intent_report.xlsx')
+    intent_df.to_excel(writer, sheet_name='Intent Rules', index=False)
+    intent_with_groups_df.to_excel(writer, sheet_name='Grouped Intent Rules', index=False)
+    """
+    Please note that Intent Rules can live in multiple Groups which may cause the rule to be duplicated.
+    """
+
+    writer.close()

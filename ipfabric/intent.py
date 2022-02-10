@@ -1,6 +1,5 @@
 import logging
-from typing import Any
-from typing import Union
+from typing import Any, Union, List
 
 from ipfabric.intent_models import Group
 from .intent_models import IntentCheck
@@ -12,8 +11,8 @@ COLOR_DICT = dict(green=0, blue=10, amber=20, red=30)
 class Intent:
     def __init__(self, client):
         self.client: Any = client
-        self.intent_checks: list = list()
-        self.groups: list = list()
+        self.intent_checks: List[IntentCheck] = list()
+        self.groups: List[Group] = list()
         self.snapshot_id: str = self.client.snapshot_id
 
     def get_intent_checks(self, snapshot_id: str = None):
