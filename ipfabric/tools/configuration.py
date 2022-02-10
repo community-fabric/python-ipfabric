@@ -28,13 +28,15 @@ class Config(BaseModel):
 class DeviceConfigs:
     ipf: Any
 
-    def get_all_configurations(self, device: Optional[str] = None):
+    def get_all_configurations(self, device: Optional[str] = None, sn: Optional[str] = None):
         """
         Get all configurations in IP Fabric
         :param device: str: Hostname (case sensitive) filter
-        :return: dict: {Hostname: [Config, Config]}
+        :param sn: str: Serial number of device
+        :return: dict: {sn: [Config, Config]}
         """
-        if device:
+        if device or sn:
+            filters = dict(sn=["eq", sn]) if sn else dict(hostname=["reg", create_regex(device)])
             res = self.ipf.fetch_all(
                 "tables/management/configuration",
                 sort={"order": "desc", "column": "lastChange"},
@@ -47,7 +49,7 @@ class DeviceConfigs:
                     "status",
                     "hash",
                 ],
-                filters=dict(hostname=["eq", device]),
+                filters=filters,
             )
             if len(res) == 0:
                 logger.warning(f"Could not find any configurations for device '{device}'.")
@@ -67,30 +69,30 @@ class DeviceConfigs:
                 ],
             )
         results = defaultdict(list)
-        [results[cfg["hostname"]].append(Config(**cfg)) for cfg in res]
+        [results[cfg["sn"]].append(Config(**cfg)) for cfg in res]
         return results
 
     def _search_ip(self, ip: str, snapshot_id: str = None, log: bool = False) -> dict:
         res = self.ipf.fetch_all(
             "tables/addressing/managed-devs",
-            columns=["ip", "hostname"],
+            columns=["ip", "hostname", "sn"],
             reports="/technology/addressing/managed-ip",
             filters=dict(ip=["eq", ip]),
         )
         if len(res) == 1 and not log:
-            return {"hostname": res[0]["hostname"]}
+            return {"hostname": res[0]["hostname"], "sn": res[0]["sn"]}
         if len(res) == 1 and log:
             res = self.ipf.inventory.devices.all(
-                columns=["hostname", "taskKey"],
+                columns=["hostname", "taskKey", "sn"],
                 snapshot_id=snapshot_id,
-                filters=dict(hostname=["eq", res[0]["hostname"]]),
+                filters=dict(sn=["eq", res[0]["sn"]]),
             )
-            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"]}
+            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"], "sn": res[0]["sn"]}
         elif len(res) > 1:
             logger.warning(f"Found multiple entries for IP '{ip}'.")
         elif len(res) == 0:
             logger.warning(f"Could not find a matching IP for '{ip}'.")
-        return {"hostname": None}
+        return {"hostname": None, "sn": None}
 
     def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = "$last"):
         """
@@ -104,14 +106,14 @@ class DeviceConfigs:
         """
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
-        device = self._validate_device(device)["hostname"]
-        if not device:
+        sn = self._validate_device(device)["sn"]
+        if not sn:
             return None
-        cfgs = self.get_all_configurations(device)
+        cfgs = self.get_all_configurations(sn=sn)
         if not cfgs:
             return None
         if device:
-            cfg = self._get_hash(cfgs[device], date)
+            cfg = self._get_hash(cfgs[sn], date)
             if cfg:
                 res = self.ipf.get(
                     "/tables/management/configuration/download",
@@ -157,21 +159,21 @@ class DeviceConfigs:
             pass
         hostname = create_regex(device)
         res = self.ipf.inventory.devices.all(
-            columns=["hostname", "taskKey"],
+            columns=["hostname", "taskKey", "sn"],
             filters=dict(hostname=["reg", hostname]),
             snapshot_id=snapshot_id,
         )
         if len(res) == 1:
-            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"]}
+            return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"], "sn": res[0]["sn"]}
         elif len(res) == 0:
             logger.warning(f"Could not find a matching device for '{device}' using regex '{hostname}'.")
         elif len(res) > 1:
             logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
-        return {"hostname": None}
+        return {"hostname": None, "sn": None}
 
     def get_log(self, device: str, snapshot_id: str = None):
         device = self._validate_device(device, snapshot_id=snapshot_id, log=True)
-        if not device["hostname"]:
+        if not device["sn"]:
             return None
         res = self.ipf.get("/os/logs/task/" + device["taskKey"])
         res.raise_for_status()

@@ -26,7 +26,7 @@ Another great introduction to this package can be found at [API Programmability 
 
 ## Diagrams
 
-Diagraming in IP Fabric version v4.3 and above has been moved to it's own package.  The diagraming included in
+Diagramming in IP Fabric version v4.3 and above has been moved to it's own package.  The diagramming included in
 this package will work for version >= v4.0 and < v4.3.
 
 ```

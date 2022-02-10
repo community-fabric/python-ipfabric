@@ -10,15 +10,28 @@ class Models(unittest.TestCase):
         self.assertEqual(authentication.Expiration(enabled=False), dict(enabled=False, value=None))
 
     def test_credential(self):
-        cred = authentication.Credential(network=['10.0.0.0/24'], excludeNetworks=[],
-                                         expirationDate=dict(enabled=False), id='ID', password='PASS', username='USER',
-                                         priority=1, syslog=False)
+        cred = authentication.Credential(
+            network=["10.0.0.0/24"],
+            excludeNetworks=[],
+            expirationDate=dict(enabled=False),
+            id="ID",
+            password="PASS",
+            username="USER",
+            priority=1,
+            syslog=False,
+        )
         self.assertIsInstance(cred, authentication.Credential)
 
     def test_privilege(self):
-        cred = authentication.Privilege(includeNetworks=['10.0.0.0/24'], excludeNetworks=[],
-                                        expirationDate=dict(enabled=False), id='ID', password='PASS', username='USER',
-                                        priority=1)
+        cred = authentication.Privilege(
+            includeNetworks=["10.0.0.0/24"],
+            excludeNetworks=[],
+            expirationDate=dict(enabled=False),
+            id="ID",
+            password="PASS",
+            username="USER",
+            priority=1,
+        )
         self.assertIsInstance(cred, authentication.Privilege)
 
 
@@ -26,43 +39,30 @@ class Authentication(unittest.TestCase):
     def setUp(self) -> None:
         self.cred = {
             "excludeNetworks": [],
-            "expirationDate": {
-                "enabled": False
-            },
+            "expirationDate": {"enabled": False},
             "id": "918d1a0f-98b1-4895-ba51-340f7f2cf6cd",
             "password": "829ec229e38314",
             "priority": 1,
             "syslog": True,
             "username": "admin15",
-            "network": [
-                "0.0.0.0/0"
-            ]
+            "network": ["0.0.0.0/0"],
         }
         self.priv = {
             "excludeNetworks": [],
-            "expirationDate": {
-                "enabled": False
-            },
+            "expirationDate": {"enabled": False},
             "id": "0a5b528d-4fd1-4e62-91e7-e565affa058f",
-            "includeNetworks": [
-                "0.0.0.0/0"
-            ],
+            "includeNetworks": ["0.0.0.0/0"],
             "password": "829ec229e38314",
             "username": "admin15",
-            "priority": 1
+            "priority": 1,
         }
         self.data = {
-            "network": [
-                "0.0.0.0/0"
-            ],
+            "network": ["0.0.0.0/0"],
             "excludeNetworks": [],
             "syslog": False,
-            "expirationDate": {
-                "enabled": True,
-                "value": "2021-11-24 23:59:59"
-            },
+            "expirationDate": {"enabled": True, "value": "2021-11-24 23:59:59"},
             "password": "test",
-            "username": "test"
+            "username": "test",
         }
         self.auth = authentication.Authentication(client=MagicMock())
         self.auth.credentials = {1: authentication.Credential(**self.cred)}
@@ -78,36 +78,36 @@ class Authentication(unittest.TestCase):
 
     def test_create_credential(self):
         self.auth.client.post().json.return_value = self.cred
-        cred = self.auth.create_credential('test', 'password')
+        cred = self.auth.create_credential("test", "password")
         self.assertIsInstance(cred, authentication.Credential)
 
     def test_create_enable(self):
         self.auth.client.post().json.return_value = self.priv
-        priv = self.auth.create_enable('test', 'password')
+        priv = self.auth.create_enable("test", "password")
         self.assertIsInstance(priv, authentication.Privilege)
 
     def test_create_payload_failed(self):
         with self.assertRaises(ipaddress.AddressValueError) as err:
-            self.auth._create_payload('test', 'pass', None, None, ['hello world'], False)
+            self.auth._create_payload("test", "pass", None, None, ["hello world"], False)
 
     def test_create_payload_expires(self):
-        payload = self.auth._create_payload('test', 'pass', None, None, None, '11-23-2021T23:59:59')
-        self.assertEqual(payload["expirationDate"]["value"], '2021-11-23 23:59:59')
+        payload = self.auth._create_payload("test", "pass", None, None, None, "11-23-2021T23:59:59")
+        self.assertEqual(payload["expirationDate"]["value"], "2021-11-23 23:59:59")
 
-    @patch('ipfabric.settings.authentication.Authentication.get_credentials')
+    @patch("ipfabric.settings.authentication.Authentication.get_credentials")
     def test_delete_cred(self, mock_call):
-        self.assertIsNone(self.auth.delete_credential('TEST'))
+        self.assertIsNone(self.auth.delete_credential("TEST"))
 
-    @patch('ipfabric.settings.authentication.Authentication.get_enables')
+    @patch("ipfabric.settings.authentication.Authentication.get_enables")
     def test_delete_enable(self, mock_call):
-        self.assertIsNone(self.auth.delete_enable('TEST'))
+        self.assertIsNone(self.auth.delete_enable("TEST"))
 
-    @patch('ipfabric.settings.authentication.Authentication.get_credentials')
+    @patch("ipfabric.settings.authentication.Authentication.get_credentials")
     def test_update_cred(self, mock_call):
         creds = self.auth.update_cred_priority(self.auth.credentials)
         self.assertEqual(creds, self.auth.credentials)
 
-    @patch('ipfabric.settings.authentication.Authentication.get_enables')
+    @patch("ipfabric.settings.authentication.Authentication.get_enables")
     def test_update_enable(self, mock_call):
         priv = self.auth.update_enable_priority(self.auth.enables)
         self.assertEqual(priv, self.auth.enables)

@@ -3,17 +3,15 @@ intent.py
 """
 from pprint import pprint
 
-from tabulate import tabulate
-
 from ipfabric import IPFClient
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ipf = IPFClient()
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     ipf.intent.load_intent()  # Load Intent Checks
     # ipf.intent.load_intent('$prev') Load a different snapshot into the class overriding the client.
 
-    intents = ipf.intent.get_intent_checks('$lastLocked')  # Returns checks for a snapshot, does not load in the class
+    intents = ipf.intent.get_intent_checks("$lastLocked")  # Returns checks for a snapshot, does not load in the class
 
     pprint(ipf.intent.intent_checks[0].__dict__)
     """
@@ -43,7 +41,7 @@ if __name__ == '__main__':
     print()
 
     print(f"{ipf.intent.intent_by_name['Console, VTY and AUX Security'].name} belongs to the following groups.")
-    for g in ipf.intent.intent_by_name['Console, VTY and AUX Security'].groups:
+    for g in ipf.intent.intent_by_name["Console, VTY and AUX Security"].groups:
         print(g.name)
     """"
     Console, VTY and AUX Security belongs to the following groups.
@@ -52,13 +50,24 @@ if __name__ == '__main__':
     """
     print()
 
+    end_of_support = ipf.intent.get_all_results(ipf.intent.intent_by_name["End of Support"])
+    print(end_of_support.result_data)
+    """
+    green=[{'id': '1629809283640666', 'dscr': 'SG300-10PP 10-port Gigabit PoE+ Managed Switch', 
+            'endMaintenance': {'data': None, 'severity': -1}, 'endSale': {'data': 1525910400000, ml',...] 
+    blue=None 
+    amber=None
+    red=[{'id': '1632632890662679', 'dscr': '4400 Series WLAN Controller for up to 25 Lightweight APs', 
+    'endMaintenance': {'data': 1339495200000, 'severity': 20}, 'endSale': {'data': 1307959200000, ...]
+    """
+
     print(f"{ipf.intent.builtin[1].name} has  a total of {ipf.intent.builtin[1].result.count} matches.")
     """"
     BGP Session Age has  a total of 344 matches.
     """
     print()
 
-    results = ipf.intent.get_results(ipf.intent.builtin[2], 'amber')
+    results = ipf.intent.get_results(ipf.intent.builtin[2], "amber")
     # Takes in an intent rule and the color you want to view
     # Colors are green (0), blue (10), amber (20), red (30)
     print(f"{ipf.intent.builtin[2].name} has {len(results)} that are amber.")
@@ -78,23 +87,3 @@ if __name__ == '__main__':
     'sn': 'FOSVM1QWZRUM4EB7', 'status': {'data': 'up', 'severity': 0}, 'tunnelIntName': 'ipsec_L64_mtik'}
     """
     print()
-
-    compare = ipf.intent.compare_snapshot('$lastLocked', reverse=True)
-    print(tabulate(compare, headers="keys"))
-    """
-    Current: The snapshot loaded into the intent class:
-        ipf.intent.load_intent('$last')
-    Other: The snapshot in the comparison:
-        ipf.intent.compare_snapshot('$prev', reverse=True)
-    Reverse (Default: False): Will flip current and other.  Use when class is newest date and compare is an older date.
-    
-    name                                                  id  check      loaded_snapshot    compare_snapshot    diff
-    --------------------------------------------  ----------  -------  -----------------  ------------------  ------
-    CDP/LLDP unidirectional                        320633253  total                   25                  18      -7
-    CDP/LLDP unidirectional                        320633253  blue                    25                  18      -7
-    BGP Session Age                                322316677  total                  367                 358      -9
-    BGP Session Age                                322316677  green                  309                 305      -4
-    BGP Session Age                                322316677  blue                    22                  19      -3
-    BGP Session Age                                322316677  amber                    3                   0      -3
-    BGP Session Age                                322316677  red                     33                  33       0
-    """

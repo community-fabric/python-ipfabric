@@ -1,24 +1,52 @@
 from ipfabric import IPFClient
 from ipfabric.tools import DeviceConfigs
 
+
 if __name__ == "__main__":
     ipf = IPFClient()
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     cfg = DeviceConfigs(ipf)
 
-    cfgs = cfg.get_all_configurations()  # Get all Configurations
-    #  Returns dictionary like {Hostname: [Config, Config]}
-    L34R3_cfgs = cfg.get_all_configurations('L34R3')  # Get all Configurations for device *Case sensitive hostname
-    #  Returns dictionary like {'L34R3': [Config, Config]}
+    # cfgs = cfg.get_all_configurations()  # Get all Configurations
+    #  Returns dictionary like {SN: [Config, Config]} where SN is the IPF Unique Serial Number
+    L35AC92_cfgs = cfg.get_all_configurations(device='L35AC92')  # Get all Configurations for device
+    #  Returns dictionary like {'a23ffbf': [Config, Config], '91624130': [Config, Config]}
+    print(L35AC92_cfgs)
+    """
+    {
+    'a23ffbf': [Config(config_id='61f1f52936add003e73b4848', sn='a23ffbf', hostname='L35AC92', 
+        config_hash='daf3d34ceb44870cc7e2647ccb01dd759e2da5b9', status='no change', 
+        last_change=datetime.datetime(2022, 1, 27, 1, 28, 9, tzinfo=datetime.timezone.utc), 
+        last_check=datetime.datetime(2022, 2, 10, 1, 21, 29, 986000, tzinfo=datetime.timezone.utc), text=None)],
+    '91624130': [Config(config_id='5ffdd5f93d1f1b0343af6bd3', sn='91624130', hostname='L35AC92', 
+        config_hash='6df7ab1f8dd2eefc757e8719421d81643c2eb6ee', status='no change', 
+        last_change=datetime.datetime(2021, 1, 12, 17, 1, 45, tzinfo=datetime.timezone.utc), 
+        last_check=datetime.datetime(2021, 4, 6, 23, 3, 15, 77000, tzinfo=datetime.timezone.utc), text=None)]
+    }
+    """
+    print()
 
-    L34R3 = cfg.get_configuration('L34R3', sanitized=False)  # Display passwords
-    print(L34R3.last_change)
+    L35AC92_sn_cfgs = cfg.get_all_configurations(sn='a23ffbf')
+    #  Returns dictionary like {'a23ffbf': [Config, Config]}
+    print(L35AC92_sn_cfgs)
+    """
+    {
+    'a23ffbf': [Config(config_id='61f1f52936add003e73b4848', sn='a23ffbf', hostname='L35AC92', 
+        config_hash='daf3d34ceb44870cc7e2647ccb01dd759e2da5b9', status='no change', 
+        last_change=datetime.datetime(2022, 1, 27, 1, 28, 9, tzinfo=datetime.timezone.utc), 
+        last_check=datetime.datetime(2022, 2, 10, 1, 21, 29, 986000, tzinfo=datetime.timezone.utc), text=None)]
+    }
+    """
+    print()
+
+    L35AC92 = cfg.get_configuration('L35AC92', sanitized=False)  # Display passwords
+    print(L35AC92.last_change)
     """
     2021-11-24 00:13:26+00:00
     """
     print()
 
-    L34R3 = cfg.get_configuration('10.34.255.103', date="$prev")  # Method can also accept any managed IP of the device
+    L34R3 = cfg.get_configuration('10.35.189.92', date="$prev")  # Method can also accept any managed IP of the device
     # Date can be $last, $prev, $first; $last is default
     print(L34R3.last_change)
     """
