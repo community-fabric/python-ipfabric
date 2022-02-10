@@ -16,6 +16,11 @@ digital transformation.
 pip install ipfabric
 ```
 
+To run examples please specify the extras option during install:
+```
+pip install ipfabric -E examples
+```
+
 ## Introduction
 
 Please take a look at [API Programmability - Part 1: The Basics](https://ipfabric.io/blog/api-programmability-part-1/)
