@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -68,3 +68,4 @@ class IntentCheck(BaseModel):
     default_color: Union[None, int] = Field(alias="defaultColor")
     web_endpoint: str = Field(alias="webEndpoint")
     intent_id: str = Field(alias="id")
+    result_data: Optional[Checks] = Field(default_factory=Checks)

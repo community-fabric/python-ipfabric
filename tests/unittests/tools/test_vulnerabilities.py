@@ -7,48 +7,79 @@ from ipfabric.tools.nist import CVEs, CVE
 
 class Version(unittest.TestCase):
     def test_version(self):
-        version = vulnerabilities.Version(vendor='Cisco', family='ios', version='1', hostname='TEST', site='TEST',
-                                          cves=CVEs(total_results=1, cves=[], error='None'))
+        version = vulnerabilities.Version(
+            vendor="Cisco",
+            family="ios",
+            version="1",
+            hostname="TEST",
+            site="TEST",
+            cves=CVEs(total_results=1, cves=[], error="None"),
+        )
         self.assertIsInstance(version, vulnerabilities.Version)
 
 
 class Vulnerabilities(unittest.TestCase):
     def setUp(self) -> None:
-        with patch('ipfabric.tools.vulnerabilities.NIST') as mock:
+        with patch("ipfabric.tools.vulnerabilities.NIST") as mock:
             self.vuln = vulnerabilities.Vulnerabilities(MagicMock())
-        self.vuln.nist.check_cve.return_value = CVEs(total_results=1, cves=[], error='None')
-        self.cve = CVE(cve_id='TEST', description='test', url='test')
+        self.vuln.nist.check_cve.return_value = CVEs(total_results=1, cves=[], error="None")
+        self.cve = CVE(cve_id="TEST", description="test", url="test")
 
     def test_check_versions_cve(self):
-        res = self.vuln._check_versions([dict(version='1', vendor='cisco', family='ios', hostname='TEST',
-                                              siteName='TEST')])
+        res = self.vuln._check_versions(
+            [dict(version="1", vendor="cisco", family="ios", hostname="TEST", siteName="TEST")]
+        )
         self.assertIsInstance(res[0], vulnerabilities.Version)
         self.assertIsInstance(res[0].cves, CVEs)
 
-    @patch('ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions')
+    @patch("ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions")
     def test_check_versions(self, versions):
-        versions.return_value = [vulnerabilities.Version(version='1', vendor='cisco', family='ios', hostname='TEST',
-                                                         site='TEST', cves=CVEs(total_results=1, cves=[self.cve]))]
-        self.vuln.ipf.inventory.devices.all.return_value = [dict(version='1', vendor='cisco', family='ios')]
+        versions.return_value = [
+            vulnerabilities.Version(
+                version="1",
+                vendor="cisco",
+                family="ios",
+                hostname="TEST",
+                site="TEST",
+                cves=CVEs(total_results=1, cves=[self.cve]),
+            )
+        ]
+        self.vuln.ipf.inventory.devices.all.return_value = [dict(version="1", vendor="cisco", family="ios")]
         cve = self.vuln.check_versions()
         self.assertIsInstance(cve[0], vulnerabilities.Version)
         self.assertIsInstance(cve[0].cves, CVEs)
 
-    @patch('ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions')
+    @patch("ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions")
     def test_check_device(self, versions):
-        versions.return_value = [vulnerabilities.Version(version='1', vendor='cisco', family='ios', hostname='TEST',
-                                                         site='TEST', cves=CVEs(total_results=1, cves=[self.cve]))]
-        self.vuln.ipf.inventory.devices.all.return_value = [dict(version='1', vendor='cisco', family='ios')]
-        cve = self.vuln.check_device('TEST')
+        versions.return_value = [
+            vulnerabilities.Version(
+                version="1",
+                vendor="cisco",
+                family="ios",
+                hostname="TEST",
+                site="TEST",
+                cves=CVEs(total_results=1, cves=[self.cve]),
+            )
+        ]
+        self.vuln.ipf.inventory.devices.all.return_value = [dict(version="1", vendor="cisco", family="ios")]
+        cve = self.vuln.check_device("TEST")
         self.assertIsInstance(cve[0], vulnerabilities.Version)
         self.assertIsInstance(cve[0].cves, CVEs)
 
-    @patch('ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions')
+    @patch("ipfabric.tools.vulnerabilities.Vulnerabilities._check_versions")
     def test_check_site(self, versions):
-        versions.return_value = [vulnerabilities.Version(version='1', vendor='cisco', family='ios', hostname='TEST',
-                                                         site='TEST', cves=CVEs(total_results=1, cves=[self.cve]))]
-        self.vuln.ipf.inventory.devices.all.return_value = [dict(version='1', vendor='cisco', family='ios')]
-        cve = self.vuln.check_site('TEST')
+        versions.return_value = [
+            vulnerabilities.Version(
+                version="1",
+                vendor="cisco",
+                family="ios",
+                hostname="TEST",
+                site="TEST",
+                cves=CVEs(total_results=1, cves=[self.cve]),
+            )
+        ]
+        self.vuln.ipf.inventory.devices.all.return_value = [dict(version="1", vendor="cisco", family="ios")]
+        cve = self.vuln.check_site("TEST")
         self.assertIsInstance(cve[0], vulnerabilities.Version)
         self.assertIsInstance(cve[0].cves, CVEs)
 

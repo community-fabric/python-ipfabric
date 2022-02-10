@@ -1,18 +1,18 @@
 import logging
-from typing import Any
-from typing import Union
+from typing import Any, Union, List
 
 from ipfabric.intent_models import Group
 from .intent_models import IntentCheck
 
 logger = logging.getLogger()
+COLOR_DICT = dict(green=0, blue=10, amber=20, red=30)
 
 
 class Intent:
     def __init__(self, client):
         self.client: Any = client
-        self.intent_checks: list = list()
-        self.groups: list = list()
+        self.intent_checks: List[IntentCheck] = list()
+        self.groups: List[Group] = list()
         self.snapshot_id: str = self.client.snapshot_id
 
     def get_intent_checks(self, snapshot_id: str = None):
@@ -81,8 +81,18 @@ class Intent:
 
     def get_results(self, intent: IntentCheck, color: Union[str, int], snapshot_id: str = None):
         if isinstance(color, str):
-            color = dict(green=0, blue=10, amber=20, red=30)[color]
+            color = COLOR_DICT[color]
         snapshot_id = snapshot_id or self.snapshot_id
+        return self._get_data(intent, snapshot_id, color)
+
+    def get_all_results(self, intent: IntentCheck, snapshot_id: str = None):
+        snapshot_id = snapshot_id or self.snapshot_id
+        for color_str, color_int in COLOR_DICT.items():
+            if getattr(intent.result.checks, color_str):
+                setattr(intent.result_data, color_str, self._get_data(intent, snapshot_id, color_int))
+        return intent
+
+    def _get_data(self, intent: IntentCheck, snapshot_id: str, color: int):
         return self.client.fetch_all(
             intent.api_endpoint,
             snapshot_id=snapshot_id,
