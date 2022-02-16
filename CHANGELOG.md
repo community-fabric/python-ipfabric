@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.1 (2022-02-10)
+### Fix
+* Added poetry extras to run examples. ([`f89d6f9`](https://github.com/community-fabric/python-ipfabric/commit/f89d6f9ad5cc39fb8bc5b7f95949f7a8d8bfcc67))
+* Config is now using Serial Number as unique identifier not hostname ([`fd18a7d`](https://github.com/community-fabric/python-ipfabric/commit/fd18a7d7c6b821620d606aef61af5d5c029ad4dc))
+* Update readme ([`b8bac4e`](https://github.com/community-fabric/python-ipfabric/commit/b8bac4e99f2537ee87fd03b50dac163fa2cc667c))
+* Remove v4.3 diagrams and added back examples ([`76f0952`](https://github.com/community-fabric/python-ipfabric/commit/76f095202fc749fbce6f26a6a9d39ef5dd9c5394))
+
+### Documentation
+*  Added examples for Intent Reporting ([`8f425d3`](https://github.com/community-fabric/python-ipfabric/commit/8f425d330c53d995be3e93fc360a842fae785525))
+
 ## v0.8.0 (2022-02-08)
 ### Feature
 * Remove Python 3.6 ([`1d8e6ea`](https://github.com/community-fabric/python-ipfabric/commit/1d8e6ea192d23397ca08bd9b0303e8f6a0923039))
