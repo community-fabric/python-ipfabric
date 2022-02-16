@@ -3,12 +3,13 @@ from json import loads
 from typing import Optional, Union
 from urllib.parse import urlparse
 
+from pkg_resources import parse_version
+
 from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
 from ipfabric.pathlookup import Diagram
 from ipfabric.security import Security
-from pkg_resources import parse_version
 
 DEFAULT_ID = "$last"
 
@@ -43,7 +44,8 @@ class IPFClient(IPFabricAPI):
         self.inventory = models.Inventory(client=self)
         self.graphs = Diagram(self) if parse_version(self.os_version) < parse_version("4.3") else \
             ImportError("v4.3 digrams has been moved to ipfabrc-diagrams python package")
-        self.security = Security(client=self)
+        self.security = Security(client=self) if parse_version(self.os_version) < parse_version("4.3") else \
+            ImportError("Security Policy tables have changed and need updated")
         self.intent = Intent(client=self)
 
     @check_format
