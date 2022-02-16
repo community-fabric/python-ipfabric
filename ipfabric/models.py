@@ -5,9 +5,14 @@ from pydantic import BaseModel, Field
 
 
 class Site(BaseModel):
-    site_name: str = Field(alias="siteName")
+    _sitename: str = Field(alias="siteName")
+    _name: str = Field(alias="name")
     uid: str
     site_id: Optional[str] = Field(None, alias="id")
+
+    @property
+    def site_name(self):
+        return self._name or self._sitename
 
 
 class Error(BaseModel):
