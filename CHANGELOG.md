@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.2 (2022-02-16)
+### Fix
+* Security tests ([`59b4870`](https://github.com/community-fabric/python-ipfabric/commit/59b4870e9d15fc90c0cc88af89d0fb3644362f0e))
+* Sitename snapshot for v4.3 ([`c033b9b`](https://github.com/community-fabric/python-ipfabric/commit/c033b9bf47d60310874977ec0f8a3a32c21b4823))
+
 ## v0.8.1 (2022-02-10)
 ### Fix
 * Added poetry extras to run examples. ([`f89d6f9`](https://github.com/community-fabric/python-ipfabric/commit/f89d6f9ad5cc39fb8bc5b7f95949f7a8d8bfcc67))
