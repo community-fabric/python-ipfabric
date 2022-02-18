@@ -7,7 +7,7 @@ if __name__ == "__main__":
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
     cfg = DeviceConfigs(ipf)
 
-    # cfgs = cfg.get_all_configurations()  # Get all Configurations
+    cfgs = cfg.get_all_configurations()  # Get all Configurations
     #  Returns dictionary like {SN: [Config, Config]} where SN is the IPF Unique Serial Number
     L35AC92_cfgs = cfg.get_all_configurations(device='L35AC92')  # Get all Configurations for device
     #  Returns dictionary like {'a23ffbf': [Config, Config], '91624130': [Config, Config]}
@@ -23,6 +23,21 @@ if __name__ == "__main__":
         last_change=datetime.datetime(2021, 1, 12, 17, 1, 45, tzinfo=datetime.timezone.utc), 
         last_check=datetime.datetime(2021, 4, 6, 23, 3, 15, 77000, tzinfo=datetime.timezone.utc), text=None)]
     }
+    """
+    print()
+
+    text = cfg.get_text_config(L35AC92_cfgs['a23ffbf'][0], False).text
+    print(text)
+    """
+    version 15.2
+    service timestamps debug datetime msec
+    service timestamps log datetime msec
+    service password-encryption
+    service compress-config
+    !
+    hostname L35AC92
+    !
+    boot-start-marker
     """
     print()
 
