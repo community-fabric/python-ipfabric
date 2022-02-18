@@ -94,10 +94,12 @@ class DeviceConfigs:
             logger.warning(f"Could not find a matching IP for '{ip}'.")
         return {"hostname": None, "sn": None}
 
-    def get_configuration(self, device: str, sanitized: bool = True, date: Union[str, tuple] = "$last"):
+    def get_configuration(self, device: str = None, sn: str = None, sanitized: bool = True,
+                          date: Union[str, tuple] = "$last"):
         """
-        Gets last configuration of a device based on hostname or IP
+        Gets last configuration of a device based on hostname or IP or IPF Unique Serial Number
         :param device: str: Hostname or IP
+        :param sn: str: Serial Number
         :param sanitized: bool: Default True to mask passwords
         :param date: Union[str, tuple]: Defaults to latest config. Values in [$last, $prev, $first] or can be a
                                         tuple of a date range to get the latest snapshot in that range.
@@ -106,25 +108,28 @@ class DeviceConfigs:
         """
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
-        sn = self._validate_device(device)["sn"]
         if not sn:
-            return None
+            sn = self._validate_device(device)["sn"]
+            if not sn:
+                return None
         cfgs = self.get_all_configurations(sn=sn)
         if not cfgs:
             return None
-        if device:
-            cfg = self._get_hash(cfgs[sn], date)
-            if cfg:
-                res = self.ipf.get(
-                    "/tables/management/configuration/download",
-                    params=dict(hash=cfg.config_hash, sanitized=sanitized),
-                )
-                res.raise_for_status()
-                cfg.text = res.text
-                return cfg
-            else:
-                logger.error(f"Could not find a configuration with date {date}")
-        return None
+        cfg = self._get_hash(cfgs[sn], date)
+        if cfg:
+            return self.get_text_config(cfg, sanitized)
+        else:
+            logger.error(f"Could not find a configuration with date {date}")
+            return None
+
+    def get_text_config(self, cfg: Config, sanitized: bool = True):
+        res = self.ipf.get(
+            "/tables/management/configuration/download",
+            params=dict(hash=cfg.config_hash, sanitized=sanitized),
+        )
+        res.raise_for_status()
+        cfg.text = res.text
+        return cfg
 
     @staticmethod
     def _get_hash(configs, date):
