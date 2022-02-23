@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.5 (2022-02-23)
+### Fix
+* Verify was not working. ([`58e7b34`](https://github.com/community-fabric/python-ipfabric/commit/58e7b349395ccb124a918f7b20ef18cc15d6a619))
+
 ## v0.8.4 (2022-02-18)
 ### Fix
 * Get device logs ([`dfd7a33`](https://github.com/community-fabric/python-ipfabric/commit/dfd7a334b0249e202695e02cc3df53dfef120035))
