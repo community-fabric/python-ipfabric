@@ -47,7 +47,7 @@ class IPFabricAPI(Client):
                 kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "v1/")
             else:
                 kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
-            kwargs["verify"] = kwargs.get("verify", None) or settings.ipf_verify
+            kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
 
         if not kwargs["base_url"]:
