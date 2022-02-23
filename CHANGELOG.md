@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.4 (2022-02-18)
+### Fix
+* Get device logs ([`dfd7a33`](https://github.com/community-fabric/python-ipfabric/commit/dfd7a334b0249e202695e02cc3df53dfef120035))
+
+## v0.8.3 (2022-02-18)
+### Fix
+* Device configs ([`a3b2d66`](https://github.com/community-fabric/python-ipfabric/commit/a3b2d66ba17504acccaa246f73aadebee4d79aed))
+
 ## v0.8.2 (2022-02-16)
 ### Fix
 * Security tests ([`59b4870`](https://github.com/community-fabric/python-ipfabric/commit/59b4870e9d15fc90c0cc88af89d0fb3644362f0e))
