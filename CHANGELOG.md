@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.6 (2022-02-24)
+### Fix
+* Log name. ([`bfa1722`](https://github.com/community-fabric/python-ipfabric/commit/bfa1722760d37b671fc2f8dc5a459eec5e8eb636))
+* Log name. ([`c3fda38`](https://github.com/community-fabric/python-ipfabric/commit/c3fda38f9ef41991328240ea237c84756a8d396d))
+
 ## v0.8.5 (2022-02-23)
 ### Fix
 * Verify was not working. ([`58e7b34`](https://github.com/community-fabric/python-ipfabric/commit/58e7b349395ccb124a918f7b20ef18cc15d6a619))
