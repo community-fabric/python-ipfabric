@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.7 (2022-02-24)
+### Fix
+* Pager ([`e96ebda`](https://github.com/community-fabric/python-ipfabric/commit/e96ebda2202f8b5eb568ea8c9e22eaf299731ad6))
+
 ## v0.8.6 (2022-02-24)
 ### Fix
 * Log name. ([`bfa1722`](https://github.com/community-fabric/python-ipfabric/commit/bfa1722760d37b671fc2f8dc5a459eec5e8eb636))
