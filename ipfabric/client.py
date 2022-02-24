@@ -180,5 +180,5 @@ class IPFClient(IPFabricAPI):
         r = r.json()
         data.extend(r["data"])
         if limit + start < r["_meta"]["count"]:
-            self._ipf_pager(url, payload, data, start + limit)
+            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
         return data
