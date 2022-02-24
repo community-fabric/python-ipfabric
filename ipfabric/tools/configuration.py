@@ -180,9 +180,9 @@ class DeviceConfigs:
         device = self._validate_device(device, snapshot_id=snapshot_id, log=True)
         if not device["sn"]:
             return None
-        return self.get_test_log(device)
+        return self.get_text_log(device)
 
-    def get_test_log(self, device: dict):
+    def get_text_log(self, device: dict):
         res = self.ipf.get("/os/logs/task/" + device["taskKey"])
         res.raise_for_status()
         return res.text
