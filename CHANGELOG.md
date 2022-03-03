@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.8 (2022-03-03)
+### Fix
+* Updated NIST search for arista and change unsupported vendors to error ([`b603b13`](https://github.com/community-fabric/python-ipfabric/commit/b603b13c30d3b5d7d99c16feab8c63511de262d5))
+* Tests ([`4e57786`](https://github.com/community-fabric/python-ipfabric/commit/4e577866780e037e5adf6941d17c38fe25d59440))
+
 ## v0.8.7 (2022-02-24)
 ### Fix
 * Pager ([`e96ebda`](https://github.com/community-fabric/python-ipfabric/commit/e96ebda2202f8b5eb568ea8c9e22eaf299731ad6))
