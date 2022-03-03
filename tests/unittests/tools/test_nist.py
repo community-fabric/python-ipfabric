@@ -69,11 +69,15 @@ class NIST(unittest.TestCase):
     @patch("httpx.Client.get")
     def test_check_timeout(self, get):
         get().raise_for_status.side_effect = ReadTimeout("Timeout")
-        res = self.vuln.check_cve("riverbed", "steelhead", "6.5.2a")
+        res = self.vuln.check_cve("cisco", "steelhead", "6.5.2a")
         self.assertEqual(res.error, "Timeout")
 
     @patch("httpx.Client.get")
     def test_check_error(self, get):
         get().raise_for_status.side_effect = HTTPStatusError("Timeout", request=MagicMock(), response=MagicMock())
-        res = self.vuln.check_cve("riverbed", "steelhead", "6.5.2a")
+        res = self.vuln.check_cve("cisco", "steelhead", "6.5.2a")
         self.assertEqual(res.error, "HTTP Error")
+
+    def test_check_unsupported(self):
+        res = self.vuln.check_cve("riverbed", "steelhead", "6.5.2a")
+        self.assertEqual(res.error, "Unsupported")
