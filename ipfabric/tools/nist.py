@@ -44,7 +44,9 @@ class NIST(Client):
         :return:
         """
         params = self.params
-        if vendor == "juniper":
+        if vendor in ['azure', 'aws']:
+            return CVEs(total_results=0, cves=[], error="Unsupported")
+        elif vendor == "juniper":
             version = version[: version.rfind("R") + 2].replace("R", ":r")
             params["cpeMatchString"] += vendor + ":" + family + ":" + version
         elif vendor == "paloalto":
@@ -58,7 +60,9 @@ class NIST(Client):
         elif vendor == "f5" and family == "big-ip":
             params["cpeMatchString"] += vendor + ":" + "big-ip_access_policy_manager" + ":" + version
         elif vendor == "cisco":
-            if family == "wlc-air":
+            if family == "meraki":
+                return CVEs(total_results=0, cves=[], error="Unsupported")
+            elif family == "wlc-air":
                 family = "wireless_lan_controller_software"
             elif family != "nx-os":
                 family = family.replace("-", "_")
@@ -68,9 +72,10 @@ class NIST(Client):
             params["cpeMatchString"] += "fortinet:fortios:" + version.replace(",", ".")
         elif vendor == "checkpoint" and family == "gaia":
             params["cpeMatchString"] += vendor + ":" + "gaia_os" + version.replace("R", ":r")
+        elif vendor == "arista":
+            params["cpeMatchString"] += vendor + ":" + family + ":" + version.lower()
         else:
-            v = str(version).split(",")[0]
-            params["cpeMatchString"] += str(vendor) + ":" + str(family) + ":" + v
+            return CVEs(total_results=0, cves=[], error="Unsupported")
 
         try:
             res = self.get("", params=params)
