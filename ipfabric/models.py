@@ -108,3 +108,8 @@ class Inventory(BaseModel):
     @property
     def interfaces(self):
         return Table(client=self.client, endpoint="/tables/inventory/interfaces")
+
+    @property
+    def hosts(self):
+        return Table(client=self.client, endpoint="tables/addressing/hosts")
+
