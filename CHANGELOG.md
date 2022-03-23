@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.9 (2022-03-08)
+### Fix
+* Run poetry update ([`af4ac25`](https://github.com/community-fabric/python-ipfabric/commit/af4ac25119bc0913cb6b15b18eb625a44e466a16))
+* Added hosts to inventory ([`0c65728`](https://github.com/community-fabric/python-ipfabric/commit/0c657281bb312f24f90bfc95e586419ae6f81c25))
+
 ## v0.8.8 (2022-03-03)
 ### Fix
 * Updated NIST search for arista and change unsupported vendors to error ([`b603b13`](https://github.com/community-fabric/python-ipfabric/commit/b603b13c30d3b5d7d99c16feab8c63511de262d5))
