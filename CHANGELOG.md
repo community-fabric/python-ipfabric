@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2022-03-23)
+### Feature
+* Add Vendor API Settings. ([`f624a83`](https://github.com/community-fabric/python-ipfabric/commit/f624a834f8d10133c5d03832659cdf30a0312fe2))
+
 ## v0.8.9 (2022-03-08)
 ### Fix
 * Run poetry update ([`af4ac25`](https://github.com/community-fabric/python-ipfabric/commit/af4ac25119bc0913cb6b15b18eb625a44e466a16))
