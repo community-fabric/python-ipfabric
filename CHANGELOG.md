@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2022-04-21)
+### Feature
+* Updates to fix configs in IPF v4.4.1 ([`fde1016`](https://github.com/community-fabric/python-ipfabric/commit/fde1016c24132c0b503bd5235fa73761c8a45814))
+
 ## v0.9.0 (2022-03-23)
 ### Feature
 * Add Vendor API Settings. ([`f624a83`](https://github.com/community-fabric/python-ipfabric/commit/f624a834f8d10133c5d03832659cdf30a0312fe2))
