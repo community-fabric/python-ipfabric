@@ -8,10 +8,13 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-homepage = "https://ipfabric.io/"
+homepage = "https://github.com/community-fabric/python-ipfabric"
 repository = "https://github.com/community-fabric/python-ipfabric"
 keywords = ["ipfabric", "ip-fabric", "community-fabric"]
 
+[tool.poetry.urls]
+"IP Fabric" = "https://ipfabric.io/"
+"Changelog" = "https://github.com/community-fabric/python-ipfabric/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
