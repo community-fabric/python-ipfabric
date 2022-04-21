@@ -37,7 +37,7 @@ class DeviceConfigs:
             filters = dict(sn=["eq", sn]) if sn else dict(hostname=["ieq", device])
             res = self.ipf.fetch_all(
                 "tables/management/configuration",
-                sort={"order": "desc", "column": "lastChange"},
+                sort={"order": "desc", "column": "lastChangeAt"},
                 columns=[
                     "id",
                     "sn",
