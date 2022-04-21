@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.3 (2022-04-21)
+### Fix
+* Update release ([`a6fec0c`](https://github.com/community-fabric/python-ipfabric/commit/a6fec0c2fcd3f5a0cd9c7f8bf63d753a6457312d))
+
 ## v0.10.2 (2022-04-21)
 ### Fix
 * Update black ([`baafd60`](https://github.com/community-fabric/python-ipfabric/commit/baafd607b8e28eb1e0791bc779581064b44323e7))
