@@ -7,13 +7,13 @@ from ipfabric.tools import configuration
 class Models(unittest.TestCase):
     def test_config(self):
         cfg = configuration.Config(
-            _id="test",
+            id="test",
             sn="test",
             hostname="test",
             hash="test",
             status="test",
-            lastCheck=1637629200,
-            lastChange=1637629200,
+            lastCheckAt=1637629200,
+            lastChangeAt=1637629200,
         )
         self.assertIsInstance(cfg, configuration.Config)
 
@@ -24,12 +24,12 @@ class DeviceConfigs(unittest.TestCase):
 
     def test_get_all_configurations(self):
         example = {
-            "_id": "619d84648eec5403579025bf",
+            "id": "619d84648eec5403579025bf",
             "sn": "OVAEB9DD0",
             "hostname": "McastRouter2",
             "hash": "be6ae3d00363cd034be33e16e0623c25fe03c3c3",
-            "lastChange": 1637712996000,
-            "lastCheck": 1637712996000,
+            "lastChangeAt": 1637712996000,
+            "lastCheckAt": 1637712996000,
             "status": "saved",
         }
         self.dc.ipf.fetch_all.return_value = [example]
@@ -38,12 +38,12 @@ class DeviceConfigs(unittest.TestCase):
 
     def test_get_all_configurations_device(self):
         example = {
-            "_id": "619d84648eec5403579025bf",
+            "id": "619d84648eec5403579025bf",
             "sn": "OVAEB9DD0",
             "hostname": "McastRouter2",
             "hash": "be6ae3d00363cd034be33e16e0623c25fe03c3c3",
-            "lastChange": 1637712996000,
-            "lastCheck": 1637712996000,
+            "lastChangeAt": 1637712996000,
+            "lastCheckAt": 1637712996000,
             "status": "saved",
         }
         self.dc.ipf.fetch_all.return_value = [example]
@@ -77,13 +77,13 @@ class DeviceConfigs(unittest.TestCase):
             "OVAEB9DD0": [
                 configuration.Config(
                     **{
-                        "_id": "619d84648eec5403579025bf",
+                        "id": "619d84648eec5403579025bf",
                         "sn": "OVAEB9DD0",
                         "hostname": "McastRouter2",
                         "status": "saved",
                         "hash": "be6ae3d00363cd034be33e16e0623c25fe03c3c3",
-                        "lastChange": 1637712996000,
-                        "lastCheck": 1637712996000,
+                        "lastChangeAt": 1637712996000,
+                        "lastCheckAt": 1637712996000,
                     }
                 )
             ]
@@ -114,13 +114,13 @@ class DeviceConfigs(unittest.TestCase):
             "test_sn": [
                 configuration.Config(
                     **{
-                        "_id": "619d84648eec5403579025bf",
+                        "id": "619d84648eec5403579025bf",
                         "sn": "OVAEB9DD0",
                         "hostname": "McastRouter2",
                         "status": "saved",
                         "hash": "be6ae3d00363cd034be33e16e0623c25fe03c3c3",
-                        "lastChange": 1637712996000,
-                        "lastCheck": 1637712996000,
+                        "lastChangeAt": 1637712996000,
+                        "lastCheckAt": 1637712996000,
                     }
                 )
             ]
@@ -131,39 +131,39 @@ class DeviceConfigs(unittest.TestCase):
     def test_get_hash(self):
         data = [
             {
-                "_id": "619d83a68eec5403579025b8",
+                "id": "619d83a68eec5403579025b8",
                 "sn": "a22ff67",
                 "hostname": "L34R3",
                 "hash": "2ec117a68eba80b1d0d644937cd3ab8d29fcde14",
-                "lastChange": 1637712806000,
-                "lastCheck": 1637712806000,
+                "lastChangeAt": 1637712806000,
+                "lastCheckAt": 1637712806000,
                 "status": "saved",
             },
             {
-                "_id": "616dffd4c476400368b3fd3c",
+                "id": "616dffd4c476400368b3fd3c",
                 "sn": "a22ff67",
                 "hostname": "L34R3",
                 "hash": "ea732ea21150a0d9f1826bc59b4023dcc609c853",
-                "lastChange": 1634598867000,
-                "lastCheck": 1637626401276,
+                "lastChangeAt": 1634598867000,
+                "lastCheckAt": 1637626401276,
                 "status": "saved",
             },
             {
-                "_id": "608747d43eb36603a1b48db3",
+                "id": "608747d43eb36603a1b48db3",
                 "sn": "a22ff67",
                 "hostname": "L34R3",
                 "hash": "e415efae4fedba53ca13e11a014a1893400cd92f",
-                "lastChange": 1619478484000,
-                "lastCheck": 1625008990651,
+                "lastChangeAt": 1619478484000,
+                "lastCheckAt": 1625008990651,
                 "status": "saved",
             },
             {
-                "_id": "6070de4cf58e8c66c307c09e",
+                "id": "6070de4cf58e8c66c307c09e",
                 "sn": "10.34.255.103",
                 "hostname": "L34R3",
                 "hash": "0140c1010e60c5efe2eea68fd90282b21aa2ad3b",
-                "lastChange": 1618009676000,
-                "lastCheck": 1619392682986,
+                "lastChangeAt": 1618009676000,
+                "lastCheckAt": 1619392682986,
                 "status": "saved",
             },
         ]
