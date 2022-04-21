@@ -2,6 +2,8 @@
 
 IPFabric is a Python module for connecting to and communicating against an IP Fabric instance.
 
+[![Requirements Status](https://requires.io/github/community-fabric/python-ipfabric/requirements.svg?branch=main)](https://requires.io/github/community-fabric/python-ipfabric/requirements/?branch=main)
+
 ## About
 
 Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructure visibility and analytics solution to
