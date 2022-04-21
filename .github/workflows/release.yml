@@ -27,7 +27,7 @@ jobs:
           python -m pip install poetry --upgrade pip
           poetry config experimental.new-installer false
           poetry config virtualenvs.create false
-          poetry install
+          poetry install --no-interaction
       - name: Run functional tests
         env:
           IPF_URL: ${{ secrets.IPF_URL }}
@@ -46,3 +46,13 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
+      - name: Create requirements file for scanning
+        run: |
+          poetry install --no-interaction --no-dev
+          poetry export -f requirements.txt -o req.txt
+      - name: Commit Requirements File
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit new requirments file
+          branch: main
+          file_pattern: req.txt
