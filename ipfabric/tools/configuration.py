@@ -41,15 +41,16 @@ class DeviceConfigs:
                 "tables/management/configuration",
                 sort={"order": "desc", "column": "lastChange"},
                 columns=[
-                    "_id",
+                    "id",
                     "sn",
                     "hostname",
-                    "lastChange",
-                    "lastCheck",
+                    "lastChangeAt",
+                    "lastCheckAt",
                     "status",
                     "hash",
                 ],
                 filters=filters,
+                snapshot=False
             )
             if len(res) == 0:
                 logger.warning(f"Could not find any configurations for device '{device}'.")
