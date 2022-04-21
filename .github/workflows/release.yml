@@ -49,10 +49,4 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add req.txt
-          semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
-#      - name: Commit Requirements File
-#        uses: stefanzweifel/git-auto-commit-action@v4
-#        with:
-#          commit_message: Commit new requirments file
-#          branch: main
-#          file_pattern: req.txt
+          poetry run semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
