@@ -26,4 +26,4 @@ from .client import IPFClient
 
 __all__ = [IPFClient]
 
-__version__ = "0.10.3"
+__version__ = "0.10.4"
