@@ -8,8 +8,6 @@ from dateutil import parser
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
 
-from .helpers import create_regex
-
 logger = logging.getLogger()
 
 
@@ -36,7 +34,7 @@ class DeviceConfigs:
         :return: dict: {sn: [Config, Config]}
         """
         if device or sn:
-            filters = dict(sn=["eq", sn]) if sn else dict(hostname=["reg", create_regex(device)])
+            filters = dict(sn=["eq", sn]) if sn else dict(hostname=["ieq", device])
             res = self.ipf.fetch_all(
                 "tables/management/configuration",
                 sort={"order": "desc", "column": "lastChange"},
@@ -164,18 +162,17 @@ class DeviceConfigs:
                 return self._search_ip(device, snapshot_id=snapshot_id, log=log)
         except AddressValueError:
             pass
-        hostname = create_regex(device)
         res = self.ipf.inventory.devices.all(
             columns=["hostname", "taskKey", "sn"],
-            filters=dict(hostname=["reg", hostname]),
+            filters=dict(hostname=["ieq", device]),
             snapshot_id=snapshot_id,
         )
         if len(res) == 1:
             return {"hostname": res[0]["hostname"], "taskKey": res[0]["taskKey"], "sn": res[0]["sn"]}
         elif len(res) == 0:
-            logger.warning(f"Could not find a matching device for '{device}' using regex '{hostname}'.")
+            logger.warning(f"Could not find a matching device for '{device}'")
         elif len(res) > 1:
-            logger.warning(f"Found multiple devices matching '{device}' using regex '{hostname}'.")
+            logger.warning(f"Found multiple devices matching '{device}'.")
         return {"hostname": None, "sn": None}
 
     def get_log(self, device: str, snapshot_id: str = None):
