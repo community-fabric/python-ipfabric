@@ -14,13 +14,13 @@ logger = logging.getLogger()
 
 
 class Config(BaseModel):
-    config_id: str = Field(alias="_id")
+    config_id: str = Field(alias="id")
     sn: str
     hostname: str
     config_hash: str = Field(alias="hash")
     status: str
-    last_change: datetime = Field(alias="lastChange")
-    last_check: datetime = Field(alias="lastCheck")
+    last_change: datetime = Field(alias="lastChangeAt")
+    last_check: datetime = Field(alias="lastCheckAt")
     text: Optional[str] = None
 
 
@@ -57,16 +57,17 @@ class DeviceConfigs:
         else:
             res = self.ipf.fetch_all(
                 "tables/management/configuration",
-                sort={"order": "desc", "column": "lastChange"},
+                sort={"order": "desc", "column": "lastChangeAt"},
                 columns=[
-                    "_id",
+                    "id",
                     "sn",
                     "hostname",
-                    "lastChange",
-                    "lastCheck",
+                    "lastChangeAt",
+                    "lastCheckAt",
                     "status",
                     "hash",
                 ],
+                snapshot=False
             )
         results = defaultdict(list)
         [results[cfg["sn"]].append(Config(**cfg)) for cfg in res]
