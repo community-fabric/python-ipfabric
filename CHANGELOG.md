@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2022-04-21)
+### Fix
+* Updates to fix configs in IPF v4.4.1 ([`da3e0b8`](https://github.com/community-fabric/python-ipfabric/commit/da3e0b8241bfd36b57edb6bf3c5ac5066d4fc8b2))
+
 ## v0.10.0 (2022-04-21)
 ### Feature
 * Updates to fix configs in IPF v4.4.1 ([`fde1016`](https://github.com/community-fabric/python-ipfabric/commit/fde1016c24132c0b503bd5235fa73761c8a45814))
