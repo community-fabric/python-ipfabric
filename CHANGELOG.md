@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2022-04-21)
+### Fix
+* Update black ([`baafd60`](https://github.com/community-fabric/python-ipfabric/commit/baafd607b8e28eb1e0791bc779581064b44323e7))
+* Test adding vulnerabilities ([`ff0fda1`](https://github.com/community-fabric/python-ipfabric/commit/ff0fda1ae7b27422c147a06047989d41ddee3bdd))
+* Config again ([`6b3fac9`](https://github.com/community-fabric/python-ipfabric/commit/6b3fac9360831f84224a84083c4e89fe22e4c848))
+* Poetry update ([`24ca2e9`](https://github.com/community-fabric/python-ipfabric/commit/24ca2e98257531465349e672efc019b11d055031))
+* Remove graphing and security as these do not work in v4.3 and above. ([`a7b3b35`](https://github.com/community-fabric/python-ipfabric/commit/a7b3b353edf8b1f8df222b12778755df441c6a0c))
+
 ## v0.10.1 (2022-04-21)
 ### Fix
 * Updates to fix configs in IPF v4.4.1 ([`da3e0b8`](https://github.com/community-fabric/python-ipfabric/commit/da3e0b8241bfd36b57edb6bf3c5ac5066d4fc8b2))
