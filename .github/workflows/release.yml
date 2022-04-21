@@ -47,4 +47,4 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add requirements.txt
-          poetry run semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
+          semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
