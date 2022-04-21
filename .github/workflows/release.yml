@@ -48,7 +48,9 @@ jobs:
           semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
       - name: Create requirements file for scanning
         run: |
-          poetry install --no-interaction --no-dev
+          poetry env remove 3.8
+          poetry config virtualenvs.create true
+          poetry install --no-interaction --no-dev --no-root
           poetry export -f requirements.txt -o req.txt
       - name: Commit Requirements File
         uses: stefanzweifel/git-auto-commit-action@v4
