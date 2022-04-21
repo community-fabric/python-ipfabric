@@ -3,13 +3,9 @@ from json import loads
 from typing import Optional, Union
 from urllib.parse import urlparse
 
-from pkg_resources import parse_version
-
 from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
-from ipfabric.pathlookup import Diagram
-from ipfabric.security import Security
 
 DEFAULT_ID = "$last"
 
@@ -42,10 +38,6 @@ class IPFClient(IPFabricAPI):
         """
         super().__init__(base_url, token, snapshot_id, **kwargs)
         self.inventory = models.Inventory(client=self)
-        self.graphs = Diagram(self) if parse_version(self.os_version) < parse_version("4.3") else \
-            ImportError("v4.3 digrams has been moved to ipfabrc-diagrams python package")
-        self.security = Security(client=self) if parse_version(self.os_version) < parse_version("4.3") else \
-            ImportError("Security Policy tables have changed and need updated")
         self.intent = Intent(client=self)
 
     @check_format
@@ -71,6 +63,7 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+        :param snapshot: bool: Set to False for some tables like management endpoints.
         :return: list: List of Dictionary objects.
         """
 
@@ -110,6 +103,7 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+        :param snapshot: bool: Set to False for some tables like management endpoints.
         :return: list: List of Dictionary objects.
         """
 

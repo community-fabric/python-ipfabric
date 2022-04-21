@@ -4,8 +4,6 @@ from typing import Any, Optional
 import pytz
 from pydantic import Field, BaseModel
 
-from ipfabric.tools.helpers import create_regex
-
 logger = logging.getLogger()
 
 
@@ -49,7 +47,7 @@ class UserMgmt:
         if int(self.client.version) >= 4.2:
             payload["columns"].append("timezone")
         if username:
-            payload["filters"] = {"username": ["reg", create_regex(username)]}
+            payload["filters"] = {"username": ["ieq", username]}
         users = self.client._ipf_pager("tables/users", payload)
         return [User(**user) for user in users]
 
@@ -93,7 +91,7 @@ class UserMgmt:
         if int(self.client.version) >= 4.2:
             if timezone not in pytz.all_timezones:
                 raise ValueError(
-                    f"Timezone {timezone} is not located. " f"This is case sensitive please see pytz.all_timezones."
+                    f"Timezone {timezone} is not located. This is case sensitive please see pytz.all_timezones."
                 )
             payload["timezone"] = timezone
         resp = self.client.post("users", json=payload)
