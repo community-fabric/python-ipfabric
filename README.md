@@ -10,7 +10,7 @@ Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructu
 help enterprise network and security teams with network assurance and automation across multi-domain heterogeneous
 environments. From in-depth discovery, through graph visualization, to packet walks and complete network history, IP
 Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless
-digital transformation.
+digital transformation. 
 
 ## Installation
 
