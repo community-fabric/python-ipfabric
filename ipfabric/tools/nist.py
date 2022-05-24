@@ -64,6 +64,9 @@ class NIST(Client):
                 return CVEs(total_results=0, cves=[], error="Unsupported")
             elif family == "wlc-air":
                 family = "wireless_lan_controller_software"
+            elif family == "ftd":
+                family = "firepower"
+                version = (version.replace('(Bu', '.Bu')).replace(')', '.').split(' .', 1)[0]
             elif family != "nx-os":
                 family = family.replace("-", "_")
             version = (version.replace("(", ".")).replace(")", ".")
