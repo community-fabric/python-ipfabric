@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2022-05-25)
+### Feature
+* Add username/password auth ([`4ae04aa`](https://github.com/community-fabric/python-ipfabric/commit/4ae04aab72f1caa1de897ded32d44c9dd01fd187))
+* Add username/password auth ([`420b6b1`](https://github.com/community-fabric/python-ipfabric/commit/420b6b17b9c0f9c982acf192ead1bf9f9a374dfc))
+
 ## v0.10.8 (2022-04-22)
 ### Fix
 * Test discord webhook ([`07c04dd`](https://github.com/community-fabric/python-ipfabric/commit/07c04dd7ec646bb509fc0c580561f4318fdb8374))
