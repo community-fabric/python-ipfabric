@@ -27,7 +27,8 @@ def check_format(func):
 
 class IPFClient(IPFabricAPI):
     def __init__(
-        self, base_url: Optional[str] = None, token: Optional[str] = None, snapshot_id: str = DEFAULT_ID, **kwargs
+        self, base_url: Optional[str] = None, token: Optional[str] = None, snapshot_id: str = DEFAULT_ID,
+            username: Optional[str] = None, password: Optional[str] = None, **kwargs
     ):
         """
         Initializes the IP Fabric Client
@@ -36,7 +37,7 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        super().__init__(base_url, token, snapshot_id, **kwargs)
+        super().__init__(base_url, token, snapshot_id, username, password, **kwargs)
         self.inventory = models.Inventory(client=self)
         self.intent = Intent(client=self)
 

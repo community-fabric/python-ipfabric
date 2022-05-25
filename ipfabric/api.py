@@ -3,6 +3,7 @@ from typing import Optional
 from urllib.parse import urljoin
 
 from httpx import Client
+from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
 from pydantic import BaseSettings
 
 from ipfabric import models
@@ -11,10 +12,12 @@ DEFAULT_ID = "$last"
 
 
 class Settings(BaseSettings):
-    ipf_url: str = None
-    ipf_token: str = None
+    ipf_url: str = ''
+    ipf_token: str = ''
     ipf_verify: bool = True
     ipf_dev: bool = False
+    ipf_username: str = ''
+    ipf_password: str = ''
 
     class Config:
         env_file = ".env"
@@ -32,7 +35,9 @@ class IPFabricAPI(Client):
         self,
         base_url: Optional[str] = None,
         token: Optional[str] = None,
-        snapshot_id: str = DEFAULT_ID,
+        snapshot_id: Optional[str] = DEFAULT_ID,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -43,20 +48,24 @@ class IPFabricAPI(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
+            base_url = base_url or settings.ipf_url
             if settings.ipf_dev:
-                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "v1/")
+                kwargs["base_url"] = urljoin(base_url, "v1/")
             else:
-                kwargs["base_url"] = urljoin(base_url or settings.ipf_url, "api/v1/")
+                kwargs["base_url"] = urljoin(base_url, "api/v1/")
             kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
+            username = username or settings.ipf_username
+            password = password or settings.ipf_password
 
         if not kwargs["base_url"]:
             raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
-        if not token:
-            raise RuntimeError("IP Fabric token not provided or IPF_TOKEN not set")
+        if not token and not (username and password):
+            raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
         super().__init__(**kwargs)
-        self.headers.update({"Content-Type": "application/json", "X-API-Token": token})
+        self.headers.update({"Content-Type": "application/json"})
+        self.auth = HeaderApiKey(token) if token else PasswordCredentials(base_url, username, password)
 
         # Request IP Fabric for the OS Version, by doing that we are also ensuring the token is valid
         self.os_version = self.fetch_os_version()
