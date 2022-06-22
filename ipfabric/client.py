@@ -20,7 +20,7 @@ def check_format(func):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
         r = re.search(r'(api/)?v\d(\.\d)?', path)
-        url = path[r.end():] if r else path
+        url = path[r.end() + 1:] if r else path
         return func(self, url, *args, **kwargs)
 
     return wrapper

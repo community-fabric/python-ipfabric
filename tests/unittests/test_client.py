@@ -14,7 +14,7 @@ class Decorator(unittest.TestCase):
             return (url, kwargs)
 
         result = tester(None, "/api/v1/networking/ip", filters='{"test": "Hello World"}')
-        self.assertEqual(result[0], "/networking/ip")
+        self.assertEqual(result[0], "networking/ip")
         self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
 
 
