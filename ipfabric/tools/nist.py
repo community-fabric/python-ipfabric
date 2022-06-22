@@ -44,7 +44,7 @@ class NIST(Client):
         :return:
         """
         params = self.params
-        if vendor in ['azure', 'aws']:
+        if vendor in ["azure", "aws"]:
             return CVEs(total_results=0, cves=[], error="Unsupported")
         elif vendor == "juniper":
             version = version[: version.rfind("R") + 2].replace("R", ":r")
@@ -66,7 +66,7 @@ class NIST(Client):
                 family = "wireless_lan_controller_software"
             elif family == "ftd":
                 family = "firepower"
-                version = (version.replace('(Bu', '.Bu')).replace(')', '.').split(' .', 1)[0]
+                version = (version.replace("(Bu", ".Bu")).replace(")", ".").split(" .", 1)[0]
             elif family != "nx-os":
                 family = family.replace("-", "_")
             version = (version.replace("(", ".")).replace(")", ".")
