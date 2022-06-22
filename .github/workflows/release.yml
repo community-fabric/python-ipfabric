@@ -4,7 +4,7 @@
 name: Release
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
   unittest:
@@ -34,16 +34,6 @@ jobs:
           IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
         run: poetry run python -m pytest tests/functional
 
-      - name: Semantic Release
-        env:
-          REPOSITORY_PASSWORD: ${{ secrets.PYPI }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          REPOSITORY_USERNAME: __token__
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add requirements.txt
-          semantic-release publish -v INFO -D commit_author="github-actions <action@github.com>"
   publish:
     name: Publish
     runs-on: ubuntu-latest
