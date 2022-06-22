@@ -14,7 +14,7 @@ DEFAULT_ID = "$last"
 
 class Settings(BaseSettings):
     ipf_url: str = ""
-    ipf_version: str = ""
+    ipf_version: str = "v1"  # TODO: Remove for 5.0 release
     ipf_token: str = ""
     ipf_verify: bool = True
     ipf_dev: bool = False
