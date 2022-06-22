@@ -55,6 +55,28 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI }}
+  notify:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Get version from tag
+        id: version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+        shell: bash
+
+      - name: Notify on Slack
+        uses: openhousepvt/slack@v1.3.2
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          platform: 'PYPI'
+          version: ${{ steps.version.outputs.version }}
+        if: success()
+    needs:
+      - publish
 
 #jobs:
 #  unittest:
