@@ -12,6 +12,13 @@ environments. From in-depth discovery, through graph visualization, to packet wa
 Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless
 digital transformation. 
 
+## Versioning
+Starting with IP Fabric version 5.0.x the python-ipfabric and python-ipfabric-diagrams will need to
+match your IP Fabric version.  The API's are changing and instead of `api/v1` they will now be `api/v5.0`.
+
+Version 5.1 will have backwards compatability with version 5.0 however 6.0 will not support any 5.x versions.
+By ensuring that your ipfabric SDK's match your IP Fabric version will ensure compatibility and will continue to work.
+
 ## Installation
 
 ```
