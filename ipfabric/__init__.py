@@ -24,6 +24,11 @@ SOFTWARE.
 
 from .client import IPFClient
 
-__all__ = [IPFClient]
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 
-__version__ = "0.11.0"
+__version__ = importlib_metadata.version(__name__)
+
+__all__ = ["IPFClient"]

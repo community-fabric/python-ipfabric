@@ -48,7 +48,7 @@ class DeviceConfigs:
                     "hash",
                 ],
                 filters=filters,
-                snapshot=False
+                snapshot=False,
             )
             if len(res) == 0:
                 logger.warning(f"Could not find any configurations for device '{device}'.")
@@ -66,7 +66,7 @@ class DeviceConfigs:
                     "status",
                     "hash",
                 ],
-                snapshot=False
+                snapshot=False,
             )
         results = defaultdict(list)
         [results[cfg["sn"]].append(Config(**cfg)) for cfg in res]
@@ -94,8 +94,9 @@ class DeviceConfigs:
             logger.warning(f"Could not find a matching IP for '{ip}'.")
         return {"hostname": None, "sn": None}
 
-    def get_configuration(self, device: str = None, sn: str = None, sanitized: bool = True,
-                          date: Union[str, tuple] = "$last"):
+    def get_configuration(
+        self, device: str = None, sn: str = None, sanitized: bool = True, date: Union[str, tuple] = "$last"
+    ):
         """
         Gets last configuration of a device based on hostname or IP or IPF Unique Serial Number
         :param device: str: Hostname or IP

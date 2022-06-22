@@ -1,7 +1,6 @@
 """
 basic.py
 """
-from pprint import pprint
 
 from ipfabric import IPFClient
 
@@ -9,61 +8,30 @@ if __name__ == '__main__':
     ipf = IPFClient()
     # ipf = IPFClient('https://demo3.ipfabric.io/', token='token', verify=False, timeout=15)
 
-    print([x for x in dir(ipf.inventory) if not x.startswith('_')])
-    """
-    ['devices', 'families', 'interfaces', 'models', 'part_numbers', 'platforms', 'sites', 'vendors']
-    """
-    print()
+    print(ipf.get_count('tables/management/ntp/summary'))
 
-    sites = ipf.inventory.sites.all()
-    print(f"Number of sites: {len(sites)}")
-    print("First site:")
-    pprint(sites[0])
-    """
-    Number of sites: 25
-    First site:
-    {'devicesCount': 22,
-     'id': '1111118694',
-     'siteKey': '1111118694',
-     'siteName': 'HWLAB',
-     'siteUid': 'HWL',
-     ...}
-    """
+    ntp = ipf.fetch_all('tables/management/ntp/summary')
+    print(len(ntp))
     print()
+    print(ntp[0])
+    """
+    435
+    435
 
-    devices = ipf.inventory.devices.all(filters={
-        "siteName": [
+    {'id': '1448808110', 'confSources': 1, 'hostname': 'L36AC43', 'reachableSources': 1, 'siteKey': '885963685', 
+    'siteName': 'L36', 'sn': 'a24ff82', 'sources': [{'source': '10.0.10.10', 'sync': True}]}
+    """
+
+    print()
+    ntp_sources = ipf.fetch_all('tables/management/ntp/sources', filters={
+        "source": [
             "like",
-            "L71"
+            "10.0.10.10"
         ]
     })
+    print(ntp_sources[0])
     """
-    Also acceptable if filter is string
-    devices = ipf.inventory.devices.all(filters='{"siteName": ["like","L71"]}')
-    """
-    print(f"Number of devices in site L71: {len(sites)}")
-    print("First Device:")
-    pprint(devices[0])
-    """
-    Number of devices in site L71: 25
-    First Device:
-    {'devType': 'fw',
-     'family': 'fortigate',
-     'hostname': 'L71FW13-HA2/root',
-     'id': '1137600732',
-     ...}
-     """
-    print()
-
-    vendors = ipf.inventory.vendors.all(columns=["vendor"])
-
-    print(f"Number of vendors: {len(vendors)}")
-    [print(vendor["vendor"]) for vendor in vendors]
-    """
-    Number of vendors: 14
-    arista
-    aws
-    checkpoint
-    cisco
-    ...
+    {'id': '1448791314', 'delay': 3.922, 'flags': ['sys.peer', 'configured'], 'hostname': 'L38AC14', 'jitter': 1.091, 
+    'offset': 0.483, 'poll': 1024, 'reach': 377, 'reachable': 'yes', 'reference': '5.1.56.123', 'siteKey': '885963537', 
+    'siteName': 'L38', 'sn': 'a26ff9f', 'source': '10.0.10.10', 'stratum': 3, 'when': 732}
     """

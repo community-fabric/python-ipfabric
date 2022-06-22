@@ -1,6 +1,10 @@
 # Changelog
 
-<!--next-version-placeholder-->
+## 4.4.3 (2022-06-22)
+### Feature
+* Add get_count function
+### CI
+* Remove semantic-release and updated GH Actions
 
 ## v0.11.0 (2022-05-25)
 ### Feature

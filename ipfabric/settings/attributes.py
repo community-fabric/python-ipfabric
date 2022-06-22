@@ -11,10 +11,10 @@ class Attributes:
     client: Any
 
     def all(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            sort: Optional[dict] = None,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -26,11 +26,7 @@ class Attributes:
         :return: list: List of Dictionaries
         """
         return self.client.fetch_all(
-            'tables/global-attributes',
-            columns=columns,
-            filters=filters,
-            sort=sort,
-            snapshot=False
+            "tables/global-attributes", columns=columns, filters=filters, sort=sort, snapshot=False
         )
 
     def set_site_by_sn(self, serial_number, site_name):
@@ -40,7 +36,7 @@ class Attributes:
         :param site_name: str: Site name for device.
         :return:
         """
-        resp = self.client.post('attributes/global', json=dict(name="siteName", sn=serial_number, value=site_name))
+        resp = self.client.post("attributes/global", json=dict(name="siteName", sn=serial_number, value=site_name))
         resp.raise_for_status()
         return resp.json()
 
@@ -51,7 +47,7 @@ class Attributes:
         :return:
         """
         [a.update(dict(name="siteName")) for a in sites]
-        resp = self.client.put('attributes/global', json=dict(attributes=sites))
+        resp = self.client.put("attributes/global", json=dict(attributes=sites))
         resp.raise_for_status()
         return resp.json()
 
@@ -62,7 +58,7 @@ class Attributes:
         :return:
         """
         serial_numbers = [str(i) for i in serial_numbers]
-        resp = self.client.request('DELETE', 'attributes/global/', json=dict(attributes=dict(sn=serial_numbers)))
+        resp = self.client.request("DELETE", "attributes/global/", json=dict(attributes=dict(sn=serial_numbers)))
         resp.raise_for_status()
         return True
 
@@ -73,6 +69,6 @@ class Attributes:
         :return:
         """
         attribute_ids = [str(i) for i in attribute_ids]
-        resp = self.client.request('DELETE', 'attributes/global/', json=dict(attributes=dict(id=attribute_ids)))
+        resp = self.client.request("DELETE", "attributes/global/", json=dict(attributes=dict(id=attribute_ids)))
         resp.raise_for_status()
         return True

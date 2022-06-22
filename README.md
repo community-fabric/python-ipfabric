@@ -41,8 +41,18 @@ pip install ipfabric-diagrams
 ```
 
 ## Authentication
-### Basic
-Please take a look at [basic.py](examples/basic.py) for basic authentication examples
+### Username/Password
+Supply in client:
+```python
+from ipfabric import IPFClient
+ipf = IPFClient('https://demo3.ipfabric.io/', username='user', password='pass')
+```
+
+### Token
+```python
+from ipfabric import IPFClient
+ipf = IPFClient('https://demo3.ipfabric.io/', token='token')
+```
 
 ### Environment 
 The easiest way to use this package is with a `.env` file.  You can copy the sample and edit it with your environment variables. 
@@ -56,6 +66,13 @@ This contains the following variables which can also be set as environment varia
 IPF_URL="https://demo3.ipfabric.io"
 IPF_TOKEN=TOKEN
 IPF_VERIFY=true
+```
+
+Or if using Username/Password:
+```
+IPF_URL="https://demo3.ipfabric.io"
+IPF_USERNAME=USER
+IPF_PASSWORD=PASS
 ```
 
 **`IPF_DEV` is an internal variable only, do not set to True.**
@@ -81,15 +98,9 @@ poetry run pytest
 poetry build
 ```
 
-GitHub Actions will publish and release. Make sure to tag your commits:
-
-* ci: Changes to our CI configuration files and scripts
-* docs: No changes just documentation
-* test: Added test cases
-* perf: A code change that improves performance
-* refactor: A code change that neither fixes a bug nor adds a feature
-* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-* fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning). 
-* feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning). 
-* BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking
-API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
+Prior to pushing changes run:
+```
+poetry run black ipfabric
+poetry export -f requirements.txt -o requirements.txt --without-hashes
+git add requirements.txt
+```

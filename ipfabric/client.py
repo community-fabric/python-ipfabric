@@ -19,7 +19,8 @@ def check_format(func):
         if "filters" in kwargs and isinstance(kwargs["filters"], str):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
-        url = path.split("v1/")[1] if "v1/" in path else path
+        r = re.search(r'(api/)?v\d(\.\d)?', path)
+        url = path[r.end():] if r else path
         return func(self, url, *args, **kwargs)
 
     return wrapper
@@ -27,8 +28,14 @@ def check_format(func):
 
 class IPFClient(IPFabricAPI):
     def __init__(
-        self, base_url: Optional[str] = None, token: Optional[str] = None, snapshot_id: str = DEFAULT_ID,
-            username: Optional[str] = None, password: Optional[str] = None, **kwargs
+        self,
+        base_url: Optional[str] = None,
+        api_version: Optional[str] = None,
+        token: Optional[str] = None,
+        snapshot_id: str = DEFAULT_ID,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        **kwargs,
     ):
         """
         Initializes the IP Fabric Client
@@ -37,7 +44,7 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        super().__init__(base_url, token, snapshot_id, username, password, **kwargs)
+        super().__init__(base_url, api_version, token, snapshot_id, username, password, **kwargs)
         self.inventory = models.Inventory(client=self)
         self.intent = Intent(client=self)
 
@@ -52,7 +59,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
-        snapshot: bool = True
+        snapshot: bool = True,
     ):
         """
         Gets data from IP Fabric for specified endpoint
@@ -94,7 +101,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
-        snapshot: bool = True
+        snapshot: bool = True,
     ):
         """
         Gets all data from IP Fabric for specified endpoint
@@ -177,3 +184,10 @@ class IPFClient(IPFabricAPI):
         if limit + start < r["_meta"]["count"]:
             self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
         return data
+
+    def get_count(self, url: str, snapshot_id: Optional[str] = None):
+        payload = dict(columns=["id"], pagination=dict(limit=1, start=0))
+        payload["snapshot"] = snapshot_id or self.snapshot_id
+        res = self.post(url, json=payload)
+        res.raise_for_status()
+        return res.json()["_meta"]["count"]

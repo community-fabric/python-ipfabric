@@ -2,6 +2,7 @@ from collections import OrderedDict
 from typing import Optional
 from urllib.parse import urljoin
 
+import pkg_resources
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
 from pydantic import BaseSettings
@@ -12,12 +13,13 @@ DEFAULT_ID = "$last"
 
 
 class Settings(BaseSettings):
-    ipf_url: str = ''
-    ipf_token: str = ''
+    ipf_url: str = ""
+    ipf_version: str = ""
+    ipf_token: str = ""
     ipf_verify: bool = True
     ipf_dev: bool = False
-    ipf_username: str = ''
-    ipf_password: str = ''
+    ipf_username: str = ""
+    ipf_password: str = ""
 
     class Config:
         env_file = ".env"
@@ -34,6 +36,7 @@ class IPFabricAPI(Client):
     def __init__(
         self,
         base_url: Optional[str] = None,
+        api_version: Optional[str] = None,
         token: Optional[str] = None,
         snapshot_id: Optional[str] = DEFAULT_ID,
         username: Optional[str] = None,
@@ -48,11 +51,16 @@ class IPFabricAPI(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
+            self.api_version = api_version or settings.ipf_version
+            if not self.api_version:
+                ver = pkg_resources.get_distribution("ipfabric").version.split(".")
+                self.api_version = "v" + ver[0] + "." + ver[1]
+
             base_url = base_url or settings.ipf_url
             if settings.ipf_dev:
-                kwargs["base_url"] = urljoin(base_url, "v1/")
+                kwargs["base_url"] = urljoin(base_url, f"{self.api_version}/")
             else:
-                kwargs["base_url"] = urljoin(base_url, "api/v1/")
+                kwargs["base_url"] = urljoin(base_url, f"api/{self.api_version}/")
             kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
             username = username or settings.ipf_username
