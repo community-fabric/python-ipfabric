@@ -2,7 +2,7 @@
 
 IPFabric is a Python module for connecting to and communicating against an IP Fabric instance.
 
-[![Requirements Status](https://requires.io/github/community-fabric/python-ipfabric/requirements.svg?branch=main)](https://requires.io/github/community-fabric/python-ipfabric/requirements/?branch=main)
+[![Requirements Status](https://requires.io/github/community-fabric/python-ipfabric/requirements.svg?branch=develop)](https://requires.io/github/community-fabric/python-ipfabric/requirements/?branch=develop)
 
 ## About
 
@@ -11,6 +11,13 @@ help enterprise network and security teams with network assurance and automation
 environments. From in-depth discovery, through graph visualization, to packet walks and complete network history, IP
 Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless
 digital transformation. 
+
+## Versioning
+Starting with IP Fabric version 5.0.x the python-ipfabric and python-ipfabric-diagrams will need to
+match your IP Fabric version.  The API's are changing and instead of `api/v1` they will now be `api/v5.0`.
+
+Version 5.1 will have backwards compatability with version 5.0 however 6.0 will not support any 5.x versions.
+By ensuring that your ipfabric SDK's match your IP Fabric Major Version will ensure compatibility and will continue to work.
 
 ## Installation
 
