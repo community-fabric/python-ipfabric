@@ -30,7 +30,7 @@ if __name__ == '__main__':
     """
     print()
 
-    update = ipf_seeds.set_seeds(["10.64.128.3", "10.64.128.1", "10.66.255.105", "10.67.255.108", "10.67.255.107"])
+    update = ipf_seeds.set_seeds(ipf_seeds.seeds)
     # Will replace the entire configuration with this new list
     print(update)
     """

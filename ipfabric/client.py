@@ -19,8 +19,8 @@ def check_format(func):
         if "filters" in kwargs and isinstance(kwargs["filters"], str):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
-        r = re.search(r'(api/)?v\d(\.\d)?', path)
-        url = path[r.end() + 1:] if r else path
+        r = re.search(r"(api/)?v\d(\.\d)?", path)
+        url = path[r.end() + 1 :] if r else path
         return func(self, url, *args, **kwargs)
 
     return wrapper

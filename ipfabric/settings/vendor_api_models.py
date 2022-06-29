@@ -30,6 +30,14 @@ AWS_REGIONS = [
 ]
 
 
+class SystemProxy(BaseModel):
+    respectSystemProxyConfiguration: bool = True
+
+
+class RejectUnauthorized(SystemProxy, BaseModel):
+    rejectUnauthorized: bool = True
+
+
 class UserAuthBaseUrl(BaseModel):
     username: str
     password: str
@@ -37,7 +45,7 @@ class UserAuthBaseUrl(BaseModel):
     isEnabled: bool = Field(default=True, const=True)
 
 
-class AWS(BaseModel):
+class AWS(SystemProxy, BaseModel):
     apiKey: str
     apiSecret: str
     region: str
@@ -52,7 +60,7 @@ class AWS(BaseModel):
         return r.lower()
 
 
-class Azure(BaseModel):
+class Azure(SystemProxy, BaseModel):
     clientId: str
     clientSecret: str
     subscriptionId: str
@@ -61,7 +69,7 @@ class Azure(BaseModel):
     type: str = Field(default="azure", const=True)
 
 
-class CheckPointApiKey(BaseModel):
+class CheckPointApiKey(RejectUnauthorized, BaseModel):
     apiKey: str
     baseUrl: AnyHttpUrl
     domains: Optional[List[str]] = Field(default_factory=list)
@@ -69,16 +77,16 @@ class CheckPointApiKey(BaseModel):
     type: str = Field(default="checkpoint-mgmt-api", const=True)
 
 
-class CheckPointUserAuth(UserAuthBaseUrl, BaseModel):
+class CheckPointUserAuth(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     domains: Optional[List[str]] = Field(default_factory=list)
     type: str = Field(default="checkpoint-mgmt-api", const=True)
 
 
-class CiscoFMC(UserAuthBaseUrl, BaseModel):
+class CiscoFMC(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     type: str = Field(default="ciscofmc", const=True)
 
 
-class Merakiv0(BaseModel):
+class Merakiv1(RejectUnauthorized, BaseModel):
     apiKey: str
     baseUrl: AnyHttpUrl
     organizations: Optional[List[str]] = Field(default_factory=list)
@@ -87,17 +95,17 @@ class Merakiv0(BaseModel):
     type: str = Field(default="meraki-v0", const=True)
 
 
-class NSXT(UserAuthBaseUrl, BaseModel):
+class NSXT(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     type: str = Field(default="nsxT", const=True)
 
 
-class SilverPeak(UserAuthBaseUrl, BaseModel):
+class SilverPeak(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     type: str = Field(default="nsxT", const=True)
 
 
-class Versa(UserAuthBaseUrl, BaseModel):
+class Versa(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     type: str = Field(default="versa", const=True)
 
 
-class Viptela(UserAuthBaseUrl, BaseModel):
+class Viptela(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     type: str = Field(default="viptela", const=True)

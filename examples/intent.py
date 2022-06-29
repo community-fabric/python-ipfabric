@@ -40,13 +40,12 @@ if __name__ == "__main__":
     """Number of builtin checks 132"""
     print()
 
-    print(f"{ipf.intent.intent_by_name['Console, VTY and AUX Security'].name} belongs to the following groups.")
-    for g in ipf.intent.intent_by_name["Console, VTY and AUX Security"].groups:
+    print(f"{ipf.intent.intent_by_name['OSPF Neighbor State'].name} belongs to the following groups.")
+    for g in ipf.intent.intent_by_name["OSPF Neighbor State"].groups:
         print(g.name)
     """"
-    Console, VTY and AUX Security belongs to the following groups.
-    HIPAA SCORE
-    CIS Detail
+    OSPF Neighbor State belongs to the following groups.
+    Neighborship compliance
     """
     print()
 

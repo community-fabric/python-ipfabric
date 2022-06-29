@@ -41,8 +41,8 @@ class Privilege(BaseModel):
 @dataclass
 class Authentication:
     client: Any
-    credentials: dict = Field(default=dict(), const=True)
-    enables: dict = Field(default=dict(), const=True)
+    credentials: dict = Field(default=dict())
+    enables: dict = Field(default=dict())
     _cred_url: ClassVar[str] = "settings/credentials"
     _priv_url: ClassVar[str] = "settings/privileges"
 
