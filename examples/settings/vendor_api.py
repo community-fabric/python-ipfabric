@@ -2,7 +2,7 @@ from httpx import HTTPStatusError
 
 from ipfabric import IPFClient
 from ipfabric.settings import VendorAPI, AWS, Azure, CheckPointApiKey, CheckPointUserAuth, \
-    CiscoFMC, Merakiv0, NSXT, SilverPeak, Versa, Viptela
+    CiscoFMC, Merakiv1, NSXT, SilverPeak, Versa, Viptela
 
 if __name__ == "__main__":
 
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     except HTTPStatusError as err:
         print(err)
 
-    aws = AWS(apiKey='KEY', apiSecret='SECRET', region='eu-central-1')
+    aws = AWS(apiKey='KEY', apiSecret='SECRET', region='eu-central-1', respectSystemProxyConfiguration=True)
     aws_assume = AWS(apiKey='KEY', apiSecret='SECRET', region='eu-central-1', assumeRole='arn:aws:iam::ID:role/NAME')
 
     add = api.add_vendor_api(aws)
@@ -36,10 +36,11 @@ if __name__ == "__main__":
     """
 
     azure = Azure(clientId='CLIENTID', clientSecret='CLIENTSECRET', subscriptionId='SUBSCRIPTION', tenantId='TENANTID')
-    checkpoint_api = CheckPointApiKey(apiKey='APIKEY', baseUrl='https://test.com', domains=['test'])  # domains is optional
+    checkpoint_api = CheckPointApiKey(apiKey='APIKEY', baseUrl='https://test.com', domains=['test'],  # domains is optional
+                                      respectSystemProxyConfiguration=True, rejectUnauthorized=True)
     checkpoint = CheckPointUserAuth(username='user', password='password', baseUrl='https://test.com')
     cisco = CiscoFMC(username='user', password='password', baseUrl='https://test.com')
-    meraki = Merakiv0(apiKey='APIKEY', baseUrl='https://test.com', organizations=['test'])  # organizations is optional
+    meraki = Merakiv1(apiKey='APIKEY', baseUrl='https://test.com', organizations=['test'])  # organizations is optional
     nsxt = NSXT(username='user', password='password', baseUrl='https://test.com')
     silverpeak = SilverPeak(username='user', password='password', baseUrl='https://test.com')
     versa = Versa(username='user', password='password', baseUrl='https://test.com')

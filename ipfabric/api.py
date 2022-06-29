@@ -14,7 +14,7 @@ DEFAULT_ID = "$last"
 
 class Settings(BaseSettings):
     ipf_url: str = ""
-    ipf_version: str = "v1"  # TODO: Remove for 5.0 release
+    ipf_version: str = ""  # TODO: Remove for 5.0 release
     ipf_token: str = ""
     ipf_verify: bool = True
     ipf_dev: bool = False
@@ -105,7 +105,7 @@ class IPFabricAPI(Client):
         res = self.get(url="os/version")
         if not res.is_error:
             try:
-                return res.json()["version"]
+                return pkg_resources.parse_version(res.json()["version"])
             except KeyError as exc:
                 raise ConnectionError(f"Error While getting the OS version, no Version available, message: {exc.args}")
         else:

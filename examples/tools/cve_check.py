@@ -9,7 +9,7 @@ if __name__ == "__main__":
     vuln = Vulnerabilities(ipf, timeout=30, cve_limit=20)
     # Increasing cve_limit will increase the amount of time NIST responds
 
-    device = vuln.check_device('L47R6')
+    device = vuln.check_device('L46EXR1')
     pprint(device)
     """
     [Version(vendor='cisco', family='ios', version='15.2(4)M1', cves=CVEs(total_results=28, 
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     """
     print()
 
-    site = vuln.check_site('L47')
+    site = vuln.check_site('L46')
     pprint(f"Number of devices: {len(site)}")
     pprint(site[0])
     """

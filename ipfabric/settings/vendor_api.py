@@ -9,7 +9,7 @@ from ipfabric.settings.vendor_api_models import (
     CheckPointApiKey,
     CheckPointUserAuth,
     CiscoFMC,
-    Merakiv0,
+    Merakiv1,
     NSXT,
     SilverPeak,
     Versa,
@@ -17,7 +17,7 @@ from ipfabric.settings.vendor_api_models import (
 )
 
 API_MODELS = Union[
-    AWS, Azure, CheckPointApiKey, CheckPointUserAuth, CiscoFMC, Merakiv0, NSXT, SilverPeak, Versa, Viptela
+    AWS, Azure, CheckPointApiKey, CheckPointUserAuth, CiscoFMC, Merakiv1, NSXT, SilverPeak, Versa, Viptela
 ]
 
 logger = logging.getLogger()

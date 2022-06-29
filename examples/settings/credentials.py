@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print()
 
     enable = ipf_auth.create_enable('test', 'password', notes='Test for Blog',
-                                    networks=['10.0.0.0/24'], excluded=['10.0.0.0/30'], expiration='12-30-2021')
+                                    networks=['10.0.0.0/24'], excluded=['10.0.0.0/30'], expiration='12-30-2023')
     pprint(enable)
     """
     Privilege(network=['10.0.0.0/24'], excluded=['10.0.0.0/30'], 

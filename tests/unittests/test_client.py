@@ -66,8 +66,8 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.get")
     def test_os(self, get):
         get().is_error = None
-        get().json.return_value = dict(version="test")
-        self.assertEqual(self.ipf.fetch_os_version(), "test")
+        get().json.return_value = dict(version="v5.0.0")
+        self.assertEqual(str(self.ipf.fetch_os_version()), "5.0.0")
 
     @patch("httpx.Client.get")
     def test_os_version_failed(self, get):
@@ -86,7 +86,7 @@ class Client(unittest.TestCase):
         get().is_error = None
         get().json.return_value = [
             {
-                "name": None,
+                "name": "Test",
                 "state": "loaded",
                 "locked": False,
                 "totalDevices": 642,
@@ -99,6 +99,7 @@ class Client(unittest.TestCase):
                 "version": "4.1.1",
                 "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
                 "errors": [{"errorType": "ABMapResultError", "count": 1}],
+                "note": "Test"
             },
             {
                 "name": None,

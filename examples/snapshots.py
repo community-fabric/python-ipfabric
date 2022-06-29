@@ -6,7 +6,7 @@ from pprint import pprint
 from ipfabric import IPFClient
 
 if __name__ == '__main__':
-    ipf = IPFClient(snapshot_id="$lastLocked")
+    ipf = IPFClient(snapshot_id="$prev")
     # ipf = IPFClient('https://demo3.ipfabric.io/', snapshot_id="$lastLocked", token='token', verify=False, timeout=15)
 
     print(f"IP Fabric version: {ipf.os_version}")
