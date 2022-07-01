@@ -9,21 +9,55 @@ logger = logging.getLogger()
 
 class User(BaseModel):
     username: str
-    scope: list
-    email: str
+    email: Optional[str]
     user_id: str = Field(alias="id")
     local: Optional[bool] = Field(alias="isLocal")
     sso_provider: Optional[Any] = Field(alias="ssoProvider")
     domains: Optional[Any] = Field(alias="domainSuffixes")
-    custom_scope: bool = Field(alias="customScope")
+    role_names: Optional[list] = Field(alias="roleNames", default_factory=list)
+    role_ids: list = Field(alias="roleNames")
     ldap_id: Any = Field(alias="ldapId")
-    timezone: Optional[str] = None
+    timezone: str
+
+
+class Role(BaseModel):
+    role_id: str = Field(alias="id")
+    name: str
+    description: Optional[str]
+    role_type: str = Field(alias="type")
+    admin: bool = Field(alias="isAdmin")
+    system: bool = Field(alias="isSystem")
 
 
 class UserMgmt:
     def __init__(self, client):
         self.client: Any = client
+        self.roles = self.get_roles()
         self.users = self.get_users()
+
+    def get_roles(self, role_name: str = None):
+        """
+        Gets all users or filters on one of the options.
+        :param role_name: str: Role Name to filter
+        :return: List of roles
+        """
+        payload = {
+            "columns": [
+                "id",
+                "name",
+                "description",
+                "type",
+                "isAdmin",
+                "isSystem",
+            ]
+        }
+        if role_name:
+            payload["filters"] = {"name": ["ieq", role_name]}
+        return [Role(**role) for role in self.client._ipf_pager("tables/roles", payload)]
+
+    @property
+    def roles_by_id(self):
+        return {r.role_id: r for r in self.roles}
 
     def get_users(self, username: str = None):
         """
@@ -40,12 +74,11 @@ class UserMgmt:
                 "ldapId",
                 "domainSuffixes",
                 "email",
-                "customScope",
-                "scope",
+                "roleNames",
+                "roleIds",
+                "timezone",
             ]
         }
-        if int(self.client.version) >= 4.2:
-            payload["columns"].append("timezone")
         if username:
             payload["filters"] = {"username": ["ieq", username]}
         users = self.client._ipf_pager("tables/users", payload)
@@ -59,14 +92,15 @@ class UserMgmt:
         """
         resp = self.client.get("users/" + str(user_id))
         resp.raise_for_status()
-        return User(**resp.json())
+        user = resp.json()
+        return User(roleNames=[self.roles_by_id[r].name for r in user["roleIds"]], **user)
 
     def add_user(
         self,
         username: str,
         email: str,
         password: str,
-        scope: list,
+        roles: list,
         timezone: str = "UTC",
     ):
         """
@@ -74,30 +108,29 @@ class UserMgmt:
         :param username: str: Username
         :param email: str: Email
         :param password: str: Must be 8 characters
-        :param scope: list: Accepted values: ['read', 'write', 'settings', 'team']
+        :param roles: list: Role IDs for Users
         :param timezone: str: v4.2 and above, Defaults UTC.  See pytz.all_timezones for correct syntax
         :return: User
         """
         if len(password) < 8:
             raise SyntaxError("Password must be 8 characters.")
-        if not all(x in ["read", "write", "settings", "team"] for x in scope):
-            raise SyntaxError("Only accepted scopes are ['read', 'write', 'settings', 'team']")
+        if not all(x in [r.role_id for r in self.roles] for x in roles):
+            raise SyntaxError(f"Only accepted scopes are {[r.role_id for r in self.roles]}")
         payload = {
             "username": username,
             "email": email,
             "password": password,
-            "scope": scope,
+            "roleIds": roles,
         }
-        if int(self.client.version) >= 4.2:
-            if timezone not in pytz.all_timezones:
-                raise ValueError(
-                    f"Timezone {timezone} is not located. This is case sensitive please see pytz.all_timezones."
-                )
-            payload["timezone"] = timezone
+        if timezone not in pytz.all_timezones:
+            raise ValueError(
+                f"Timezone {timezone} is not located. This is case sensitive please see pytz.all_timezones."
+            )
+        payload["timezone"] = timezone
         resp = self.client.post("users", json=payload)
         resp.raise_for_status()
-        user_id = resp.json()["id"]
-        return self.get_user_by_id(user_id)
+        user = resp.json()
+        return User(roleNames=[self.roles_by_id[r].name for r in user["roleIds"]], **user)
 
     def delete_user(self, user_id: str):
         """
