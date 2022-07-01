@@ -45,7 +45,6 @@ class TestUsers(unittest.TestCase):
             "ssoProvider": None,
             "domainSuffixes": "",
             "email": "justin.jeffrey@ipfabric.io",
-            "roleNames": ["admin"],
             "roleIds": ["admin"],
             "timezone": "UTC"
         }
@@ -60,7 +59,6 @@ class TestUsers(unittest.TestCase):
             "ssoProvider": None,
             "domainSuffixes": "",
             "email": "justin.jeffrey@ipfabric.io",
-            "roleNames": ["admin"],
             "roleIds": ["admin"],
             "timezone": "UTC"
         }
