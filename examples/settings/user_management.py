@@ -12,39 +12,35 @@ if __name__ == '__main__':
 
     print(usermgmt.users[0])
     """
-    username='justin' scope=['read', 'write', 'settings'] email='justin.jeffrey@ipfabric.io' user_id='1108612054' 
-    local=True sso_provider=None domains='' custom_scope=True ldap_id=None
+    username='test' email='test@test.ipfabric.io' user_id='50632669251' local=True sso_provider=None domains='' 
+    role_names=['admin'] role_ids=['admin'] ldap_id=None timezone='UTC'
     """
     print()
 
     user = usermgmt.add_user(username='Test', email='test@ipfabric.io', password='8characters',
-                             scope=['read', 'write', 'settings', 'team'])
+                             roles=[usermgmt.roles[0].role_id])
     print(user)
     """
-    username='Test' scope=['read', 'write', 'settings', 'team'] email='test@ipfabric.io' user_id='1168572704' 
-    local=None sso_provider=None domains=None custom_scope=True ldap_id=None
+    username='Test' email='test@ipfabric.io' user_id='52914335501' local=True sso_provider=None domains=None 
+    role_names=['Network engineer'] role_ids=['Network engineer'] ldap_id=None timezone='UTC'
+
     """
     print()
 
     print(usermgmt.get_user_by_id(user_id=user.user_id))
     """
-    username='Test' scope=['read', 'write', 'settings', 'team'] email='test@ipfabric.io' user_id='1168572704' 
-    local=None sso_provider=None domains=None custom_scope=True ldap_id=None
+    username='Test' email='test@ipfabric.io' user_id='52914335501' local=True sso_provider=None domains=None 
+    role_names=['Network engineer'] role_ids=['Network engineer'] ldap_id=None timezone='UTC'
     """
     print()
 
     print(usermgmt.get_users(username=user.username))
     """
-    [User(username='Test', scope=['read', 'write', 'settings', 'team'], email='test@ipfabric.io', 
-    user_id='1168572704', local=True, sso_provider=None, domains='', custom_scope=True, ldap_id=None)]
+    [User(username='Test', email='test@ipfabric.io', user_id='52914337160', local=True, sso_provider=None, domains='', 
+    role_names=['Network engineer'], role_ids=['Network engineer'], ldap_id=None, timezone='UTC')]
     """
     print()
 
     print(usermgmt.delete_user(user_id=user.user_id))
-    """
-    [User(username='justin', scope=['read', 'write', 'settings'], email='justin.jeffrey@ipfabric.io', 
-        user_id='1108612054', local=True, sso_provider=None, domains='', custom_scope=True, ldap_id=None), 
-    User(username='vector', scope=['read', 'write', 'settings'], email='vector@vector.pl', user_id='1083776225', 
-        local=True, sso_provider=None, domains='', custom_scope=True, ldap_id=None), ]
-    """
+
     print()
