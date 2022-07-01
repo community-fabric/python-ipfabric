@@ -108,7 +108,7 @@ class UserMgmt:
         :param username: str: Username
         :param email: str: Email
         :param password: str: Must be 8 characters
-        :param roles: list: Roles for Users
+        :param roles: list: Role IDs for Users
         :param timezone: str: v4.2 and above, Defaults UTC.  See pytz.all_timezones for correct syntax
         :return: User
         """
