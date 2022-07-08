@@ -13,12 +13,12 @@ logger = logging.getLogger()
 V4_4_PATH = "ipfabric.tools.factory_defaults.v4.4"
 
 DEFAULT_SETUP = {
-    'v4.4': {
-        'intents': json.loads(importlib.resources.read_text(V4_4_PATH, "intents.json")),
-        'groups': json.loads(importlib.resources.read_text(V4_4_PATH, "groups.json")),
-        'dashboard': json.loads(importlib.resources.read_text(V4_4_PATH, "dashboard.json"),
-                                object_pairs_hook=OrderedDict
-                                ),
+    "v4.4": {
+        "intents": json.loads(importlib.resources.read_text(V4_4_PATH, "intents.json")),
+        "groups": json.loads(importlib.resources.read_text(V4_4_PATH, "groups.json")),
+        "dashboard": json.loads(
+            importlib.resources.read_text(V4_4_PATH, "dashboard.json"), object_pairs_hook=OrderedDict
+        ),
     }
 }
 
@@ -31,11 +31,11 @@ class RestoreIntents:
         if not all(path.exists(f) for f in [intents_file, groups_file, dashboard_file]):
             logger.critical(f"File(s) do not exist.")
             exit()
-        with open(intents_file, 'r') as file:
+        with open(intents_file, "r") as file:
             intents = json.load(file)
-        with open(groups_file, 'r') as file:
+        with open(groups_file, "r") as file:
             groups = json.load(file)
-        with open(dashboard_file, 'r') as file:
+        with open(dashboard_file, "r") as file:
             dashboard = json.load(file)
         self._restore(intents, groups, dashboard)
 
@@ -46,35 +46,35 @@ class RestoreIntents:
         self._restore(intents, groups, dashboard)
 
     def restore_default(self, version=None):
-        v = version.lower() or 'v' + str(self.ipf.os_version)[0:3]
+        v = version.lower() or "v" + str(self.ipf.os_version)[0:3]
         if v not in DEFAULT_SETUP:
             logger.critical(f"Version {v} not in Defaults {list(DEFAULT_SETUP)}.")
             exit()
-        self._restore(DEFAULT_SETUP[v]['intents'], DEFAULT_SETUP[v]['groups'], DEFAULT_SETUP[v]['dashboard'])
+        self._restore(DEFAULT_SETUP[v]["intents"], DEFAULT_SETUP[v]["groups"], DEFAULT_SETUP[v]["dashboard"])
 
     def _save_to_file(self, intents, groups, dashboard):
         tstamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         def save(name, data):
-            filename = name + '_' + tstamp + '.json'
+            filename = name + "_" + tstamp + ".json"
             logger.info(f"Saving {name} to {filename}.")
-            with open(filename, 'w') as file:
+            with open(filename, "w") as file:
                 json.dump(data, file)
             logger.info(f"Saved {name} to {filename}.")
 
-        save('intents', intents)
-        save('groups', groups)
-        save('dashboard', dashboard)
+        save("intents", intents)
+        save("groups", groups)
+        save("dashboard", dashboard)
 
     def _restore(self, intents, groups, dashboard):
-        i = input('\nDO YOU ACCEPT OVERRIDING ALL INTENTS, INTENT GROUPS, DASHBOARD SETTINGS? (y/n): ').strip().lower()
-        if i and 'y' not in i[0]:
+        i = input("\nDO YOU ACCEPT OVERRIDING ALL INTENTS, INTENT GROUPS, DASHBOARD SETTINGS? (y/n): ").strip().lower()
+        if i and "y" not in i[0]:
             logger.warning(f"Exiting Script before making changes.")
             exit()
 
-        old_intents = self.ipf.get('reports').json()
-        old_intent_groups = self.ipf.get('reports/groups').json()
-        old_dashboard = json.loads(self.ipf.get('settings/dashboard').text, object_pairs_hook=OrderedDict)
+        old_intents = self.ipf.get("reports").json()
+        old_intent_groups = self.ipf.get("reports/groups").json()
+        old_dashboard = json.loads(self.ipf.get("settings/dashboard").text, object_pairs_hook=OrderedDict)
         self._save_to_file(old_intents, old_intent_groups, old_dashboard)
 
         logger.info("Deleting All Intents.")
@@ -93,23 +93,23 @@ class RestoreIntents:
         logger.info("Creating Intent Verification Rules.")
         for i in intents:
             i["groups"] = []
-            i.pop('custom', None)
-            src_id = i.pop('id', None)
-            res = self.ipf.post('reports', json=i)
+            i.pop("custom", None)
+            src_id = i.pop("id", None)
+            res = self.ipf.post("reports", json=i)
             res.raise_for_status()
-            intent_mapping[src_id] = res.json()['id']
+            intent_mapping[src_id] = res.json()["id"]
         logger.info("Created Intent Verification Rules.")
 
         group_mapping = {g["id"]: None for g in groups}
         logger.info("Creating Intent Groups.")
         for g in groups:
             for c in g["children"]:
-                c['id'] = intent_mapping[c['id']]
-            src_id = g.pop('id', None)
-            g.pop('custom', None)
-            res = self.ipf.post('reports/groups', json=g)
+                c["id"] = intent_mapping[c["id"]]
+            src_id = g.pop("id", None)
+            g.pop("custom", None)
+            res = self.ipf.post("reports/groups", json=g)
             res.raise_for_status()
-            group_mapping[src_id] = res.json()['id']
+            group_mapping[src_id] = res.json()["id"]
         logger.info("Created Intent Groups.")
 
         raw_dashboard = json.dumps(dashboard)
@@ -117,7 +117,7 @@ class RestoreIntents:
         for src_group, dst_group in group_mapping.items():
             raw_dashboard = raw_dashboard.replace(src_group, dst_group)
 
-        res = self.ipf.put('settings/dashboard', data=raw_dashboard)
+        res = self.ipf.put("settings/dashboard", data=raw_dashboard)
         res.raise_for_status()
         logger.info("Created Dashboard.")
         return True
