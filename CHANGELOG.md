@@ -3,6 +3,7 @@
 ## 5.0.0
 ### Feature
 * Update package to be compatible with v5.0.0
+* Added tools.RestoreIntents which will restore Intents, Groups, & Dashboard from a file, another instance, or factory default
 
 ## 4.4.3 (2022-06-22)
 ### Feature
