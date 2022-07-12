@@ -107,6 +107,7 @@ poetry build
 Prior to pushing changes run:
 ```
 poetry run black ipfabric
+poetry update
 poetry export -f requirements.txt -o requirements.txt --without-hashes
 git add requirements.txt
 ```

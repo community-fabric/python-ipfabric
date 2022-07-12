@@ -49,8 +49,9 @@ class Snapshot(BaseModel):
         :return: True
         """
         if self.loaded:
-            res = ipf.post('snapshots/unload',
-                           json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)])
+            res = ipf.post(
+                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
             res.raise_for_status()
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
@@ -63,8 +64,9 @@ class Snapshot(BaseModel):
         :return: True
         """
         if not self.loaded:
-            res = ipf.post('snapshots/load',
-                           json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)])
+            res = ipf.post(
+                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
             res.raise_for_status()
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
