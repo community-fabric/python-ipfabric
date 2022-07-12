@@ -72,6 +72,14 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True
 
+    def attributes(self, ipf):
+        """
+        Load Snapshot
+        :param ipf: IPFClient
+        :return: True
+        """
+        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
+
 
 class Table(BaseModel):
     endpoint: str
