@@ -1,9 +1,14 @@
 # Changelog
 
-## 5.0.0
+## 5.0.0 (2022-07-13)
 ### Feature
 * Update package to be compatible with v5.0.0
 * Added tools.RestoreIntents which will restore Intents, Groups, & Dashboard from a file, another instance, or factory default
+* Added all inventory endpoints to inventory (phones, fans, modules, powerSupplies, powerSuppliesFans)
+* Allow initialization without loaded snapshots
+* Added IPFClient.loaded_snapshots and IPFClient.unloaded_snapshots
+* Added a Load and Unload snapshot function to Snapshot model `ipf.snapshots['ea0da479-6222-4cf6-a0ae-78a610669477'].load(ipf)`
+* Added ability to get attributes for a snapshot `attributes = ipf.snapshots['$last'].attributes(ipf)`
 
 ## 4.4.3 (2022-06-22)
 ### Feature

@@ -1,7 +1,10 @@
+import logging
 from datetime import datetime
 from typing import Optional, Any, List
 
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger()
 
 
 class Site(BaseModel):
@@ -38,6 +41,44 @@ class Snapshot(BaseModel):
     @property
     def loaded(self):
         return self.state == "loaded"
+
+    def unload(self, ipf):
+        """
+        Load Snapshot
+        :param ipf: IPFClient
+        :return: True
+        """
+        if self.loaded:
+            res = ipf.post(
+                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
+            res.raise_for_status()
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
+        return True
+
+    def load(self, ipf):
+        """
+        Load Snapshot
+        :param ipf: IPFClient
+        :return: True
+        """
+        if not self.loaded:
+            res = ipf.post(
+                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
+            res.raise_for_status()
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
+        return True
+
+    def attributes(self, ipf):
+        """
+        Load Snapshot
+        :param ipf: IPFClient
+        :return: True
+        """
+        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
 
 
 class Table(BaseModel):
@@ -113,3 +154,23 @@ class Inventory(BaseModel):
     @property
     def hosts(self):
         return Table(client=self.client, endpoint="tables/addressing/hosts")
+
+    @property
+    def phones(self):
+        return Table(client=self.client, endpoint="tables/inventory/phones")
+
+    @property
+    def fans(self):
+        return Table(client=self.client, endpoint="tables/inventory/fans")
+
+    @property
+    def modules(self):
+        return Table(client=self.client, endpoint="tables/inventory/modules")
+
+    @property
+    def powerSupplies(self):
+        return Table(client=self.client, endpoint="tables/inventory/powerSupplies")
+
+    @property
+    def powerSuppliesFans(self):
+        return Table(client=self.client, endpoint="tables/inventory/powerSuppliesFans")

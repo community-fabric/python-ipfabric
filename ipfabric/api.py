@@ -1,3 +1,4 @@
+import logging
 from collections import OrderedDict
 from typing import Optional
 from urllib.parse import urljoin
@@ -9,6 +10,7 @@ from pydantic import BaseSettings
 
 from ipfabric import models
 
+logger = logging.getLogger()
 DEFAULT_ID = "$last"
 
 
@@ -85,13 +87,24 @@ class IPFabricAPI(Client):
         self.snapshots = self.get_snapshots()
 
     @property
+    def loaded_snapshots(self):
+        return {k: v for k, v in self.snapshots.items() if v.loaded}
+
+    @property
+    def unloaded_snapshots(self):
+        return {k: v for k, v in self.snapshots.items() if not v.loaded}
+
+    @property
     def snapshot_id(self):
         return self._snapshot_id
 
     @snapshot_id.setter
     def snapshot_id(self, snapshot_id):
-        snapshot_id = DEFAULT_ID if not snapshot_id else snapshot_id
-        if snapshot_id not in self.snapshots:
+        snapshot_id = snapshot_id or DEFAULT_ID
+        if not self.loaded_snapshots:
+            logger.warning("No Snapshots are currently loaded.  Please load a snapshot before querying any data.")
+            self._snapshot_id = None
+        elif snapshot_id not in self.snapshots:
             # Verify snapshot ID is valid
             raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
         else:
