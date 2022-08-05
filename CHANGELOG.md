@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.1 (2022-07-13)
+### Fix
+* Do not use count for paging results do to some tables not returning a count.
+
 ## 5.0.0 (2022-07-13)
 ### Feature
 * Update package to be compatible with v5.0.0

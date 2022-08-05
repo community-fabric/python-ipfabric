@@ -179,9 +179,9 @@ class IPFClient(IPFabricAPI):
         payload["pagination"] = dict(limit=limit, start=start)
         r = self.post(url, json=payload)
         r.raise_for_status()
-        r = r.json()
-        data.extend(r["data"])
-        if limit + start < r["_meta"]["count"]:
+        r_data = r.json()["data"]
+        data.extend(r_data)
+        if limit == len(r_data):
             self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
         return data
 
