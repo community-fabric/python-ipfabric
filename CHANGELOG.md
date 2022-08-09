@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.2 (2022-07-13)
+### Fix
+* Remove `importlib-metadata` dependency
+
 ## 5.0.1 (2022-07-13)
 ### Fix
 * Do not use count for paging results do to some tables not returning a count.
