@@ -169,8 +169,39 @@ class Inventory(BaseModel):
 
     @property
     def powerSupplies(self):
-        return Table(client=self.client, endpoint="tables/inventory/powerSupplies")
+        logger.warning("""Use of client.inventory.PowerSupplies will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies""")
+        return Table(client=self.client, endpoint="tables/inventory/power-supplies")
 
     @property
     def powerSuppliesFans(self):
-        return Table(client=self.client, endpoint="tables/inventory/powerSuppliesFans")
+        logger.warning("""Use of client.inventory.PowerSuppliesFans will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies_fans""")
+        return Table(client=self.client, endpoint="tables/inventory/power-supplies-fans")
+
+
+class Technology(BaseModel):
+    client: Any
+    platforms: Any
+    interfaces: Any
+    neighbors: Any
+    dhcp: Any
+    port_channels: Any
+    vlans: Any
+    stp: Any
+    addressing: Any
+    fhrp: Any
+    managed_networks: Any
+    mpls: Any
+    multicast: Any
+    management: Any
+    cloud: Any
+    ip_telephony: Any
+    load_balancing: Any
+    oam: Any
+    qos: Any
+    routing: Any
+    sdn: Any
+    sdwan: Any
+    security: Any
+    wireless: Any
