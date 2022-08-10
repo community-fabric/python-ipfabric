@@ -5,6 +5,7 @@ from ipfabric import models
 
 logger = logging.getLogger()
 
+
 class Interfaces(BaseModel):
     client: Any
 
@@ -106,13 +107,15 @@ class Interfaces(BaseModel):
 
     @property
     def connectivity_matrix_unmanaged_neighbors_summary(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/interfaces/connectivity-matrix/unmanaged-neighbors/summary")
+        return models.Table(
+            client=self.client, endpoint="tables/interfaces/connectivity-matrix/unmanaged-neighbors/summary"
+        )
 
     @property
     def connectivity_matrix_unmanaged_neighbors_detail(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/interfaces/connectivity-matrix/unmanaged-neighbors/detail")
+        return models.Table(
+            client=self.client, endpoint="tables/interfaces/connectivity-matrix/unmanaged-neighbors/detail"
+        )
 
     @property
     def switchport(self):

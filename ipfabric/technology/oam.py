@@ -11,10 +11,12 @@ class Oam(BaseModel):
 
     @property
     def unidirectional_link_detection_neighbors(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/management/oam/unidirectional-link-detection/neighbors")
+        return models.Table(
+            client=self.client, endpoint="tables/management/oam/unidirectional-link-detection/neighbors"
+        )
 
     @property
     def unidirectional_link_detection_interfaces(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/management/oam/unidirectional-link-detection/interfaces")
+        return models.Table(
+            client=self.client, endpoint="tables/management/oam/unidirectional-link-detection/interfaces"
+        )

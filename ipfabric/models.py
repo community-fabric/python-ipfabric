@@ -169,14 +169,18 @@ class Inventory(BaseModel):
 
     @property
     def powerSupplies(self):
-        logger.warning("""Use of client.inventory.PowerSupplies will be deprecated in a future release, please 
-                        use client.technology.platform_environment_power_supplies""")
+        logger.warning(
+            """Use of client.inventory.PowerSupplies will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies"""
+        )
         return Table(client=self.client, endpoint="tables/inventory/power-supplies")
 
     @property
     def powerSuppliesFans(self):
-        logger.warning("""Use of client.inventory.PowerSuppliesFans will be deprecated in a future release, please 
-                        use client.technology.platform_environment_power_supplies_fans""")
+        logger.warning(
+            """Use of client.inventory.PowerSuppliesFans will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies_fans"""
+        )
         return Table(client=self.client, endpoint="tables/inventory/power-supplies-fans")
 
 

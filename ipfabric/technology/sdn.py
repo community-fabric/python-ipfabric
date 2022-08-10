@@ -68,5 +68,3 @@ class Sdn(BaseModel):
     @property
     def apic_contracts(self):
         return models.Table(client=self.client, endpoint="tables/apic/contracts")
-
-

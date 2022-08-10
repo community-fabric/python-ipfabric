@@ -5,6 +5,7 @@ from ipfabric import models
 
 logger = logging.getLogger()
 
+
 class Multicast(BaseModel):
     client: Any
 

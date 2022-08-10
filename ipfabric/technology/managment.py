@@ -139,13 +139,13 @@ class Management(BaseModel):
 
     @property
     def cisco_smart_licenses_authorization(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/management/licenses/cisco-smart-licenses/authorization")
+        return models.Table(
+            client=self.client, endpoint="tables/management/licenses/cisco-smart-licenses/authorization"
+        )
 
     @property
     def cisco_smart_licenses_registration(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/management/licenses/cisco-smart-licenses/registration")
+        return models.Table(client=self.client, endpoint="tables/management/licenses/cisco-smart-licenses/registration")
 
     @property
     def cisco_smart_licenses_reservations(self):

@@ -47,13 +47,15 @@ class Stp(BaseModel):
 
     @property
     def inconsistencies_ports_vlan_mismatch(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/spanning-tree/inconsistencies/neighbor-ports-vlan-mismatch")
+        return models.Table(
+            client=self.client, endpoint="tables/spanning-tree/inconsistencies/neighbor-ports-vlan-mismatch"
+        )
 
     @property
     def inconsistencies_ports_multiple_neighbors(self):
-        return models.Table(client=self.client,
-                            endpoint="tables/spanning-tree/inconsistencies/ports-multiple-neighbors")
+        return models.Table(
+            client=self.client, endpoint="tables/spanning-tree/inconsistencies/ports-multiple-neighbors"
+        )
 
     @property
     def inconsistencies_stp_cdp_ports_mismatch(self):

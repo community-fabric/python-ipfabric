@@ -7,9 +7,30 @@ from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
 from ipfabric.technology import (
-    addressing, dhcp, fhrp, interfaces, managment, manged_networks, mpls, mulitcasting, neighbors, platforms,
-    port_channels, routing, stp, vlans, cloud, ip_telephony, load_balancing, oam, qos, sdn, sdwan, security, wireless
-    )
+    addressing,
+    dhcp,
+    fhrp,
+    interfaces,
+    managment,
+    manged_networks,
+    mpls,
+    mulitcasting,
+    neighbors,
+    platforms,
+    port_channels,
+    routing,
+    stp,
+    vlans,
+    cloud,
+    ip_telephony,
+    load_balancing,
+    oam,
+    qos,
+    sdn,
+    sdwan,
+    security,
+    wireless,
+)
 
 DEFAULT_ID = "$last"
 
@@ -24,7 +45,7 @@ def check_format(func):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
         r = re.search(r"(api/)?v\d(\.\d)?", path)
-        url = path[r.end() + 1:] if r else path
+        url = path[r.end() + 1 :] if r else path
         return func(self, url, *args, **kwargs)
 
     return wrapper

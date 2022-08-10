@@ -7,6 +7,7 @@ from ipfabric import models
 
 logger = logging.getLogger()
 
+
 class Routing(BaseModel):
     client: Any
 
