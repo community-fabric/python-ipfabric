@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "ipfabric"
-version = "v5.0.0b1"
+version = "v5.0.3"
 description = "Python package for interacting with IP Fabric"
 authors = [
     "Justin Jeffery <justin.jeffery@ipfabric.io>",
+    "Cristian Cordero <cristian.cordero@ipfabric.io>",
     "Community Fabric <communityfabric@ipfabric.io>"
 ]
 license = "MIT"

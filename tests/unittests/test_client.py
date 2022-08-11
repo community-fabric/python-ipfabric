@@ -2,6 +2,8 @@ import os
 import unittest
 from unittest.mock import patch
 
+from pkg_resources import parse_version, get_distribution
+
 from ipfabric import IPFClient
 from ipfabric.client import check_format
 from ipfabric.models import Snapshot
@@ -13,9 +15,19 @@ class Decorator(unittest.TestCase):
         def tester(self, url, **kwargs):
             return (url, kwargs)
 
-        result = tester(None, "/api/v1/networking/ip", filters='{"test": "Hello World"}')
-        self.assertEqual(result[0], "networking/ip")
-        self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
+        tests = [
+            'v5/tables/addressing/ipv6-neighbors',
+            'v5.0/tables/addressing/ipv6-neighbors',
+            'api/v5/tables/addressing/ipv6-neighbors',
+            'https://demo3.ipfabric.io/api/v5.0/tables/addressing/ipv6-neighbors',
+            '/tables/addressing/ipv6-neighbors',
+            'tables/addressing/ipv6-neighbors'
+        ]
+
+        for test in tests:
+            result = tester(None, test, filters='{"test": "Hello World"}')
+            self.assertEqual(result[0], "tables/addressing/ipv6-neighbors", msg=test)
+            self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
 
 
 class FailedClient(unittest.TestCase):
@@ -26,8 +38,10 @@ class FailedClient(unittest.TestCase):
             ipf = IPFClient()
 
     @patch.dict(os.environ, {}, clear=True)
-    def test_no_token(self):
+    @patch("ipfabric.IPFClient.check_version")
+    def test_no_token(self, version):
         env = dict()
+        version.return_value = 'v5', parse_version('v5.0.1')
         with self.assertRaises(RuntimeError) as err:
             ipf = IPFClient(base_url="http://google.com")
 
@@ -36,10 +50,10 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.__init__", return_value=None)
     @patch("httpx.Client.headers")
     @patch("httpx.Client.base_url")
-    @patch("ipfabric.IPFClient.fetch_os_version")
+    @patch("ipfabric.IPFClient.check_version")
     @patch("ipfabric.IPFClient.get_snapshots")
     @patch("ipfabric.models.Inventory")
-    def setUp(self, inventory, snaps, os_version, base_url, headers, mock_client):
+    def setUp(self, inventory, snaps, check_version, base_url, headers, mock_client):
         snaps.return_value = {
             "$last": Snapshot(
                 **{
@@ -60,26 +74,47 @@ class Client(unittest.TestCase):
             )
         }
         mock_client._headers = dict()
-        os_version.return_value = "4.2"
+        check_version.return_value = "v5", parse_version("v5.0.1")
         self.ipf = IPFClient(base_url="https://google.com", token='token')
 
     @patch("httpx.Client.get")
-    def test_os(self, get):
+    def test_check_version(self, get):
         get().is_error = None
-        get().json.return_value = dict(version="v5.0.0")
-        self.assertEqual(str(self.ipf.fetch_os_version()), "5.0.0")
+        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        api_version, os_version = self.ipf.check_version('v5.0', 'TEST')
+        self.assertEqual(api_version, 'v5.0')
+        self.assertEqual(str(os_version), "5.0.1+10")
 
     @patch("httpx.Client.get")
-    def test_os_version_failed(self, get):
+    def test_check_version_no_version(self, get):
         get().is_error = None
-        get().json.return_value = dict()
-        with self.assertRaises(ConnectionError) as err:
-            self.ipf.fetch_os_version()
+        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        api_version, os_version = self.ipf.check_version(None, 'TEST')
+        ver = parse_version(get_distribution("ipfabric").version)
+        self.assertEqual(api_version, f"v{ver.major}.{ver.minor}")
+        self.assertEqual(str(os_version), "5.0.1+10")
 
     @patch("httpx.Client.get")
-    def test_os_failed(self, get):
-        with self.assertRaises(ConnectionRefusedError) as err:
-            self.ipf.fetch_os_version()
+    def test_check_version_api_gt_os(self, get):
+        get().is_error = None
+        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        api_version, os_version = self.ipf.check_version('v5.2', 'TEST')
+        self.assertEqual(api_version, 'v5.1')
+        self.assertEqual(str(os_version), "5.0.1+10")
+
+    @patch("httpx.Client.get")
+    def test_check_version_os_gt_api(self, get):
+        get().is_error = None
+        get().json.return_value = {"apiVersion": "v6.1", "releaseVersion": "5.0.1+10"}
+        with self.assertRaises(RuntimeError) as err:
+            self.ipf.check_version('v5.2', 'TEST')
+
+    @patch("httpx.Client.get")
+    def test_check_version_v1(self, get):
+        get().is_error = None
+        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        with self.assertRaises(RuntimeError) as err:
+            self.ipf.check_version('v1', 'TEST')
 
     @patch("httpx.Client.get")
     def test_snapshots(self, get):
@@ -176,14 +211,16 @@ class Client(unittest.TestCase):
 
     @patch("httpx.Client.post")
     def test_ipf_pager(self, post):
-        post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
-        self.assertEqual(self.ipf._ipf_pager("test", dict()), ["hello"])
+        post().json.return_value = {"data": ["hello", "world"], "_meta": {"count": 2}}
+        self.assertEqual(self.ipf._ipf_pager("test", dict(), limit=3), ["hello", "world"])
 
-    @patch("ipfabric.IPFClient.fetch_os_version")
     @patch("ipfabric.IPFClient.get_snapshots")
-    def test_update(self, snap, os_v):
+    def test_update(self, snap):
         self.ipf.get_snapshots.return_value = 1
-        self.ipf.fetch_os_version.return_value = 2
         self.ipf.update()
         self.assertEqual(self.ipf.snapshots, 1)
-        self.assertEqual(self.ipf.os_version, 2)
+
+    @patch("httpx.Client.post")
+    def test_ipf_count(self, post):
+        post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
+        self.assertEqual(self.ipf.get_count('test'), 1)
