@@ -88,7 +88,8 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        api_version = parse_version(api_version) if api_version else parse_version(get_distribution("ipfabric").version)
+        dist_ver = get_distribution("ipfabric").version.split('.')
+        api_version = parse_version(api_version) if api_version else parse_version(f"{dist_ver[0]}.{dist_ver[1]}")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
         resp.raise_for_status()
