@@ -4,6 +4,8 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel, Field
 
+from ipfabric.technology import *
+
 logger = logging.getLogger()
 
 
@@ -186,26 +188,95 @@ class Inventory(BaseModel):
 
 class Technology(BaseModel):
     client: Any
-    platforms: Any
-    interfaces: Any
-    neighbors: Any
-    dhcp: Any
-    port_channels: Any
-    vlans: Any
-    stp: Any
-    addressing: Any
-    fhrp: Any
-    managed_networks: Any
-    mpls: Any
-    multicast: Any
-    management: Any
-    cloud: Any
-    ip_telephony: Any
-    load_balancing: Any
-    oam: Any
-    qos: Any
-    routing: Any
-    sdn: Any
-    sdwan: Any
-    security: Any
-    wireless: Any
+
+    @property
+    def platforms(self):
+        return Platforms(client=self.client)
+
+    @property
+    def interfaces(self):
+        return Interfaces(client=self.client)
+
+    @property
+    def neighbors(self):
+        return Neighbors(client=self.client)
+
+    @property
+    def dhcp(self):
+        return Dhcp(client=self.client)
+
+    @property
+    def port_channels(self):
+        return PortChannels(client=self.client)
+
+    @property
+    def vlans(self):
+        return Vlans(client=self.client)
+
+    @property
+    def stp(self):
+        return Stp(client=self.client)
+
+    @property
+    def addressing(self):
+        return Addressing(client=self.client)
+
+    @property
+    def fhrp(self):
+        return Fhrp(client=self.client)
+
+    @property
+    def managed_networks(self):
+        return ManagedNetworks(client=self.client)
+
+    @property
+    def mpls(self):
+        return Mpls(client=self.client)
+
+    @property
+    def multicast(self):
+        return Multicast(client=self.client)
+
+    @property
+    def cloud(self):
+        return Cloud(client=self.client)
+
+    @property
+    def management(self):
+        return Management(client=self.client)
+
+    @property
+    def ip_telephony(self):
+        return IpTelephony(client=self.client)
+
+    @property
+    def load_balancing(self):
+        return LoadBalancing(client=self.client)
+
+    @property
+    def oam(self):
+        return Oam(client=self.client)
+
+    @property
+    def qos(self):
+        return Qos(client=self.client)
+
+    @property
+    def routing(self):
+        return Routing(client=self.client)
+
+    @property
+    def sdn(self):
+        return Sdn(client=self.client)
+
+    @property
+    def sdwan(self):
+        return Sdwan(client=self.client)
+
+    @property
+    def security(self):
+        return Security(client=self.client)
+
+    @property
+    def wireless(self):
+        return Wireless(client=self.client)

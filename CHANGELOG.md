@@ -1,6 +1,12 @@
 # Changelog
 
-## 5.0.2 (2022-07-13)
+## 5.0.3 (2022-08-11)
+### Fix
+* Deprecate IPF v4.X from package
+* Added Technologies to the SDK
+* Verification of API Version against IP Fabric Version
+
+## 5.0.2 (2022-08-09)
 ### Fix
 * Remove `importlib-metadata` dependency
 

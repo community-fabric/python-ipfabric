@@ -3,9 +3,9 @@ from collections import OrderedDict
 from typing import Optional
 from urllib.parse import urljoin
 
-import pkg_resources
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
+from pkg_resources import parse_version, get_distribution
 from pydantic import BaseSettings
 
 from ipfabric import models
@@ -52,38 +52,62 @@ class IPFabricAPI(Client):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
+        super().__init__()
+        self.headers.update({"Content-Type": "application/json"})
         with Settings() as settings:
-            self.api_version = api_version or settings.ipf_version
-            if not self.api_version:
-                ver = pkg_resources.get_distribution("ipfabric").version.split(".")
-                self.api_version = "v" + ver[0] + "." + ver[1]
-
             base_url = base_url or settings.ipf_url
-            if settings.ipf_dev:
-                kwargs["base_url"] = urljoin(base_url, f"{self.api_version}/")
-            else:
-                kwargs["base_url"] = urljoin(base_url, f"api/{self.api_version}/")
-            kwargs["verify"] = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
+            if not base_url and not settings.ipf_url:
+                raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
+
+            self.api_version, self.os_version = self.check_version(api_version or settings.ipf_version, base_url)
+            self.base_url = (
+                urljoin(base_url, f"api/{self.api_version}/")
+                if not settings.ipf_dev
+                else urljoin(base_url, f"{self.api_version}/")
+            )  # TODO: Verify 5.0 Dev Image stuff
+            self.verify = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
             username = username or settings.ipf_username
             password = password or settings.ipf_password
 
-        if not kwargs["base_url"]:
-            raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
         if not token and not (username and password):
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
-        super().__init__(**kwargs)
-        self.headers.update({"Content-Type": "application/json"})
         self.auth = HeaderApiKey(token) if token else PasswordCredentials(base_url, username, password)
 
-        # Request IP Fabric for the OS Version, by doing that we are also ensuring the token is valid
-        self.os_version = self.fetch_os_version()
+        # Get Snapshots, by doing that we are also ensuring the token is valid
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
 
+    def check_version(self, api_version, base_url):
+        """
+        Checks API Version and returns the version to use in the URL and the OS Version
+        :param api_version: str: User defined API Version or None
+        :param base_url: str: URL of IP Fabric
+        :return: api_version, os_version
+        """
+        if api_version == "v1":
+            raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
+        api_version = parse_version(api_version) if api_version else parse_version(get_distribution("ipfabric").version)
+
+        resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
+        resp.raise_for_status()
+        os_api_version = parse_version(resp.json()["apiVersion"])
+        if api_version > os_api_version:
+            logger.warning(
+                f"Specified API or SDK Version ({api_version}) is greater then "
+                f"OS API Version.\nUsing OS Version:  ({os_api_version})"
+            )
+            api_version = os_api_version
+        elif os_api_version.major > api_version.major:
+            raise RuntimeError(
+                f"OS Major Version {os_api_version.major} is greater then SDK Version "
+                f"{api_version.major}.  Please upgrade the Python SDK to the new major version."
+            )
+
+        return f"v{api_version.major}.{api_version.minor}", parse_version(resp.json()["releaseVersion"])
+
     def update(self):
-        self.os_version = self.fetch_os_version()
         self.snapshots = self.get_snapshots()
 
     @property
@@ -109,20 +133,6 @@ class IPFabricAPI(Client):
             raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
         else:
             self._snapshot_id = self.snapshots[snapshot_id].snapshot_id
-
-    def fetch_os_version(self):
-        """
-        Gets IP Fabric version to ensure token is correct
-        :return: str: IP Fabric version
-        """
-        res = self.get(url="os/version")
-        if not res.is_error:
-            try:
-                return pkg_resources.parse_version(res.json()["version"])
-            except KeyError as exc:
-                raise ConnectionError(f"Error While getting the OS version, no Version available, message: {exc.args}")
-        else:
-            raise ConnectionRefusedError("Verify URL and Token are correct.")
 
     def get_snapshots(self):
         """

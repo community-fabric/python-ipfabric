@@ -3,34 +3,9 @@ from json import loads
 from typing import Optional, Union
 from urllib.parse import urlparse
 
-from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
-from ipfabric.technology import (
-    addressing,
-    dhcp,
-    fhrp,
-    interfaces,
-    managment,
-    manged_networks,
-    mpls,
-    mulitcasting,
-    neighbors,
-    platforms,
-    port_channels,
-    routing,
-    stp,
-    vlans,
-    cloud,
-    ip_telephony,
-    load_balancing,
-    oam,
-    qos,
-    sdn,
-    sdwan,
-    security,
-    wireless,
-)
+from ipfabric.models import Technology, Inventory
 
 DEFAULT_ID = "$last"
 
@@ -70,32 +45,9 @@ class IPFClient(IPFabricAPI):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         super().__init__(base_url, api_version, token, snapshot_id, username, password, **kwargs)
-        self.inventory = models.Inventory(client=self)
+        self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
-        self.technology = models.Technology(client=self)
-        self.technology.platforms = platforms.Platforms(client=self)
-        self.technology.interfaces = interfaces.Interfaces(client=self)
-        self.technology.neighbors = neighbors.Neighbors(client=self)
-        self.technology.dhcp = dhcp.Dhcp(client=self)
-        self.technology.port_channels = port_channels.PortChannels(client=self)
-        self.technology.vlans = vlans.Vlans(client=self)
-        self.technology.stp = stp.Stp(client=self)
-        self.technology.addressing = addressing.Addressing(client=self)
-        self.technology.fhrp = fhrp.Fhrp(client=self)
-        self.technology.managed_networks = manged_networks.ManagedNetworks(client=self)
-        self.technology.routing = routing.Routing(client=self)
-        self.technology.mpls = mpls.Mpls(client=self)
-        self.technology.multicast = mulitcasting.Multicast(client=self)
-        self.technology.management = managment.Management(client=self)
-        self.technology.cloud = cloud.Cloud(client=self)
-        self.technology.ip_telephony = ip_telephony.IpTelephony(client=self)
-        self.technology.load_balancing = load_balancing.LoadBalancing(client=self)
-        self.technology.oam = oam.Oam(client=self)
-        self.technology.qos = qos.Qos(client=self)
-        self.technology.sdn = sdn.Sdn(client=self)
-        self.technology.sdwan = sdwan.Sdwan(client=self)
-        self.technology.security = security.Security(client=self)
-        self.technology.wireless = wireless.Wireless(client=self)
+        self.technology = Technology(client=self)
 
     @check_format
     def fetch(

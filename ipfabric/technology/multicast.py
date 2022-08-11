@@ -1,6 +1,8 @@
 import logging
-from pydantic import BaseModel
 from typing import Any
+
+from pydantic import BaseModel
+
 from ipfabric import models
 
 logger = logging.getLogger()

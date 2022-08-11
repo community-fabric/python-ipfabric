@@ -1,6 +1,8 @@
 import os
 import unittest
 
+from httpx import HTTPStatusError
+
 from ipfabric import IPFClient
 
 condition = False if os.getenv("IPF_TOKEN", None) and os.getenv("IPF_URL", None) else True
@@ -14,7 +16,7 @@ class MyTestCase(unittest.TestCase):
         self.assertIsInstance(str(ipf.os_version), str)
 
     def test_bad_token(self):
-        with self.assertRaises(ConnectionRefusedError) as err:
+        with self.assertRaises(HTTPStatusError) as err:
             IPFClient(token="BAD")
 
     def test_inventory(self):
