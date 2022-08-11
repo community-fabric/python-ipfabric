@@ -15,9 +15,19 @@ class Decorator(unittest.TestCase):
         def tester(self, url, **kwargs):
             return (url, kwargs)
 
-        result = tester(None, "/api/v1/networking/ip", filters='{"test": "Hello World"}')
-        self.assertEqual(result[0], "networking/ip")
-        self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
+        tests = [
+            'v5/tables/addressing/ipv6-neighbors',
+            'v5.0/tables/addressing/ipv6-neighbors',
+            'api/v5/tables/addressing/ipv6-neighbors',
+            'https://demo3.ipfabric.io/api/v5.0/tables/addressing/ipv6-neighbors',
+            '/tables/addressing/ipv6-neighbors',
+            'tables/addressing/ipv6-neighbors'
+        ]
+
+        for test in tests:
+            result = tester(None, test, filters='{"test": "Hello World"}')
+            self.assertEqual(result[0], "tables/addressing/ipv6-neighbors", msg=test)
+            self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
 
 
 class FailedClient(unittest.TestCase):

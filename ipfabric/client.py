@@ -21,6 +21,7 @@ def check_format(func):
         path = urlparse(url or kwargs["url"]).path
         r = re.search(r"(api/)?v\d(\.\d)?/", path)
         url = path[r.end():] if r else path
+        url = url[1:] if url[0] == '/' else url
         return func(self, url, *args, **kwargs)
 
     return wrapper
