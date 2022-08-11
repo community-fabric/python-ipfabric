@@ -3,9 +3,9 @@ from json import loads
 from typing import Optional, Union
 from urllib.parse import urlparse
 
-from ipfabric import models
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
+from ipfabric.models import Technology, Inventory
 
 DEFAULT_ID = "$last"
 
@@ -19,8 +19,9 @@ def check_format(func):
         if "filters" in kwargs and isinstance(kwargs["filters"], str):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
-        r = re.search(r"(api/)?v\d(\.\d)?", path)
-        url = path[r.end() + 1 :] if r else path
+        r = re.search(r"(api/)?v\d(\.\d)?/", path)
+        url = path[r.end():] if r else path
+        url = url[1:] if url[0] == '/' else url
         return func(self, url, *args, **kwargs)
 
     return wrapper
@@ -45,8 +46,9 @@ class IPFClient(IPFabricAPI):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         super().__init__(base_url, api_version, token, snapshot_id, username, password, **kwargs)
-        self.inventory = models.Inventory(client=self)
+        self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
+        self.technology = Technology(client=self)
 
     @check_format
     def fetch(
@@ -130,7 +132,7 @@ class IPFClient(IPFabricAPI):
     @check_format
     def query(self, url: str, payload: Union[str, dict], all: bool = True):
         """
-        Submits a query, does no formating on the parameters.  Use for copy/pasting from the webpage.
+        Submits a query, does no formatting on the parameters.  Use for copy/pasting from the webpage.
         :param url: str: Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary
         :param payload: Union[str, dict]: Dictionary to submit in POST or can be JSON string (i.e. read from file).
         :param all: bool: Default use pager to get all results and ignore pagination information in the payload

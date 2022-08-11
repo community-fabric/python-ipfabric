@@ -4,6 +4,8 @@ from typing import Optional, Any, List
 
 from pydantic import BaseModel, Field
 
+from ipfabric.technology import *
+
 logger = logging.getLogger()
 
 
@@ -169,8 +171,112 @@ class Inventory(BaseModel):
 
     @property
     def powerSupplies(self):
-        return Table(client=self.client, endpoint="tables/inventory/powerSupplies")
+        logger.warning(
+            """Use of client.inventory.PowerSupplies will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies"""
+        )
+        return Table(client=self.client, endpoint="tables/inventory/power-supplies")
 
     @property
     def powerSuppliesFans(self):
-        return Table(client=self.client, endpoint="tables/inventory/powerSuppliesFans")
+        logger.warning(
+            """Use of client.inventory.PowerSuppliesFans will be deprecated in a future release, please 
+                        use client.technology.platform_environment_power_supplies_fans"""
+        )
+        return Table(client=self.client, endpoint="tables/inventory/power-supplies-fans")
+
+
+class Technology(BaseModel):
+    client: Any
+
+    @property
+    def platforms(self):
+        return Platforms(client=self.client)
+
+    @property
+    def interfaces(self):
+        return Interfaces(client=self.client)
+
+    @property
+    def neighbors(self):
+        return Neighbors(client=self.client)
+
+    @property
+    def dhcp(self):
+        return Dhcp(client=self.client)
+
+    @property
+    def port_channels(self):
+        return PortChannels(client=self.client)
+
+    @property
+    def vlans(self):
+        return Vlans(client=self.client)
+
+    @property
+    def stp(self):
+        return Stp(client=self.client)
+
+    @property
+    def addressing(self):
+        return Addressing(client=self.client)
+
+    @property
+    def fhrp(self):
+        return Fhrp(client=self.client)
+
+    @property
+    def managed_networks(self):
+        return ManagedNetworks(client=self.client)
+
+    @property
+    def mpls(self):
+        return Mpls(client=self.client)
+
+    @property
+    def multicast(self):
+        return Multicast(client=self.client)
+
+    @property
+    def cloud(self):
+        return Cloud(client=self.client)
+
+    @property
+    def management(self):
+        return Management(client=self.client)
+
+    @property
+    def ip_telephony(self):
+        return IpTelephony(client=self.client)
+
+    @property
+    def load_balancing(self):
+        return LoadBalancing(client=self.client)
+
+    @property
+    def oam(self):
+        return Oam(client=self.client)
+
+    @property
+    def qos(self):
+        return Qos(client=self.client)
+
+    @property
+    def routing(self):
+        return Routing(client=self.client)
+
+    @property
+    def sdn(self):
+        return Sdn(client=self.client)
+
+    @property
+    def sdwan(self):
+        return Sdwan(client=self.client)
+
+    @property
+    def security(self):
+        return Security(client=self.client)
+
+    @property
+    def wireless(self):
+        return Wireless(client=self.client)
