@@ -91,6 +91,38 @@ class Table(BaseModel):
     def name(self):
         return self.endpoint.split("/")[-1]
 
+    def fetch(
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
+        limit: Optional[int] = 1000,
+        start: Optional[int] = 0,
+    ):
+        """
+        Gets all data from corresponding endpoint
+        :param columns: list: Optional columns to return, default is all
+        :param filters: dict: Optional filters
+        :param snapshot_id: str: Optional snapshot ID to override class
+        :param reports: str: String of frontend URL where the reports are displayed
+        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+        :param limit: int: Default to 1,000 rows
+        :param start: int: Starts at 0
+        :return: list: List of Dictionaries
+        """
+        return self.client.fetch(
+            self.endpoint,
+            columns=columns,
+            filters=filters,
+            snapshot_id=snapshot_id,
+            reports=reports,
+            sort=sort,
+            limit=limit,
+            start=start,
+        )
+
     def all(
         self,
         columns: list = None,
