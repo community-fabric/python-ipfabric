@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.4 (2022-08-17)
+### Fix
+* Fix in Users model
+* Added get_user to get information about logged in user during init
+* Added count function to tables
+
 ## 5.0.3 (2022-08-11)
 ### Fix
 * Deprecate IPF v4.X from package

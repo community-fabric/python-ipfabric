@@ -9,6 +9,7 @@ from pkg_resources import parse_version, get_distribution
 from pydantic import BaseSettings
 
 from ipfabric import models
+from ipfabric.settings.user_mgmt import User
 
 logger = logging.getLogger()
 DEFAULT_ID = "$last"
@@ -74,10 +75,19 @@ class IPFabricAPI(Client):
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
         self.auth = HeaderApiKey(token) if token else PasswordCredentials(base_url, username, password)
-
-        # Get Snapshots, by doing that we are also ensuring the token is valid
+        # Get Current User, by doing that we are also ensuring the token is valid
+        self.user = self.get_user()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
+
+    def get_user(self):
+        """
+        Gets current logged in user information.
+        :return: User: User model of logged in user
+        """
+        resp = self.get("users/me")
+        resp.raise_for_status()
+        return User(**resp.json())
 
     def check_version(self, api_version, base_url):
         """
@@ -88,7 +98,7 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        dist_ver = get_distribution("ipfabric").version.split('.')
+        dist_ver = get_distribution("ipfabric").version.split(".")
         api_version = parse_version(api_version) if api_version else parse_version(f"{dist_ver[0]}.{dist_ver[1]}")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})

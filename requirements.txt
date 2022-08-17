@@ -9,7 +9,7 @@ pydantic==1.9.2; python_full_version >= "3.6.1"
 pyjwt==2.4.0; python_full_version >= "3.7.1" and python_full_version < "4.0.0" and python_version >= "3.6"
 python-dateutil==2.8.2; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.3.0")
 python-dotenv==0.20.0; python_version >= "3.5"
-pytz==2022.1
+pytz==2022.2.1
 rfc3986==1.5.0; python_full_version >= "3.7.1" and python_full_version < "4.0.0" and python_version >= "3.7"
 six==1.16.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.3.0"
 sniffio==1.2.0; python_full_version >= "3.7.1" and python_full_version < "4.0.0" and python_version >= "3.7"
