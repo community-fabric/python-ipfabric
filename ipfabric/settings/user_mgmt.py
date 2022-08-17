@@ -15,7 +15,7 @@ class User(BaseModel):
     sso_provider: Optional[Any] = Field(alias="ssoProvider")
     domains: Optional[Any] = Field(alias="domainSuffixes")
     role_names: Optional[list] = Field(alias="roleNames", default_factory=list)
-    role_ids: list = Field(alias="roleNames")
+    role_ids: list = Field(alias="roleIds")
     ldap_id: Any = Field(alias="ldapId")
     timezone: str
 

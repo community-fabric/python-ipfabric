@@ -20,8 +20,8 @@ def check_format(func):
             kwargs["filters"] = loads(kwargs["filters"])
         path = urlparse(url or kwargs["url"]).path
         r = re.search(r"(api/)?v\d(\.\d)?/", path)
-        url = path[r.end():] if r else path
-        url = url[1:] if url[0] == '/' else url
+        url = path[r.end() :] if r else path
+        url = url[1:] if url[0] == "/" else url
         return func(self, url, *args, **kwargs)
 
     return wrapper
@@ -187,9 +187,10 @@ class IPFClient(IPFabricAPI):
             self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
         return data
 
-    def get_count(self, url: str, snapshot_id: Optional[str] = None):
-        payload = dict(columns=["id"], pagination=dict(limit=1, start=0))
-        payload["snapshot"] = snapshot_id or self.snapshot_id
+    def get_count(self, url: str, filters: Optional[Union[dict, str]] = None, snapshot_id: Optional[str] = None):
+        payload = dict(columns=["id"], pagination=dict(limit=1, start=0), snapshot=snapshot_id or self.snapshot_id)
+        if filters:
+            payload["filters"] = filters
         res = self.post(url, json=payload)
         res.raise_for_status()
         return res.json()["_meta"]["count"]

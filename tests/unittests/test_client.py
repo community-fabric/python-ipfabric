@@ -7,6 +7,7 @@ from pkg_resources import parse_version, get_distribution
 from ipfabric import IPFClient
 from ipfabric.client import check_format
 from ipfabric.models import Snapshot
+from ipfabric.settings.user_mgmt import User
 
 
 class Decorator(unittest.TestCase):
@@ -50,10 +51,11 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.__init__", return_value=None)
     @patch("httpx.Client.headers")
     @patch("httpx.Client.base_url")
+    @patch("ipfabric.IPFClient.get_user")
     @patch("ipfabric.IPFClient.check_version")
     @patch("ipfabric.IPFClient.get_snapshots")
     @patch("ipfabric.models.Inventory")
-    def setUp(self, inventory, snaps, check_version, base_url, headers, mock_client):
+    def setUp(self, inventory, snaps, check_version, get_user, base_url, headers, mock_client):
         snaps.return_value = {
             "$last": Snapshot(
                 **{
@@ -76,6 +78,16 @@ class Client(unittest.TestCase):
         mock_client._headers = dict()
         check_version.return_value = "v5", parse_version("v5.0.1")
         self.ipf = IPFClient(base_url="https://google.com", token='token')
+
+    @patch("httpx.Client.get")
+    def test_get_user(self, get):
+        get().is_error = None
+        get().json.return_value = {"email": "admin@ipfabric.io", "isLocal": True, "timezone": "UTC",
+                                   "username": "admin", "active": True, "ldapId": None, "id": "863",
+                                   "roleIds": ["admin"]}
+        user = self.ipf.get_user()
+        self.assertIsInstance(user, User)
+        self.assertEqual(user.username, 'admin')
 
     @patch("httpx.Client.get")
     def test_check_version(self, get):

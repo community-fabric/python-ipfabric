@@ -15,6 +15,7 @@ def mock_pager(*args):
                 "domainSuffixes": "",
                 "email": "justin.jeffrey@ipfabric.io",
                 "roleNames": ["admin"],
+                "roleIds": ["admin"],
                 "timezone": "UTC"
             }
         ]

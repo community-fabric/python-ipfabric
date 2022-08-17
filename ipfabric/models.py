@@ -117,6 +117,19 @@ class Table(BaseModel):
             sort=sort,
         )
 
+    def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
+        """
+        Gets count of table
+        :param filters: dict: Optional filters
+        :param snapshot_id: str: Optional snapshot ID to override class
+        :return: int: Count
+        """
+        return self.client.get_count(
+            self.endpoint,
+            filters=filters,
+            snapshot_id=snapshot_id,
+        )
+
 
 class Inventory(BaseModel):
     client: Any
