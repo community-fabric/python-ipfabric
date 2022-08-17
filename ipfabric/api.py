@@ -1,4 +1,3 @@
-import logging
 from collections import OrderedDict
 from typing import Optional
 from urllib.parse import urljoin
@@ -7,11 +6,12 @@ from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
 from pkg_resources import parse_version, get_distribution
 from pydantic import BaseSettings
+from loguru import logger
 
 from ipfabric import models
 from ipfabric.settings.user_mgmt import User
+from ipfabric.logg import set_logger
 
-logger = logging.getLogger()
 DEFAULT_ID = "$last"
 
 
@@ -53,6 +53,10 @@ class IPFabricAPI(Client):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
+        # set global logging
+        debugging = kwargs.get("debug", False)
+        set_logger(debugging)
+
         super().__init__()
         self.headers.update({"Content-Type": "application/json"})
         with Settings() as settings:
