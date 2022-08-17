@@ -53,16 +53,17 @@ class IPFClient(IPFabricAPI):
         self.technology = Technology(client=self)
         logger.info(
             f"""
-        IPFClientInitialized:
-        ipf_base_url:{self.base_url}
-        ipf_api_version:{self.api_version}
-        user_name:{self.user.username}
-        user_id:{self.user.user_id}
-        user_email:{self.user.email}
-        snapshot_id:{self.snapshot_id}
-        auth_method:{"Token" if token else "username/password"}
-        extras:{kwargs}
-        """)
+            IPFClientInitialized:
+            ipf_base_url:{self.base_url}
+            ipf_api_version:{self.api_version}
+            user_name:{self.user.username}
+            user_id:{self.user.user_id}
+            user_email:{self.user.email}
+            snapshot_id:{self.snapshot_id}
+            auth_method:{"Token" if token else "username/password"}
+            extras:{kwargs}
+            """
+        )
 
     @check_format
     def fetch(
