@@ -13,6 +13,13 @@ def set_logger(console_debug: bool = False):
         "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan>|"
         "<level>{message}</level>"
     )
+
+    # loguru default loghandler logs to stderr,but sets default level to debug
+    # we only want debug logs to the console when we explicitly set it
+
+    # remove default console logger
+    logger.remove()
+
     # three log files
     # 1 for latest iteration
     # 2 for full day log
@@ -21,11 +28,6 @@ def set_logger(console_debug: bool = False):
     logger.add("ipfabric_2.log", level="DEBUG", format=fmt, rotation="12:00")
     logger.add("ipfabric_3.log", level="DEBUG", format=fmt, rotation="7 days")
 
-    # loguru default loghandler logs to stderr,but sets default level to debug
-    # we only want debug logs to the console when we explicitly set it
-
-    # remove default console logger
-    logger.remove(0)
     # add a console logger only if console_debug is True
     if console_debug:
         logger.add(sys.stderr, level="DEBUG", format=fmt, colorize=True)
