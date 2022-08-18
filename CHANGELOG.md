@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.5 (2022-08-17)
+### Fix
+* Fix in user/pass auth
+
 ## 5.0.4 (2022-08-17)
 ### Fix
 * Fix in Users model
