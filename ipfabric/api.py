@@ -74,8 +74,9 @@ class IPFabricAPI(Client):
         if not token and not (username and password):
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
-        self.auth = HeaderApiKey(token) if token else \
-            PasswordCredentials(base_url, username, password, self.api_version)
+        self.auth = (
+            HeaderApiKey(token) if token else PasswordCredentials(base_url, username, password, self.api_version)
+        )
         # Get Current User, by doing that we are also ensuring the token is valid
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
