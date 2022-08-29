@@ -4,7 +4,7 @@ from typing import Any, Optional
 import pytz
 from pydantic import Field, BaseModel
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 class User(BaseModel):

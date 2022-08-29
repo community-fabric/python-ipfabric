@@ -20,7 +20,7 @@ API_MODELS = Union[
     AWS, Azure, CheckPointApiKey, CheckPointUserAuth, CiscoFMC, Merakiv1, NSXT, SilverPeak, Versa, Viptela
 ]
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 @dataclass

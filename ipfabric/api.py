@@ -10,10 +10,15 @@ from pydantic import BaseSettings
 
 from ipfabric import models
 from ipfabric.settings.user_mgmt import User
+from .logg import LoggingConfig
 
-logger = logging.getLogger()
+# config root logger
+log_config = LoggingConfig()
+log_config.configure()
+# call base logger
+logger = logging.getLogger("python-ipfabric")
+
 DEFAULT_ID = "$last"
-
 
 class Settings(BaseSettings):
     ipf_url: str = ""
@@ -72,6 +77,7 @@ class IPFabricAPI(Client):
             password = password or settings.ipf_password
 
         if not token and not (username and password):
+            logger.error("IP Fabric Token or Username/Password not provided.")
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
         self.auth = (
@@ -99,6 +105,7 @@ class IPFabricAPI(Client):
         :return: api_version, os_version
         """
         if api_version == "v1":
+            logger.error("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
         dist_ver = get_distribution("ipfabric").version.split(".")
         api_version = parse_version(api_version) if api_version else parse_version(f"{dist_ver[0]}.{dist_ver[1]}")
@@ -113,6 +120,10 @@ class IPFabricAPI(Client):
             )
             api_version = os_api_version
         elif os_api_version.major > api_version.major:
+            logger.error(
+                f"OS Major Version {os_api_version.major} is greater then SDK Version "
+                f"{api_version.major}.  Please upgrade the Python SDK to the new major version."
+            )
             raise RuntimeError(
                 f"OS Major Version {os_api_version.major} is greater then SDK Version "
                 f"{api_version.major}.  Please upgrade the Python SDK to the new major version."
@@ -143,6 +154,7 @@ class IPFabricAPI(Client):
             self._snapshot_id = None
         elif snapshot_id not in self.snapshots:
             # Verify snapshot ID is valid
+            logger.error("EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
             raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
         else:
             self._snapshot_id = self.snapshots[snapshot_id].snapshot_id

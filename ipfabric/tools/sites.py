@@ -6,7 +6,7 @@ from typing import Union, Any
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 @dataclass

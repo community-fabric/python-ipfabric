@@ -8,7 +8,7 @@ from typing import Any, Union
 
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 V4_4_PATH = "ipfabric.tools.factory_defaults.v4.4"
 

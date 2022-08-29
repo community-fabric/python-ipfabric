@@ -5,7 +5,7 @@ from typing import Any, Union
 from dateutil import parser
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 @dataclass
