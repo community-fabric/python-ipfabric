@@ -61,6 +61,7 @@ class IPFabricAPI(Client):
         super().__init__()
         self.headers.update({"Content-Type": "application/json"})
         with Settings() as settings:
+            self.verify = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             base_url = base_url or settings.ipf_url
             if not base_url and not settings.ipf_url:
                 raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
@@ -71,7 +72,6 @@ class IPFabricAPI(Client):
                 if not settings.ipf_dev
                 else urljoin(base_url, f"{self.api_version}/")
             )  # TODO: Verify 5.0 Dev Image stuff
-            self.verify = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
             token = token or settings.ipf_token
             username = username or settings.ipf_username
             password = password or settings.ipf_password

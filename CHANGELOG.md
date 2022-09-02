@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.6 (2022-09-01)
+### Fix
+* Fix for unverified cert
+
 ## 5.0.5 (2022-08-17)
 ### Fix
 * Fix in user/pass auth
