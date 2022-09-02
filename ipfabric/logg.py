@@ -15,11 +15,12 @@ class LoggingConfig(BaseModel):
     """disable non-root loggers"""
 
     filters: Optional[Dict[str, Dict[str, Any]]] = None
-    """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding Filter instance."""
+    """A dict in which each key is a filter id and each value is a dict 
+    describing how to configure the corresponding Filter instance."""
 
     formatters: Dict[str, Dict[str, Any]] = {
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
-        "json_formatter": {"format":"%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
+        "json_formatter": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
     }
     handlers: Dict[str, Dict[str, Any]] = {
         "console": {
@@ -31,7 +32,7 @@ class LoggingConfig(BaseModel):
             "class": "logging.FileHandler",
             "level": "DEBUG",
             "formatter": "json_formatter",
-            "filename": "python-ipfabric.log"
+            "filename": "python-ipfabric.log",
         },
         "rotatingFileHandler": {
             "class": "logging.handlers.RotatingFileHandler",
@@ -39,21 +40,23 @@ class LoggingConfig(BaseModel):
             "formatter": "json_formatter",
             "maxBytes": 5000000,
             "backupCount": 3,
-            "filename": "python-ipfabric.log"
-        }
+            "filename": "python-ipfabric.log",
+        },
     }
-    """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance."""
+    """A dict in which each key is a handler id and each value is a dict 
+    describing how to configure the corresponding Handler instance."""
     loggers: Dict[str, Dict[str, Any]] = {
         "python-ipfabric": {
             "level": "INFO",
             "handlers": ["rotatingFileHandler"],
         },
     }
-    """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding Logger instance."""
+    """A dict in which each key is a logger name and each value is a dict 
+    describing how to configure the corresponding Logger instance."""
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["console"], "level": "INFO"}
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
-    except that the propagate setting will not be applicable. Logs will always print to stdout unless this Root logger is changed."""
-
+    except that the propagate setting will not be applicable. 
+    Logs will always print to stdout unless this Root logger is changed."""
 
     def configure(self) -> None:
         """Configured logger with the given configuration."""

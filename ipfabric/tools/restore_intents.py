@@ -52,7 +52,8 @@ class RestoreIntents:
             exit()
         self._restore(DEFAULT_SETUP[v]["intents"], DEFAULT_SETUP[v]["groups"], DEFAULT_SETUP[v]["dashboard"])
 
-    def _save_to_file(self, intents, groups, dashboard):
+    @staticmethod
+    def _save_to_file(intents, groups, dashboard):
         tstamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         def save(name, data):
