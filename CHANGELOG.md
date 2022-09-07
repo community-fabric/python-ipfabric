@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.7 (2022-09-07)
+### Fix
+* Fix for httpx timeout
+
 ## 5.0.6 (2022-09-01)
 ### Fix
 * Fix for unverified cert
