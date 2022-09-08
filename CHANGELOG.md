@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.8 (2022-09-08)
+### Fix
+* Update python-dontenv
+
 ## 5.0.7 (2022-09-07)
 ### Fix
 * Fix for httpx timeout
