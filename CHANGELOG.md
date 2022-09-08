@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.7 (2022-09-08)
+## 5.0.8 (2022-09-08)
 ### Fix
 * Update python-dontenv
 
