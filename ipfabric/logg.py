@@ -22,17 +22,25 @@ class LoggingConfig(BaseModel):
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
         "json_formatter": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
     }
+
     handlers: Dict[str, Dict[str, Any]] = {
         "console": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
             "formatter": "standard",
         },
+    }
+    """
+    A dict in which each key is a handler id and each value is a dict describing 
+    how to configure the corresponding Handler instance.
+    
+    Example File Handlers:
+    {
         "fileHandler": {
-            "class": "logging.FileHandler",
-            "level": "DEBUG",
-            "formatter": "json_formatter",
-            "filename": "python-ipfabric.log",
+                "class": "logging.FileHandler",
+                "level": "DEBUG",
+                "formatter": "json_formatter",
+                "filename": "python-ipfabric.log",
         },
         "rotatingFileHandler": {
             "class": "logging.handlers.RotatingFileHandler",
@@ -43,16 +51,22 @@ class LoggingConfig(BaseModel):
             "filename": "python-ipfabric.log",
         },
     }
-    """A dict in which each key is a handler id and each value is a dict 
-    describing how to configure the corresponding Handler instance."""
-    loggers: Dict[str, Dict[str, Any]] = {
+    """
+
+    loggers: Union[Dict[str, Dict[str, Any]], None] = None
+    """
+    A dict in which each key is a logger name and each value is a dict describing 
+    how to configure the corresponding Logger instance.
+    
+    Example:
+    {
         "python-ipfabric": {
             "level": "INFO",
             "handlers": ["rotatingFileHandler"],
         },
     }
-    """A dict in which each key is a logger name and each value is a dict 
-    describing how to configure the corresponding Logger instance."""
+    """
+
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["console"], "level": "INFO"}
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable. 

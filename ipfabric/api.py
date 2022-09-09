@@ -2,9 +2,9 @@ import logging
 from collections import OrderedDict
 
 try:
-    from importlib import metadata
-except ImportError:
-    from pkg_resources import get_distribution
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Needed for context"""
         pass
 
 
@@ -76,7 +77,7 @@ class IPFabricAPI(Client):
                 urljoin(base_url, f"api/{self.api_version}/")
                 if not settings.ipf_dev
                 else urljoin(base_url, f"{self.api_version}/")
-            )  # TODO: Verify 5.0 Dev Image stuff
+            )
             token = token or settings.ipf_token
             username = username or settings.ipf_username
             password = password or settings.ipf_password
@@ -111,10 +112,7 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        try:
-            dist_ver = metadata.version("ipfabric").split(".")
-        except NameError:
-            dist_ver = get_distribution("ipfabric").version.split(".")
+        dist_ver = importlib_metadata.version("ipfabric").split(".")
         api_version = parse(api_version) if api_version else parse(f"{dist_ver[0]}.{dist_ver[1]}")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
@@ -123,7 +121,7 @@ class IPFabricAPI(Client):
         if api_version > os_api_version:
             logger.warning(
                 f"Specified API or SDK Version ({api_version}) is greater then "
-                f"OS API Version.\nUsing OS Version:  ({os_api_version})"
+                f"OS API Version. Using OS Version:  ({os_api_version})"
             )
             api_version = os_api_version
         elif os_api_version.major > api_version.major:
