@@ -1,11 +1,12 @@
 import logging
 from collections import OrderedDict
+from importlib import metadata
 from typing import Optional
 from urllib.parse import urljoin
 
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
-from pkg_resources import parse_version, get_distribution
+from packaging.version import parse
 from pydantic import BaseSettings
 
 from ipfabric import models
@@ -99,12 +100,12 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        dist_ver = get_distribution("ipfabric").version.split(".")
-        api_version = parse_version(api_version) if api_version else parse_version(f"{dist_ver[0]}.{dist_ver[1]}")
+        dist_ver = metadata.version("ipfabric").split(".")
+        api_version = parse(api_version) if api_version else parse(f"{dist_ver[0]}.{dist_ver[1]}")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
         resp.raise_for_status()
-        os_api_version = parse_version(resp.json()["apiVersion"])
+        os_api_version = parse(resp.json()["apiVersion"])
         if api_version > os_api_version:
             logger.warning(
                 f"Specified API or SDK Version ({api_version}) is greater then "
@@ -117,7 +118,7 @@ class IPFabricAPI(Client):
                 f"{api_version.major}.  Please upgrade the Python SDK to the new major version."
             )
 
-        return f"v{api_version.major}.{api_version.minor}", parse_version(resp.json()["releaseVersion"])
+        return f"v{api_version.major}.{api_version.minor}", parse(resp.json()["releaseVersion"])
 
     def update(self):
         self.snapshots = self.get_snapshots()

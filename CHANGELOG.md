@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.0.9 (2022-09-09)
+### Fix
+* Removed pkg_resources as it was causing some issues on certain OS and Python versions
+* Updated poetry-core
+### CI
+* Added more python versions to functional testing.
+
 ## 5.0.8 (2022-09-08)
 ### Fix
 * Update python-dontenv
