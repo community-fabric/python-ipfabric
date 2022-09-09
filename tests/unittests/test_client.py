@@ -1,6 +1,5 @@
 import os
 import unittest
-from importlib import metadata
 from unittest.mock import patch
 
 from packaging.version import parse
@@ -103,8 +102,7 @@ class Client(unittest.TestCase):
         get().is_error = None
         get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
         api_version, os_version = self.ipf.check_version(None, 'TEST')
-        ver = parse(metadata.version("ipfabric"))
-        self.assertEqual(api_version, f"v{ver.major}.{ver.minor}")
+        self.assertEqual(api_version, f"v5.0")
         self.assertEqual(str(os_version), "5.0.1+10")
 
     @patch("httpx.Client.get")

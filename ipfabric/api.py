@@ -1,6 +1,10 @@
 import logging
 from collections import OrderedDict
-from importlib import metadata
+
+try:
+    from importlib import metadata
+except ImportError:
+    from pkg_resources import get_distribution
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -100,7 +104,10 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        dist_ver = metadata.version("ipfabric").split(".")
+        try:
+            dist_ver = metadata.version("ipfabric").split(".")
+        except NameError:
+            dist_ver = get_distribution("ipfabric").version.split(".")
         api_version = parse(api_version) if api_version else parse(f"{dist_ver[0]}.{dist_ver[1]}")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
