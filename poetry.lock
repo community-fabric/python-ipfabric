@@ -534,7 +534,7 @@ examples = ["tabulate", "pandas", "openpyxl"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "d480cd9bef7fdbcff996e7bde96c59632b4049445d63f8374e32947eabcdfcfa"
+content-hash = "22378701f14d278d95df9d75085636f57508cc9b259eb8c2f66ed308924aab7b"
 
 [metadata.files]
 anyio = [
