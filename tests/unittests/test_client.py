@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from pkg_resources import parse_version, get_distribution
+from packaging.version import parse
 
 from ipfabric import IPFClient
 from ipfabric.client import check_format
@@ -42,7 +42,7 @@ class FailedClient(unittest.TestCase):
     @patch("ipfabric.IPFClient.check_version")
     def test_no_token(self, version):
         env = dict()
-        version.return_value = 'v5', parse_version('v5.0.1')
+        version.return_value = 'v5', parse('v5.0.1')
         with self.assertRaises(RuntimeError) as err:
             ipf = IPFClient(base_url="http://google.com")
 
@@ -76,7 +76,7 @@ class Client(unittest.TestCase):
             )
         }
         mock_client._headers = dict()
-        check_version.return_value = "v5", parse_version("v5.0.1")
+        check_version.return_value = "v5", parse("v5.0.1")
         self.ipf = IPFClient(base_url="https://google.com", token='token')
 
     @patch("httpx.Client.get")
@@ -102,8 +102,7 @@ class Client(unittest.TestCase):
         get().is_error = None
         get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
         api_version, os_version = self.ipf.check_version(None, 'TEST')
-        ver = parse_version(get_distribution("ipfabric").version)
-        self.assertEqual(api_version, f"v{ver.major}.{ver.minor}")
+        self.assertEqual(api_version, f"v5.0")
         self.assertEqual(str(os_version), "5.0.1+10")
 
     @patch("httpx.Client.get")

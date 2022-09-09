@@ -1,5 +1,20 @@
 # Changelog
 
+## 5.0.9 (2022-09-09)
+### Fix
+* Removed pkg_resources as it was causing some issues on certain OS and Python versions
+* Updated poetry-core
+### CI
+* Added more python versions to functional testing.
+
+## 5.0.8 (2022-09-08)
+### Fix
+* Update python-dontenv
+
+## 5.0.7 (2022-09-07)
+### Fix
+* Fix for httpx timeout
+
 ## 5.0.6 (2022-09-01)
 ### Fix
 * Fix for unverified cert

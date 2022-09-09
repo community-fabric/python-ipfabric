@@ -19,13 +19,11 @@ jobs:
       - name: Install Python Poetry
         uses: abatilo/actions-poetry@v2.1.0
         with:
-          poetry-version: 1.1.11
+          poetry-version: 1.2.0
       - name: Configure poetry
         run: |
           poetry config virtualenvs.in-project true
           poetry config experimental.new-installer false
-      - name: View poetry version
-        run: poetry --version
       - name: Install dependencies
         run: poetry install --no-interaction
       - name: Lint with flake8
