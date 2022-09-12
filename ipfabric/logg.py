@@ -19,8 +19,7 @@ class LoggingConfig(BaseModel):
     describing how to configure the corresponding Filter instance."""
 
     formatters: Dict[str, Dict[str, Any]] = {
-        "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
-        "json_formatter": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
+        "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
 
     handlers: Dict[str, Dict[str, Any]] = {
@@ -28,7 +27,7 @@ class LoggingConfig(BaseModel):
             "class": "logging.StreamHandler",
             "level": "DEBUG",
             "formatter": "standard",
-        },
+        }
     }
     """
     A dict in which each key is a handler id and each value is a dict describing 
