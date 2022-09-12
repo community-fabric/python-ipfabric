@@ -19,7 +19,9 @@ from .logg import LoggingConfig
 # config root logger
 log_config = LoggingConfig()
 log_config.configure()
-# call base logger
+# First time logger gets called.
+# Create a logger called python-ipfabric
+# logger uses root logger settings
 logger = logging.getLogger("python-ipfabric")
 
 DEFAULT_ID = "$last"
