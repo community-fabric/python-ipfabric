@@ -50,12 +50,11 @@ class FailedClient(unittest.TestCase):
 class Client(unittest.TestCase):
     @patch("httpx.Client.__init__", return_value=None)
     @patch("httpx.Client.headers")
-    @patch("httpx.Client.base_url")
     @patch("ipfabric.IPFClient.get_user")
     @patch("ipfabric.IPFClient.check_version")
     @patch("ipfabric.IPFClient.get_snapshots")
     @patch("ipfabric.models.Inventory")
-    def setUp(self, inventory, snaps, check_version, get_user, base_url, headers, mock_client):
+    def setUp(self, inventory, snaps, check_version, get_user,  headers, mock_client):
         snaps.return_value = {
             "$last": Snapshot(
                 **{
@@ -76,8 +75,9 @@ class Client(unittest.TestCase):
             )
         }
         mock_client._headers = dict()
-        check_version.return_value = "v5", parse("v5.0.1")
-        self.ipf = IPFClient(base_url="https://google.com", token='token')
+        check_version.return_value = ("v5", "v5.0.1")
+        self.ipf = IPFClient(base_url='https://demo.ipfabric.io', token='token')
+        self.ipf.user = User(username='admin', id='admin', roleIds=['admin'], timezone='UTC')
 
     @patch("httpx.Client.get")
     def test_get_user(self, get):

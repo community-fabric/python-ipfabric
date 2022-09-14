@@ -14,15 +14,9 @@ from pydantic import BaseSettings
 
 from ipfabric import models
 from ipfabric.settings.user_mgmt import User
-from .logg import LoggingConfig
 
-# config root logger
-log_config = LoggingConfig()
-log_config.configure()
-# First time logger gets called.
-# Create a logger called python-ipfabric
-# logger uses root logger settings
-logger = logging.getLogger("python-ipfabric")
+
+logger = logging.getLogger("ipfabric")
 
 DEFAULT_ID = "$last"
 
@@ -94,6 +88,8 @@ class IPFabricAPI(Client):
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
+        logger.debug(f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
+                     f"as user '{self.user.username}'")
 
     def get_user(self):
         """
