@@ -10,14 +10,34 @@ from pydantic.dataclasses import dataclass
 
 logger = logging.getLogger("python-ipfabric")
 
+INTENTS = "intents.json"
+GROUPS = "groups.json"
+DASHBOARD = "dashboard.json"
+
 V4_4_PATH = "ipfabric.tools.factory_defaults.v4.4"
+V5_0_PATH = "ipfabric.tools.factory_defaults.v5.0"
+V6_0_PATH = "ipfabric.tools.factory_defaults.v6.0"
 
 DEFAULT_SETUP = {
     "v4.4": {
-        "intents": json.loads(importlib.resources.read_text(V4_4_PATH, "intents.json")),
-        "groups": json.loads(importlib.resources.read_text(V4_4_PATH, "groups.json")),
+        "intents": json.loads(importlib.resources.read_text(V4_4_PATH, INTENTS)),
+        "groups": json.loads(importlib.resources.read_text(V4_4_PATH, GROUPS)),
         "dashboard": json.loads(
-            importlib.resources.read_text(V4_4_PATH, "dashboard.json"), object_pairs_hook=OrderedDict
+            importlib.resources.read_text(V4_4_PATH, DASHBOARD), object_pairs_hook=OrderedDict
+        ),
+    },
+    "v5.0": {
+        "intents": json.loads(importlib.resources.read_text(V5_0_PATH, INTENTS)),
+        "groups": json.loads(importlib.resources.read_text(V5_0_PATH, GROUPS)),
+        "dashboard": json.loads(
+            importlib.resources.read_text(V5_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict
+        ),
+    },
+    "v6.0": {
+        "intents": json.loads(importlib.resources.read_text(V6_0_PATH, INTENTS)),
+        "groups": json.loads(importlib.resources.read_text(V6_0_PATH, GROUPS)),
+        "dashboard": json.loads(
+            importlib.resources.read_text(V6_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict
         ),
     }
 }
