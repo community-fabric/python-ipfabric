@@ -2,21 +2,22 @@ import logging
 from collections import OrderedDict
 
 try:
-    from importlib import metadata
-except ImportError:
-    from pkg_resources import get_distribution
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
 from typing import Optional
 from urllib.parse import urljoin
 
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
-from packaging.version import parse
 from pydantic import BaseSettings
 
 from ipfabric import models
 from ipfabric.settings.user_mgmt import User
 
-logger = logging.getLogger()
+
+logger = logging.getLogger("ipfabric")
+
 DEFAULT_ID = "$last"
 
 
@@ -37,6 +38,7 @@ class Settings(BaseSettings):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Needed for context"""
         pass
 
 
@@ -70,12 +72,13 @@ class IPFabricAPI(Client):
                 urljoin(base_url, f"api/{self.api_version}/")
                 if not settings.ipf_dev
                 else urljoin(base_url, f"{self.api_version}/")
-            )  # TODO: Verify 5.0 Dev Image stuff
+            )
             token = token or settings.ipf_token
             username = username or settings.ipf_username
             password = password or settings.ipf_password
 
         if not token and not (username and password):
+            logger.error("IP Fabric Token or Username/Password not provided.")
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
         self.auth = (
@@ -85,6 +88,8 @@ class IPFabricAPI(Client):
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
+        logger.debug(f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
+                     f"as user '{self.user.username}'")
 
     def get_user(self):
         """
@@ -104,28 +109,25 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        try:
-            dist_ver = metadata.version("ipfabric").split(".")
-        except NameError:
-            dist_ver = get_distribution("ipfabric").version.split(".")
-        api_version = parse(api_version) if api_version else parse(f"{dist_ver[0]}.{dist_ver[1]}")
+        api_version = api_version.lstrip('v').split(".") if api_version else \
+            importlib_metadata.version("ipfabric").lstrip('v').split(".")
 
         resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
         resp.raise_for_status()
-        os_api_version = parse(resp.json()["apiVersion"])
-        if api_version > os_api_version:
+        os_api_version = resp.json()["apiVersion"].lstrip('v').split(".")
+        if api_version[0:2] > os_api_version[0:2]:
             logger.warning(
-                f"Specified API or SDK Version ({api_version}) is greater then "
-                f"OS API Version.\nUsing OS Version:  ({os_api_version})"
+                f"Specified API or SDK Version ({'.'.join(api_version)}) is greater then "
+                f"OS API Version. Using OS Version:  ({'.'.join(os_api_version)})"
             )
             api_version = os_api_version
-        elif os_api_version.major > api_version.major:
+        elif os_api_version[0] > api_version[0]:
             raise RuntimeError(
-                f"OS Major Version {os_api_version.major} is greater then SDK Version "
-                f"{api_version.major}.  Please upgrade the Python SDK to the new major version."
+                f"OS Major Version {os_api_version[0]} is greater then SDK Version "
+                f"{api_version[0]}.  Please upgrade the Python SDK to the new major version."
             )
 
-        return f"v{api_version.major}.{api_version.minor}", parse(resp.json()["releaseVersion"])
+        return f"v{api_version[0]}.{api_version[1]}", resp.json()["releaseVersion"]
 
     def update(self):
         self.snapshots = self.get_snapshots()
@@ -150,7 +152,8 @@ class IPFabricAPI(Client):
             self._snapshot_id = None
         elif snapshot_id not in self.snapshots:
             # Verify snapshot ID is valid
-            raise ValueError(f"##ERROR## EXIT -> Incorrect Snapshot ID: '{snapshot_id}'")
+            logger.exception(f"Incorrect Snapshot ID: '{snapshot_id}'")
+            raise ValueError(f"Incorrect Snapshot ID: '{snapshot_id}'")
         else:
             self._snapshot_id = self.snapshots[snapshot_id].snapshot_id
 

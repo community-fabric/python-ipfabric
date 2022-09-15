@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Any
 from ipfabric import models
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 class Vlans(BaseModel):

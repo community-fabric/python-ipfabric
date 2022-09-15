@@ -4,7 +4,7 @@ from typing import Any, Optional
 import pytz
 from pydantic import Field, BaseModel
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 class User(BaseModel):
@@ -16,7 +16,7 @@ class User(BaseModel):
     domains: Optional[Any] = Field(alias="domainSuffixes")
     role_names: Optional[list] = Field(alias="roleNames", default_factory=list)
     role_ids: list = Field(alias="roleIds")
-    ldap_id: Any = Field(alias="ldapId")
+    ldap_id: Optional[Any] = Field(alias="ldapId")
     timezone: str
 
 

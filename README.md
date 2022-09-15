@@ -20,16 +20,29 @@ Version 5.1 will have backwards compatability with version 5.0 however 6.0 will 
 By ensuring that your ipfabric SDK's match your IP Fabric Major Version will ensure compatibility and will continue to work.
 
 ## Installation
-
+#### Quick Start:
 ```
 pip install ipfabric
 ```
+#### Poetry:
 
-To run examples please specify the extras option during install:
+IPFabric uses [Poetry](https://pypi.org/project/poetry/) to make setting up a virtual environment with all dependencies
+installed quick and easy.
+
+Install poetry globally:
 ```
-pip install ipfabric -E examples
+pip install poetry
+```
+To install a virtual environment run the following command in the root of this directory.
+
+```
+poetry install
 ```
 
+To run examples, install extras:
+```
+poetry install ipfabric -E examples
+```
 ## Introduction
 
 Please take a look at [API Programmability - Part 1: The Basics](https://ipfabric.io/blog/api-programmability-part-1/)
@@ -84,18 +97,7 @@ IPF_PASSWORD=PASS
 **`IPF_DEV` is an internal variable only, do not set to True.**
 
 ## Development
-
-IPFabric uses poetry for the python packaging module. Install poetry globally:
-
-```
-pip install poetry
-```
-
-To install a virtual environment run the following command in the root of this directory.
-
-```
-poetry install
-```
+Follow the poetry install then follow instructions below:
 
 To test and build:
 

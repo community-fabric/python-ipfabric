@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.10 (2022-09-12)
+### Feature
+* added the ability to add custom loggers
+* add python-json-logger to poetry optional dependencies
+
 ## 5.0.9 (2022-09-09)
 ### Fix
 * Removed pkg_resources as it was causing some issues on certain OS and Python versions

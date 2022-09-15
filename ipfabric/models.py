@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from ipfabric.technology import *
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 class Site(BaseModel):

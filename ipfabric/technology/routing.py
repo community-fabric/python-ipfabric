@@ -5,7 +5,7 @@ from typing import Optional, Any, List
 from pydantic import BaseModel, Field
 from ipfabric import models
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 class Routing(BaseModel):

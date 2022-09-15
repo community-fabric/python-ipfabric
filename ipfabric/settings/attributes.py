@@ -3,7 +3,7 @@ from typing import Any, Optional, List
 
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger()
+logger = logging.getLogger("python-ipfabric")
 
 
 @dataclass
