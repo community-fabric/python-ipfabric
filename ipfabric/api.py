@@ -60,11 +60,11 @@ class IPFabricAPI(Client):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        super().__init__(timeout=kwargs.get("timeout", True), headers={"Content-Type": "application/json"})
         with Settings() as settings:
-            self.verify = kwargs.get("verify") if "verify" in kwargs else settings.ipf_verify
+            super().__init__(timeout=kwargs.get("timeout", True), headers={"Content-Type": "application/json"},
+                             verify=kwargs.get("verify", settings.ipf_verify))
             base_url = base_url or settings.ipf_url
-            if not base_url and not settings.ipf_url:
+            if not base_url:
                 raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
 
             self.api_version, self.os_version = self.check_version(api_version or settings.ipf_version, base_url)
