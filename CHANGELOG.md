@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.11 (2022-09-20)
+### Fix
+* Final fix for SSL verification
+
 ## 5.0.10 (2022-09-12)
 ### Feature
 * added the ability to add custom loggers
