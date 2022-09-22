@@ -67,7 +67,8 @@ class IPFabricAPI(Client):
             if not base_url:
                 raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
 
-            self.api_version, self.os_version = self.check_version(api_version or settings.ipf_version, base_url)
+            self.api_version, self.os_version = self.check_version(api_version or settings.ipf_version, base_url,
+                                                                   settings.ipf_dev)
             self.base_url = (
                 urljoin(base_url, f"api/{self.api_version}/")
                 if not settings.ipf_dev
@@ -100,7 +101,7 @@ class IPFabricAPI(Client):
         resp.raise_for_status()
         return User(**resp.json())
 
-    def check_version(self, api_version, base_url):
+    def check_version(self, api_version, base_url, dev=False):
         """
         Checks API Version and returns the version to use in the URL and the OS Version
         :param api_version: str: User defined API Version or None
@@ -112,7 +113,7 @@ class IPFabricAPI(Client):
         api_version = api_version.lstrip('v').split(".") if api_version else \
             importlib_metadata.version("ipfabric").lstrip('v').split(".")
 
-        resp = self.get(urljoin(base_url, "api/version"), headers={"Content-Type": "application/json"})
+        resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
         os_api_version = resp.json()["apiVersion"].lstrip('v').split(".")
         if api_version[0:2] > os_api_version[0:2]:
