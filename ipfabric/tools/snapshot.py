@@ -1,7 +1,26 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+"""
+Conditional import for typing, allowing the use of the download function in a snapsnot object.
+If we did not utlize a Conditional Import here, you would receive a circular import error when trying to import
+the IPF client. Example with non conditional import:
+>>> from ipfabric import IPFClient
+Traceback (most recent call last):
+  File "python-ipfabric/ipfabric/models.py", line 8, in <module>
+    from ipfabric.tools.snapshot import download
+  File "python-ipfabric/ipfabric/tools/__init__.py", line 4, in <module>
+    from .snapshot import upload, download
+  File "python-ipfabric/ipfabric/tools/snapshot.py", line 4, in <module>
+    from ipfabric import IPFClient
+ImportError: cannot import name 'IPFClient' from partially initialized module 'ipfabric' 
+(most likely due to a circular import) (python-ipfabric/ipfabric/__init__.py)
+>>> 
+"""
+if TYPE_CHECKING:
+    from ipfabric import IPFClient
 from pathlib import Path
 import time
 import logging
-from ipfabric import IPFClient
 
 logger = logging.getLogger("python-ipfabric")
 
@@ -39,10 +58,17 @@ def find_job_id(ipf, snapshot_id):
 
 
 def upload(ipf: IPFClient, file: str):
-    file = {'file': (Path(file).name, open(file, 'rb'), 'application/x-tar')}
-    resp = ipf.post('snapshots/upload', headers={"Content-Type": "multipart/form-data"}, data=dict(), files=file)
-    resp.raise_for_status()
-    return resp.json()
+    # as of time of development, httpx does not support file uploads via form data
+    # httpx is a wrapper package for urllib3, so utlizing the lower level package to send this request
+    # until httpx offically supports file uploads via formdata
+    import urllib3
+    http = urllib3.PoolManager()
+    with open(file, 'rb') as fp:
+        file = {'file': (Path(file).name, fp.read(), 'application/x-tar')}
+    resp = http.request("POST", f"{ipf.base_url}" + "/snapshots/upload", fields=file, headers={'X-API-Token': ipf.auth.api_key})
+    if resp.status != 200:
+        logger.warning(f"Error uploading snapshot, {resp.data}")
+    return resp.data.decode()
 
 
 def download(ipf: IPFClient, snapshot_id: str, path: str):
