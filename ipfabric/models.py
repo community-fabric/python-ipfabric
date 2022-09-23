@@ -5,6 +5,7 @@ from typing import Optional, Any, List
 from pydantic import BaseModel, Field
 
 from ipfabric.technology import *
+from ipfabric.tools.snapshot import download
 
 logger = logging.getLogger("python-ipfabric")
 
@@ -82,6 +83,8 @@ class Snapshot(BaseModel):
         """
         return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
 
+    def download(self, ipf, path):
+        return download(ipf,snapshot_id=self.snapshot_id, path=path)
 
 class Table(BaseModel):
     endpoint: str
