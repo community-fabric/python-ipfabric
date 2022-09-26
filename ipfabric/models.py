@@ -5,6 +5,7 @@ from typing import Optional, Any, List
 from pydantic import BaseModel, Field
 
 from ipfabric.technology import *
+
 # todo: update snapshot obj with download method once httpx bug is fixed
 # from ipfabric.tools.snapshot import download
 
@@ -87,6 +88,7 @@ class Snapshot(BaseModel):
     # todo: uncomment once httpx supports form data file uploads
     # def download(self, ipf, path):
     #     return download(ipf,snapshot_id=self.snapshot_id, path=path)
+
 
 class Table(BaseModel):
     endpoint: str

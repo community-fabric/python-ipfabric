@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 """
 Conditional import for typing, allowing the use of the download function in a snapsnot object.
 If we did not utlize a Conditional Import here, you would receive a circular import error when trying to import
@@ -27,28 +28,16 @@ logger = logging.getLogger("python-ipfabric")
 
 def find_job_id(ipf, snapshot_id):
     ipf_filter = {
-        "snapshot": [
-            "eq",
-            f"{snapshot_id}"
-        ],
-        "name": [
-            "eq",
-            "snapshotDownload"
-        ],
-        "status": [
-            "eq",
-            'done'
-        ],
-        "downloadFile": [
-            "empty",
-            "false"
-        ]
+        "snapshot": ["eq", f"{snapshot_id}"],
+        "name": ["eq", "snapshotDownload"],
+        "status": ["eq", "done"],
+        "downloadFile": ["empty", "false"],
     }
     jobs = ipf.fetch_all("tables/jobs", filters=ipf_filter, snapshot=False)
     job_id = None
     if len(jobs) > 1:
         logger.warning("multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id")
-        job_ids = sorted([int(job['id']) for job in jobs])
+        job_ids = sorted([int(job["id"]) for job in jobs])
         job_id = job_ids[-1]
     elif len(jobs) == 0:
         logger.warning(f"No download job found for snap-snap {snapshot_id}")
@@ -63,14 +52,14 @@ def upload(ipf: IPFClient, file: str):
     try:
         import urllib3
     except ModuleNotFoundError as err:
-        logger.warning("urllib3 is not installed,"
-                       "please install via pip using:"
-                       "pip install urllib3")
+        logger.warning("urllib3 is not installed," "please install via pip using:" "pip install urllib3")
         return None
     http = urllib3.PoolManager()
-    with open(file, 'rb') as fp:
-        file = {'file': (Path(file).name, fp.read(), 'application/x-tar')}
-    resp = http.request("POST", f"{ipf.base_url}" + "/snapshots/upload", fields=file, headers={'X-API-Token': ipf.auth.api_key})
+    with open(file, "rb") as fp:
+        file = {"file": (Path(file).name, fp.read(), "application/x-tar")}
+    resp = http.request(
+        "POST", f"{ipf.base_url}" + "/snapshots/upload", fields=file, headers={"X-API-Token": ipf.auth.api_key}
+    )
     if resp.status != 200:
         logger.warning(f"Error uploading snapshot, {resp.data}")
     return resp.data.decode()
@@ -86,12 +75,12 @@ def download(ipf: IPFClient, snapshot_id: str, path: str = None):
     if not isinstance(path, Path):
         path = Path(f"{path}")
         if not path:
-            ss_name = ipf.snapshots[snapshot_id].dict()['name']
+            ss_name = ipf.snapshots[snapshot_id].dict()["name"]
             file_name = f"{snapshot_id}.tar"
             if not bool(ss_name):
                 file_name = f"{ss_name}_{snapshot_id}.tar"
             path = Path(f"{file_name}")
-    if path and not path.name.endswith('.tar'):
+    if path and not path.name.endswith(".tar"):
         path = Path(f"{path.name}.tar")
     job_id = find_job_id(ipf, snapshot_id)
     file = ipf.get(f"jobs/{job_id}/download")
