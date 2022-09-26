@@ -59,9 +59,14 @@ def find_job_id(ipf, snapshot_id):
 
 def upload(ipf: IPFClient, file: str):
     # as of time of development, httpx does not support file uploads via form data
-    # httpx is a wrapper package for urllib3, so utlizing the lower level package to send this request
-    # until httpx offically supports file uploads via formdata
-    import urllib3
+    # urllib3 supports pools to stream data faster
+    try:
+        import urllib3
+    except ModuleNotFoundError as err:
+        logger.warning("urllib3 is not installed,"
+                       "please install via pip using:"
+                       "pip install urllib3")
+        return None
     http = urllib3.PoolManager()
     with open(file, 'rb') as fp:
         file = {'file': (Path(file).name, fp.read(), 'application/x-tar')}
@@ -71,7 +76,7 @@ def upload(ipf: IPFClient, file: str):
     return resp.data.decode()
 
 
-def download(ipf: IPFClient, snapshot_id: str, path: str):
+def download(ipf: IPFClient, snapshot_id: str, path: str = None):
     if not snapshot_id:
         snapshot_id = ipf.snapshot_id
     # start download job
@@ -80,16 +85,16 @@ def download(ipf: IPFClient, snapshot_id: str, path: str):
     time.sleep(5)
     if not isinstance(path, Path):
         path = Path(f"{path}")
+        if not path:
+            ss_name = ipf.snapshots[snapshot_id].dict()['name']
+            file_name = f"{snapshot_id}.tar"
+            if not bool(ss_name):
+                file_name = f"{ss_name}_{snapshot_id}.tar"
+            path = Path(f"{file_name}")
     if path and not path.name.endswith('.tar'):
         path = Path(f"{path.name}.tar")
-    if not path:
-        ss_name = ipf.snapshots[snapshot_id].dict()['name']
-        file_name = f"{snapshot_id}.tar"
-        if not bool(ss_name):
-            file_name = f"{ss_name}_{snapshot_id}.tar"
-        path = Path(f"{file_name}")
     job_id = find_job_id(ipf, snapshot_id)
     file = ipf.get(f"jobs/{job_id}/download")
     with open(path, "wb") as fp:
         fp.write(file.read())
-    return True
+    return path
