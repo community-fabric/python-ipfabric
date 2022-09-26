@@ -29,6 +29,7 @@ openpyxl = {version = "^3.0.9", optional = true}
 tabulate = {version = "^0.8.9",  optional = true}
 ipfabric-httpx-auth = "^5.0.0"
 python-json-logger = {version = "^2.0.4",  optional = true}
+urllib3 = {version = "^1.26.12", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -38,6 +39,7 @@ black = "^22.3"
 
 [tool.poetry.extras]
 examples = ["tabulate", "pandas", "openpyxl", "python-json-logger"]
+snapshots = ["urllib3", "python-json-logger"]
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
