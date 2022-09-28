@@ -2,6 +2,12 @@
 
 ## 5.0.11 (2022-09-20)
 ### Fix
+* Poetry Update
+### CI/CD
+* Add community-fabric Slack notification
+
+## 5.0.11 (2022-09-20)
+### Fix
 * Final fix for SSL verification
 
 ## 5.0.10 (2022-09-12)

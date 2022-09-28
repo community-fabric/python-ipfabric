@@ -61,14 +61,18 @@ class IPFabricAPI(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
-            super().__init__(timeout=kwargs.get("timeout", True), headers={"Content-Type": "application/json"},
-                             verify=kwargs.get("verify", settings.ipf_verify))
+            super().__init__(
+                timeout=kwargs.get("timeout", True),
+                headers={"Content-Type": "application/json"},
+                verify=kwargs.get("verify", settings.ipf_verify),
+            )
             base_url = base_url or settings.ipf_url
             if not base_url:
                 raise RuntimeError("IP Fabric base_url not provided or IPF_URL not set")
 
-            self.api_version, self.os_version = self.check_version(api_version or settings.ipf_version, base_url,
-                                                                   settings.ipf_dev)
+            self.api_version, self.os_version = self.check_version(
+                api_version or settings.ipf_version, base_url, settings.ipf_dev
+            )
             self.base_url = (
                 urljoin(base_url, f"api/{self.api_version}/")
                 if not settings.ipf_dev
@@ -89,8 +93,10 @@ class IPFabricAPI(Client):
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
         self.snapshot_id = snapshot_id
-        logger.debug(f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
-                     f"as user '{self.user.username}'")
+        logger.debug(
+            f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
+            f"as user '{self.user.username}'"
+        )
 
     def get_user(self):
         """
@@ -110,12 +116,15 @@ class IPFabricAPI(Client):
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
-        api_version = api_version.lstrip('v').split(".") if api_version else \
-            importlib_metadata.version("ipfabric").lstrip('v').split(".")
+        api_version = (
+            api_version.lstrip("v").split(".")
+            if api_version
+            else importlib_metadata.version("ipfabric").lstrip("v").split(".")
+        )
 
         resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
-        os_api_version = resp.json()["apiVersion"].lstrip('v').split(".")
+        os_api_version = resp.json()["apiVersion"].lstrip("v").split(".")
         if api_version[0:2] > os_api_version[0:2]:
             logger.warning(
                 f"Specified API or SDK Version ({'.'.join(api_version)}) is greater then "
