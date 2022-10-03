@@ -10,6 +10,8 @@ def convert_timestamp(ts: int, to_utc: bool = False):
 
 
 def date_parser(timestamp: Union[int, str]):
-    return (datetime.fromtimestamp(timestamp, tz=timezone.utc)
-            if isinstance(timestamp, int)
-            else parser.parse(timestamp).replace(tzinfo=timezone.utc))
+    return (
+        datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        if isinstance(timestamp, int)
+        else parser.parse(timestamp).replace(tzinfo=timezone.utc)
+    )
