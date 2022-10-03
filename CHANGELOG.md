@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.12 (2022-10-03)
+### Feature
+* Added tools for Discovery History table
+
 ## 5.0.11 (2022-09-20)
 ### Fix
 * Poetry Update
