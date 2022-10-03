@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.12 (2022-10-03)
+## 5.0.13 (2022-10-03)
 ### Feature
 * Added tools for Discovery History table
 
