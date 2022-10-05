@@ -216,6 +216,14 @@ httpx = ">=0.23.0,<0.24.0"
 PyJWT = ">=2.4.0,<3.0.0"
 
 [[package]]
+name = "macaddress"
+version = "1.2.0"
+description = "Like ``ipaddress``, but for hardware identifiers such as MAC addresses."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "mccabe"
 version = "0.6.1"
 description = "McCabe checker, plugin for flake8"
@@ -542,7 +550,7 @@ examples = ["tabulate", "pandas", "openpyxl", "python-json-logger"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "c061e9d2641e48c56e741ddc5445d92ea4e9a3596429cffe9b81409df805a9de"
+content-hash = "38c99fb07d92d1a564c5b718eb8eb03a91088045727f8431e1ef8025e41af67a"
 
 [metadata.files]
 anyio = [
@@ -680,6 +688,10 @@ iniconfig = [
 ipfabric-httpx-auth = [
     {file = "ipfabric_httpx_auth-5.0.0-py3-none-any.whl", hash = "sha256:9b3ba954644862aa86efb24435da8f84c2a3c99d79eaeb757cd3caf57b11d2ea"},
     {file = "ipfabric_httpx_auth-5.0.0.tar.gz", hash = "sha256:e376f0381a2c286ebb4cb2e61168f03cecce09bd8b7044d5efe15db89a6291df"},
+]
+macaddress = [
+    {file = "macaddress-1.2.0-py3-none-any.whl", hash = "sha256:09efb3fdd161643c1b53037647127ddf42071022f57d78cc8d4cca02633407e1"},
+    {file = "macaddress-1.2.0.tar.gz", hash = "sha256:e93d7fba733626f98c7567440ccd2e6768b5fb3fb474d45f55643670ac88b765"},
 ]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},

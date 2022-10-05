@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.14 (2022-10-03)
+### Feature
+* Added shared tools for parsing MAC addresses and return IP Fabric Format
+* Added examples for parsing MAC and Timestamps.
+
 ## 5.0.13 (2022-10-03)
 ### Feature
 * Added tools for Discovery History table
