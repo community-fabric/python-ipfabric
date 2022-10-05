@@ -5,7 +5,7 @@
 * Added ipfabric.settings.SiteSeparation
 * Removed ipfabric.tools.UpdateSiteNames as this was removed in 4.4
 * Added ipfabric.tools.site_seperation_report.map_devices_to_rules
-* See [site_separation_tester.py](examples/tools/site_separation_tester.py)
+* See [site_separation_tester.py](examples/tools/site_separation_report.py)
 
 ## 5.0.14 (2022-10-04)
 ### Feature

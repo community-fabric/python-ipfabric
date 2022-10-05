@@ -39,10 +39,10 @@ class VendorAPI:
 
     def add_vendor_api(self, api: API_MODELS):
         params = vars(api)
-        if isinstance(api, AWS) and api.assumeRole is None:
-            params.pop("assumeRole")
-        elif isinstance(api, AWS) and api.assumeRole:
-            params["assumeRole"] = dict(role=params["assumeRole"])
+        if isinstance(api, AWS) and api.assumeRoles is None:
+            params.pop("assumeRoles")
+        elif isinstance(api, AWS) and api.assumeRoles:
+            params["assumeRoles"] = [dict(role=a) for a in params["assumeRoles"]]
         res = self.client.post(self._api_url, json=params)
         res.raise_for_status()
         return res.json()
