@@ -22,7 +22,7 @@ class Discovery(unittest.TestCase):
 
     def test_get_all_history(self):
         example = deepcopy(self.example)[0]
-        example.update({'ts': convert_timestamp(example['ts'], to_utc=True)})
+        example.update({'ts': convert_timestamp(example['ts'], ts_format='ziso')})
         self.dh.ipf.fetch_all.return_value = self.example
         history = self.dh.get_all_history()
         self.assertEqual(history[0], example)

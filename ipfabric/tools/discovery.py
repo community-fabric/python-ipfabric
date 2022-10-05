@@ -33,7 +33,7 @@ class DiscoveryHistory:
         if ts_format == "datetime" and "ts" in columns:
             [h.update({"ts": convert_timestamp(h["ts"])}) for h in history]
         elif ts_format == "utc" and "ts" in columns:
-            [h.update({"ts": convert_timestamp(h["ts"], to_utc=True)}) for h in history]
+            [h.update({"ts": convert_timestamp(h["ts"], ts_format="ziso")}) for h in history]
         return history
 
     def get_snapshot_history(
