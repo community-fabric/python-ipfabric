@@ -37,6 +37,7 @@ class Snapshot(BaseModel):
     start: datetime = Field(alias="tsStart")
     end: Optional[datetime] = Field(alias="tsEnd")
     version: Optional[str] = None
+    initial_version: Optional[str] = Field(alias="initialVersion")
     sites: List[Site]
     errors: Optional[List[Error]]
 

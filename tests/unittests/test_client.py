@@ -69,6 +69,7 @@ class Client(unittest.TestCase):
                     "tsStart": 1637154608164,
                     "id": "631ac652-1f72-417f-813f-b8a8c8730157",
                     "version": "4.1.1",
+                    "initialVersion": "3.8.0",
                     "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
                     "errors": [{"errorType": "ABMapResultError", "count": 1}],
                 }
@@ -100,10 +101,10 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.get")
     def test_check_version_no_version(self, get):
         get().is_error = None
-        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        get().json.return_value = {"apiVersion": "v6.1", "releaseVersion": "6.0.1+10"}
         api_version, os_version = self.ipf.check_version(None, 'TEST')
-        self.assertEqual(api_version, f"v5.0")
-        self.assertEqual(str(os_version), "5.0.1+10")
+        self.assertEqual(api_version, f"v6.0")
+        self.assertEqual(str(os_version), "6.0.1+10")
 
     @patch("httpx.Client.get")
     def test_check_version_api_gt_os(self, get):
