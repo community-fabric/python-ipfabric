@@ -79,7 +79,7 @@ def download(ipf: IPFClient, snapshot_id: str = None, path: str = None, timeout:
         path = Path(f"{snapshot_id}.tar")
     elif not isinstance(path, Path):
         path = Path(f"{path}")
-    if path.name.endswith('.tar'):
+    if not path.name.endswith('.tar'):
         path = Path(f"{path.name}.tar")
 
     # start download job
