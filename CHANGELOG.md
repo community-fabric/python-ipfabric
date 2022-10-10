@@ -1,5 +1,27 @@
 # Changelog
 
+## 5.0.15 (2022-10-05)
+### Feature
+* Added ipfabric.settings.SiteSeparation
+* Removed ipfabric.tools.UpdateSiteNames as this was removed in 4.4
+* Added ipfabric.tools.site_seperation_report.map_devices_to_rules
+* See [site_separation_tester.py](examples/tools/site_separation_tester.py)
+
+## 5.0.14 (2022-10-04)
+### Feature
+* Added shared tools for parsing MAC addresses and return IP Fabric Format
+* Added examples for parsing MAC and Timestamps.
+
+## 5.0.13 (2022-10-03)
+### Feature
+* Added tools for Discovery History table
+
+## 5.0.11 (2022-09-20)
+### Fix
+* Poetry Update
+### CI/CD
+* Add community-fabric Slack notification
+
 ## 5.0.11 (2022-09-20)
 ### Fix
 * Final fix for SSL verification

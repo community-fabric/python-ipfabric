@@ -61,10 +61,11 @@ class IPFabricAPI(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         with Settings() as settings:
+            self.verify = kwargs.get("verify", settings.ipf_verify)
             super().__init__(
                 timeout=kwargs.get("timeout", True),
                 headers={"Content-Type": "application/json"},
-                verify=kwargs.get("verify", settings.ipf_verify),
+                verify=self.verify,
             )
             base_url = base_url or settings.ipf_url
             if not base_url:

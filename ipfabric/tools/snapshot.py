@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 """
@@ -22,22 +23,36 @@ if TYPE_CHECKING:
 from pathlib import Path
 import time
 import logging
+import httpx
+from urllib.parse import urljoin
 
 logger = logging.getLogger("python-ipfabric")
 
 
 def find_job_id(ipf, snapshot_id):
     ipf_filter = {
-        "snapshot": ["eq", f"{snapshot_id}"],
-        "name": ["eq", "snapshotDownload"],
-        "status": ["eq", "done"],
-        "downloadFile": ["empty", "false"],
+        "snapshot": [
+            "eq",
+            f"{snapshot_id}"
+        ],
+        "name": [
+            "eq",
+            "snapshotDownload"
+        ],
+        "status": [
+            "eq",
+            'done'
+        ],
+        "downloadFile": [
+            "empty",
+            "false"
+        ]
     }
     jobs = ipf.fetch_all("tables/jobs", filters=ipf_filter, snapshot=False)
     job_id = None
     if len(jobs) > 1:
         logger.warning("multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id")
-        job_ids = sorted([int(job["id"]) for job in jobs])
+        job_ids = sorted([int(job['id']) for job in jobs])
         job_id = job_ids[-1]
     elif len(jobs) == 0:
         logger.warning(f"No download job found for snap-snap {snapshot_id}")
@@ -47,41 +62,31 @@ def find_job_id(ipf, snapshot_id):
 
 
 def upload(ipf: IPFClient, file: str):
-    # as of time of development, httpx does not support file uploads via form data
-    # urllib3 supports pools to stream data faster
-    try:
-        import urllib3
-    except ModuleNotFoundError as err:
-        logger.warning("urllib3 is not installed," "please install via pip using:" "pip install urllib3")
-        return None
-    http = urllib3.PoolManager()
-    with open(file, "rb") as fp:
-        file = {"file": (Path(file).name, fp.read(), "application/x-tar")}
-    resp = http.request(
-        "POST", f"{ipf.base_url}" + "/snapshots/upload", fields=file, headers={"X-API-Token": ipf.auth.api_key}
-    )
-    if resp.status != 200:
-        logger.warning(f"Error uploading snapshot, {resp.data}")
-    return resp.data.decode()
+    file = {'file': (Path(file).name, open(file, 'rb'), 'application/x-tar')}
+    resp = httpx.request('POST', urljoin(str(ipf.base_url), 'snapshots/upload'), files=file, auth=ipf.auth,
+                         verify=ipf.verify)
+    resp.raise_for_status()
+    return resp.json()
 
 
-def download(ipf: IPFClient, snapshot_id: str, path: str = None):
+def download(ipf: IPFClient, snapshot_id: str = None, path: str = None, timeout: int = 60):
     if not snapshot_id:
         snapshot_id = ipf.snapshot_id
-    # start download job
-    ipf.get(f"/snapshots/{snapshot_id}/download")
-    # waiting for download job to process
-    time.sleep(5)
-    if not isinstance(path, Path):
+    else:
+        snapshot_id = ipf.snapshots[snapshot_id].snapshot_id  # This checks if snapshot exists
+
+    if not path:
+        path = Path(f"{snapshot_id}.tar")
+    elif not isinstance(path, Path):
         path = Path(f"{path}")
-        if not path:
-            ss_name = ipf.snapshots[snapshot_id].dict()["name"]
-            file_name = f"{snapshot_id}.tar"
-            if not bool(ss_name):
-                file_name = f"{ss_name}_{snapshot_id}.tar"
-            path = Path(f"{file_name}")
-    if path and not path.name.endswith(".tar"):
+    if path.name.endswith('.tar'):
         path = Path(f"{path.name}.tar")
+
+    # start download job
+    resp = ipf.get(f"/snapshots/{snapshot_id}/download")
+    resp.raise_for_status()
+    # waiting for download job to process
+    time.sleep(timeout)  # TODO Loop until timeout to check
     job_id = find_job_id(ipf, snapshot_id)
     file = ipf.get(f"jobs/{job_id}/download")
     with open(path, "wb") as fp:
