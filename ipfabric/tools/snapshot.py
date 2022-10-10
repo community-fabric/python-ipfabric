@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
+
 """
 Conditional import for typing, allowing the use of the download function in a snapsnot object.
 If we did not utlize a Conditional Import here, you would receive a circular import error when trying to import
@@ -67,13 +69,20 @@ def upload(ipf: IPFClient, file: str):
                        "please install via pip using:"
                        "pip install urllib3")
         return None
-    http = urllib3.PoolManager()
+    http = urllib3.PoolManager() if ipf.verify else urllib3.PoolManager(cert_reqs='CERT_NONE')
     with open(file, 'rb') as fp:
         file = {'file': (Path(file).name, fp.read(), 'application/x-tar')}
     resp = http.request("POST", f"{ipf.base_url}" + "/snapshots/upload", fields=file, headers={'X-API-Token': ipf.auth.api_key})
     if resp.status != 200:
         logger.warning(f"Error uploading snapshot, {resp.data}")
     return resp.data.decode()
+
+
+# def upload(ipf: IPFClient, file: str):  #TODO Update with new HTTPX Client
+#     file = {'file': (Path(file).name, open(file, 'rb'), 'application/x-tar')}
+#     resp = ipf.request('POST', 'snapshots/upload', files=file, headers={"Content-Type": "multipart/form-data"})
+#     resp.raise_for_status()
+#     return resp.json()
 
 
 def download(ipf: IPFClient, snapshot_id: str, path: str = None):
