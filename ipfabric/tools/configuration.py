@@ -1,12 +1,13 @@
 import logging
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 from ipaddress import IPv4Address, AddressValueError
 from typing import Any, Union, Optional
 
-from dateutil import parser
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
+
+from ipfabric.tools.shared import date_parser
 
 logger = logging.getLogger("python-ipfabric")
 
@@ -135,17 +136,8 @@ class DeviceConfigs:
     @staticmethod
     def _get_hash(configs, date):
         if isinstance(date, tuple):
-            start, end = date
-            start = (
-                datetime.fromtimestamp(start, tz=timezone.utc)
-                if isinstance(start, int)
-                else parser.parse(start).replace(tzinfo=timezone.utc)
-            )
-            end = (
-                datetime.fromtimestamp(end, tz=timezone.utc)
-                if isinstance(end, int)
-                else parser.parse(end).replace(tzinfo=timezone.utc)
-            )
+            start = date_parser(date[0])
+            end = date_parser(date[1])
             for cfg in configs:
                 if start < cfg.last_change < end:
                     return cfg

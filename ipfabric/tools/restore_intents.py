@@ -22,24 +22,18 @@ DEFAULT_SETUP = {
     "v4.4": {
         "intents": json.loads(importlib.resources.read_text(V4_4_PATH, INTENTS)),
         "groups": json.loads(importlib.resources.read_text(V4_4_PATH, GROUPS)),
-        "dashboard": json.loads(
-            importlib.resources.read_text(V4_4_PATH, DASHBOARD), object_pairs_hook=OrderedDict
-        ),
+        "dashboard": json.loads(importlib.resources.read_text(V4_4_PATH, DASHBOARD), object_pairs_hook=OrderedDict),
     },
     "v5.0": {
         "intents": json.loads(importlib.resources.read_text(V5_0_PATH, INTENTS)),
         "groups": json.loads(importlib.resources.read_text(V5_0_PATH, GROUPS)),
-        "dashboard": json.loads(
-            importlib.resources.read_text(V5_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict
-        ),
+        "dashboard": json.loads(importlib.resources.read_text(V5_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict),
     },
     "v6.0": {
         "intents": json.loads(importlib.resources.read_text(V6_0_PATH, INTENTS)),
         "groups": json.loads(importlib.resources.read_text(V6_0_PATH, GROUPS)),
-        "dashboard": json.loads(
-            importlib.resources.read_text(V6_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict
-        ),
-    }
+        "dashboard": json.loads(importlib.resources.read_text(V6_0_PATH, DASHBOARD), object_pairs_hook=OrderedDict),
+    },
 }
 
 

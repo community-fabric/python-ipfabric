@@ -96,5 +96,14 @@ jobs:
           platform: 'PYPI'
           version: ${{ steps.version.outputs.version }}
         if: success()
+      - name: Notify on Community Slack
+        uses: openhousepvt/slack@v1.3.2
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_COMMUNITY_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          platform: 'PYPI'
+          version: ${{ steps.version.outputs.version }}
+        if: success()
     needs:
       - publish

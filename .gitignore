@@ -137,3 +137,4 @@ dmypy.json
 examples/*.svg
 examples/*.png
 examples/*.xlsx
+examples/tools/SiteSeparation.csv
