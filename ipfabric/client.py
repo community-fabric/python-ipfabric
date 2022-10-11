@@ -50,6 +50,18 @@ class IPFClient(IPFabricAPI):
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)
 
+    @staticmethod
+    def _check_payload(payload, snapshot, filters, reports, sort):
+        if not snapshot:
+            payload.pop("snapshot", None)
+        if filters:
+            payload["filters"] = filters
+        if reports:
+            payload["reports"] = reports
+        if sort:
+            payload["sort"] = sort
+        return payload
+
     @check_format
     def fetch(
         self,
@@ -76,20 +88,12 @@ class IPFClient(IPFabricAPI):
         :param snapshot: bool: Set to False for some tables like management endpoints.
         :return: list: List of Dictionary objects.
         """
-
         payload = dict(
             columns=columns or self._get_columns(url),
             pagination=dict(start=start, limit=limit),
+            snapshot=snapshot_id or self.snapshot_id
         )
-        if snapshot:
-            payload["snapshot"] = snapshot_id or self.snapshot_id
-        if filters:
-            payload["filters"] = filters
-        if reports:
-            payload["reports"] = reports
-        if sort:
-            payload["sort"] = sort
-
+        payload = self._check_payload(payload, snapshot, filters, reports, sort)
         res = self.post(url, json=payload)
         res.raise_for_status()
         return res.json()["data"]
@@ -116,17 +120,8 @@ class IPFClient(IPFabricAPI):
         :param snapshot: bool: Set to False for some tables like management endpoints.
         :return: list: List of Dictionary objects.
         """
-
-        payload = dict(columns=columns or self._get_columns(url))
-        if snapshot:
-            payload["snapshot"] = snapshot_id or self.snapshot_id
-        if filters:
-            payload["filters"] = filters
-        if reports:
-            payload["reports"] = reports
-        if sort:
-            payload["sort"] = sort
-
+        payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
+        payload = self._check_payload(payload, snapshot, filters, reports, sort)
         return self._ipf_pager(url, payload)
 
     @check_format
@@ -159,33 +154,6 @@ class IPFClient(IPFabricAPI):
             return [x.strip() for x in re.match(r"\".*\".*\[(.*)]$", msg).group(1).split(",")]
         else:
             r.raise_for_status()
-
-    def _ipf_pager(
-        self,
-        url: str,
-        payload: dict,
-        data: Optional[Union[list, None]] = None,
-        limit: int = 1000,
-        start: int = 0,
-    ):
-        """
-        Loops through and collects all the data from the tables
-        :param url: str: Full URL to post to
-        :param payload: dict: Data to submit to IP Fabric
-        :param data: list: List of data to append subsequent calls
-        :param start: int: Where to start for the data
-        :return: list: List of dictionaries
-        """
-        data = data or list()
-
-        payload["pagination"] = dict(limit=limit, start=start)
-        r = self.post(url, json=payload)
-        r.raise_for_status()
-        r_data = r.json()["data"]
-        data.extend(r_data)
-        if limit == len(r_data):
-            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
-        return data
 
     def get_count(self, url: str, filters: Optional[Union[dict, str]] = None, snapshot_id: Optional[str] = None):
         payload = dict(columns=["id"], pagination=dict(limit=1, start=0), snapshot=snapshot_id or self.snapshot_id)

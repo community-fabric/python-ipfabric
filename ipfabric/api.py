@@ -5,7 +5,7 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional
+from typing import Optional, Union
 from urllib.parse import urljoin
 
 from httpx import Client
@@ -14,7 +14,6 @@ from pydantic import BaseSettings
 
 from ipfabric import models
 from ipfabric.settings.user_mgmt import User
-
 
 logger = logging.getLogger("ipfabric")
 
@@ -44,14 +43,14 @@ class Settings(BaseSettings):
 
 class IPFabricAPI(Client):
     def __init__(
-        self,
-        base_url: Optional[str] = None,
-        api_version: Optional[str] = None,
-        token: Optional[str] = None,
-        snapshot_id: Optional[str] = DEFAULT_ID,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        **kwargs,
+            self,
+            base_url: Optional[str] = None,
+            api_version: Optional[str] = None,
+            token: Optional[str] = None,
+            snapshot_id: Optional[str] = DEFAULT_ID,
+            username: Optional[str] = None,
+            password: Optional[str] = None,
+            **kwargs,
     ):
         """
         Initializes the IP Fabric Client
@@ -167,17 +166,40 @@ class IPFabricAPI(Client):
         else:
             self._snapshot_id = self.snapshots[snapshot_id].snapshot_id
 
-    def get_snapshots(self):
+    def get_snapshots(self, loaded_only: bool = True):
         """
         Gets all snapshots from IP Fabric and returns a dictionary of {ID: Snapshot_info}
         :return: dict[str, Snapshot]: Dictionary with ID as key and dictionary with info as the value
         """
+        payload = {
+            "columns": ['id', 'status', 'finishStatus', 'loadedSize', 'unloadedSize', 'name', 'note', 'sites',
+                        'fromArchive', 'loading', 'locked', 'deviceAddedCount', 'deviceRemovedCount',
+                        'interfaceActiveCount', 'interfaceCount', 'interfaceEdgeCount', 'totalDevCount',
+                        'isLastSnapshot', 'tsChange', 'tsEnd', 'tsStart', 'userCount'],
+            "sort": {"order": "desc", "column": "tsEnd"}
+        }
+        if loaded_only:
+            logger.warning("Retrieving only loaded snapshots. To load all snapshots set X to X.")
+            payload['filters'] = {"and": [{"status": ["eq", "done"]}, {"finishStatus": ["eq", "done"]}]}
+        results = self._ipf_pager('tables/management/snapshots', payload)
         res = self.get("/snapshots")
         res.raise_for_status()
+        get_results = {s['id']: s for s in res.json()}
+        """
+        Need to do a GET and POST to get all Snapshot data. See NIM-7223
+        POST Missing:
+        licensedDevCount
+        errors
+        version
+        initialVersion
+        """
 
         snap_dict = OrderedDict()
-        for s in res.json():
-            snap = models.Snapshot(**s)
+        for s in results:
+            snap = models.Snapshot(**s, licensedDevCount=get_results[s['id']]['licensedDevCount'],
+                                   errors=get_results[s['id']].get('errors', None),
+                                   version=get_results[s['id']]['version'],
+                                   initialVersion=get_results[s['id']].get('initialVersion', None))
             snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
@@ -188,3 +210,30 @@ class IPFabricAPI(Client):
                 if "$prev" not in snap_dict:
                     snap_dict["$prev"] = snap
         return snap_dict
+
+    def _ipf_pager(
+            self,
+            url: str,
+            payload: dict,
+            data: Optional[Union[list, None]] = None,
+            limit: int = 1000,
+            start: int = 0,
+    ):
+        """
+        Loops through and collects all the data from the tables
+        :param url: str: Full URL to post to
+        :param payload: dict: Data to submit to IP Fabric
+        :param data: list: List of data to append subsequent calls
+        :param start: int: Where to start for the data
+        :return: list: List of dictionaries
+        """
+        data = data or list()
+
+        payload["pagination"] = dict(limit=limit, start=start)
+        r = self.post(url, json=payload)
+        r.raise_for_status()
+        r_data = r.json()["data"]
+        data.extend(r_data)
+        if limit == len(r_data):
+            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
+        return data

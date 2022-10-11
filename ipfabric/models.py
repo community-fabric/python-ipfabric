@@ -9,17 +9,6 @@ from ipfabric.technology import *
 logger = logging.getLogger("python-ipfabric")
 
 
-class Site(BaseModel):
-    _sitename: str = Field(alias="siteName")
-    _name: str = Field(alias="name")
-    uid: str
-    site_id: Optional[str] = Field(None, alias="id")
-
-    @property
-    def site_name(self):
-        return self._name or self._sitename
-
-
 class Error(BaseModel):
     error_type: str = Field(alias="errorType")
     count: int
@@ -29,21 +18,53 @@ class Snapshot(BaseModel):
     snapshot_id: str = Field(alias="id")
     name: Optional[str]
     note: Optional[str]
-    count: int = Field(alias="totalDevCount")
-    licensed_count: int = Field(alias="licensedDevCount")
+    total_dev_count: int = Field(alias="totalDevCount")
+    licensed_dev_count: int = Field(alias="licensedDevCount")
+    user_count: int = Field(alias='userCount')
+    interface_active_count: int = Field(alias="interfaceActiveCount")
+    interface_count: int = Field(alias="interfaceCount")
+    interface_edge_count: int = Field(alias='interfaceEdgeCount')
+    device_added_count: int = Field(alias="deviceAddedCount")
+    device_removed_count: int = Field(alias='deviceRemovedCount')
     status: str
-    state: str
+    finish_status: str = Field(alias="finishStatus")
+    loading: bool
     locked: bool
+    from_archive: bool = Field(alias="fromArchive")
     start: datetime = Field(alias="tsStart")
     end: Optional[datetime] = Field(alias="tsEnd")
+    change: Optional[datetime] = Field(alias="tsChange")
     version: Optional[str] = None
     initial_version: Optional[str] = Field(alias="initialVersion")
-    sites: List[Site]
+    sites: List[str]
     errors: Optional[List[Error]]
+    loaded_size: int = Field(alias='loadedSize')
+    unloaded_size: int = Field(alias='unloadedSize')
+
+    def lock(self, ipf):
+        if not self.locked and self.loaded:
+            res = ipf.post(f'snapshots/{self.snapshot_id}/lock')
+            res.raise_for_status()
+        elif not self.loaded:
+            logger.error(f"Snapshot {self.snapshot_id} is not loaded.")
+            return False
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already locked.")
+        return True
+
+    def unlock(self, ipf):
+        if self.locked and self.loaded:
+            res = ipf.post(f'snapshots/{self.snapshot_id}/unlock')
+            res.raise_for_status()
+        elif not self.loaded:
+            logger.error(f"Snapshot {self.snapshot_id} is not loaded.")
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already unlocked.")
+        return True
 
     @property
     def loaded(self):
-        return self.state == "loaded"
+        return self.status == "done" and self.finish_status == "done"
 
     def unload(self, ipf):
         """

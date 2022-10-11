@@ -12,7 +12,6 @@ class Models(unittest.TestCase):
                 "loadedSize": "172267939",
                 "name": None,
                 "note": "",
-                "state": "loaded",
                 "version": "develop",
                 "locked": False,
                 "totalDevices": 642,
@@ -22,12 +21,24 @@ class Models(unittest.TestCase):
                 "tsEnd": 1637156346509,
                 "tsStart": 1637154608164,
                 "id": "631ac652-1f72-417f-813f-b8a8c8730157",
-                "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
+                "sites": ["BRANCH"],
                 "errors": [{"errorType": "ABMapResultError", "count": 1}],
+                "unloadedSize": 10,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
+
             }
         )
         self.assertIsInstance(s, models.Snapshot)
         self.assertIsInstance(s.start, datetime.datetime)
+        self.assertTrue(s.loaded)
 
     def test_table(self):
         table = models.Table(client=MagicMock(), endpoint="/network/ip")
