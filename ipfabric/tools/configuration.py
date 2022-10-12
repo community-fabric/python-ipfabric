@@ -27,12 +27,14 @@ class Config(BaseModel):
 class DeviceConfigs:
     ipf: Any
 
-    def get_all_configurations(self, device: Optional[str] = None, sn: Optional[str] = None):
-        """
-        Get all configurations in IP Fabric
-        :param device: str: Hostname (case sensitive) filter
-        :param sn: str: Serial number of device
-        :return: dict: {sn: [Config, Config]}
+    def get_all_configurations(self, device: Optional[str] = None, sn: Optional[str] = None) -> dict[str:[Config, Config]]:
+        """Get all configurations in IP Fabric
+
+        Args:
+            device Hostname (case sensitive) filter
+            sn: Serial number of device
+        Returns:
+            results: dict: {sn: [Config, Config]}
         """
         if device or sn:
             filters = dict(sn=["eq", sn]) if sn else dict(hostname=["ieq", device])
@@ -97,16 +99,18 @@ class DeviceConfigs:
 
     def get_configuration(
         self, device: str = None, sn: str = None, sanitized: bool = True, date: Union[str, tuple] = "$last"
-    ):
-        """
-        Gets last configuration of a device based on hostname or IP or IPF Unique Serial Number
-        :param device: str: Hostname or IP
-        :param sn: str: Serial Number
-        :param sanitized: bool: Default True to mask passwords
-        :param date: Union[str, tuple]: Defaults to latest config. Values in [$last, $prev, $first] or can be a
+    ) -> str:
+        """Gets last configuration of a device based on hostname or IP or IPF Unique Serial Number
+
+        Args:
+        device: Hostname or IP
+        sn: Serial Number
+        sanitized: Default True to mask passwords
+        date: Defaults to latest config. Values in [$last, $prev, $first] or can be a
                                         tuple of a date range to get the latest snapshot in that range.
                                         Date can be string or int in seconds ("11/22/ 1:30", 1637629200)
-        :return: Result: Returns a result or None
+        Returns:
+            Returns a result or None
         """
         if not isinstance(date, tuple) and date not in ["$last", "$prev", "$first"]:
             raise SyntaxError("Date must be in [$last, $prev, $first] or tuple ('startDate', 'endDate')")
@@ -124,7 +128,15 @@ class DeviceConfigs:
             logger.error(f"Could not find a configuration with date {date}")
             return None
 
-    def get_text_config(self, cfg: Config, sanitized: bool = True):
+    def get_text_config(self, cfg: Config, sanitized: bool = True) -> str:
+        """gets a devices config
+        Args:
+            cfg: Config from get_configuration method
+            sanitized: bool to determine to return sensitive data
+
+        Returns:
+            string containing config of a device
+        """
         res = self.ipf.get(
             "/tables/management/configuration/download",
             params=dict(hash=cfg.config_hash, sanitized=sanitized),

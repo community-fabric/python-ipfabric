@@ -40,14 +40,18 @@ class IPFClient(IPFabricAPI):
         username: Optional[str] = None,
         password: Optional[str] = None,
         unloaded: bool = False,
-        **kwargs,
+        **kwargs: Optional[dict]
     ):
-        """
-        Initializes the IP Fabric Client
-        :param base_url: str: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
-        :param token: str: API token or 'IPF_TOKEN' environment variable
-        :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
-        :param kwargs: dict: Keyword args to pass to httpx
+        """Initializes the IP Fabric Client
+
+        Args:
+            base_url: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
+            api_version: Version of IP Fabric API
+            token: API token or 'IPF_TOKEN' environment variable
+            snapshot_id: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
+            username: username to authenticate against IP Fabric
+            password: password to authenticate against IP Fabric
+            **kwargs: Keyword args to pass to httpx
         """
         super().__init__(base_url, api_version, token, snapshot_id, username, password, unloaded, **kwargs)
         self.inventory = Inventory(client=self)
@@ -72,7 +76,7 @@ class IPFClient(IPFabricAPI):
     def fetch(
         self,
         url,
-        columns: Optional[list] = None,
+        columns: Optional[List] = None,
         filters: Optional[Union[dict, str]] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
@@ -81,20 +85,22 @@ class IPFClient(IPFabricAPI):
         sort: Optional[dict] = None,
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
-    ):
-        """
-        Gets data from IP Fabric for specified endpoint
-        :param url: str: Example tables/vlan/device-summary
-        :param columns: list: Optional list of columns to return, None will return all
-        :param filters: dict: Optional dictionary of filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param limit: int: Default to 1,000 rows
-        :param start: int: Starts at 0
-        :param snapshot_id: str: Optional snapshot_id to override default
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :param snapshot: bool: Set to False for some tables like management endpoints.
-        :return: list: List of Dictionary objects.
+    ) -> list:
+        """Gets data from IP Fabric for specified endpoint
+
+        Args:
+            url: Example tables/vlan/device-summary
+            columns: Optional list of columns to return, None will return all
+            filters: Optional dictionary of filters
+            limit: Default to 1,000 rows
+            start: Starts at 0
+            snapshot_id: Optional snapshot_id to override default
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            snapshot: Set to False for some tables like management endpoints.
+
+        Returns:
+            list: List of Dictionary objects.
         """
         payload = dict(
             columns=columns or self._get_columns(url),
@@ -117,31 +123,37 @@ class IPFClient(IPFabricAPI):
         sort: Optional[dict] = None,
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
-    ):
-        """
-        Gets all data from IP Fabric for specified endpoint
-        :param url: str: Example tables/vlan/device-summary
-        :param columns: list: Optional list of columns to return, None will return all
-        :param filters: dict: Optional dictionary of filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param snapshot_id: str: Optional snapshot_id to override default
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :param snapshot: bool: Set to False for some tables like management endpoints.
-        :return: list: List of Dictionary objects.
+    )-> list:
+        """Gets all data from IP Fabric for specified endpoint
+
+        Args:
+            url: Example tables/vlan/device-summary
+            columns: Optional list of columns to return, None will return all
+            filters: Optional dictionary of filters
+            snapshot_id: Optional snapshot_id to override default
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            snapshot: Set to False for some tables like management endpoints.
+
+        Returns:
+            list: List of Dictionary objects.
         """
         payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
         payload = self._check_payload(payload, snapshot, filters, reports, sort, attr_filters)
         return self._ipf_pager(url, payload)
 
     @check_format
-    def query(self, url: str, payload: Union[str, dict], all: bool = True):
-        """
-        Submits a query, does no formatting on the parameters.  Use for copy/pasting from the webpage.
-        :param url: str: Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary
-        :param payload: Union[str, dict]: Dictionary to submit in POST or can be JSON string (i.e. read from file).
-        :param all: bool: Default use pager to get all results and ignore pagination information in the payload
-        :return: list: List of Dictionary objects.
+    def query(self, url: str, payload: Union[str, dict], all: bool = True) -> list:
+        """Submits a query, does no formatting on the parameters.  Use for copy/pasting from the webpage.
+
+        Args:
+            url Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary
+            payload: Dictionary to submit in POST or can be JSON string (i.e. read from file).
+            all: Default use pager to get all results and ignore pagination information in the payload
+
+
+        Returns:
+            list: List of Dictionary objects.
         """
         if isinstance(payload, str):
             payload = loads(payload)
@@ -159,10 +171,13 @@ class IPFClient(IPFabricAPI):
         return self.get_columns(url)
 
     def get_columns(self, url: str):
-        """
-        Submits malformed payload and extracts column names from it
-        :param url: str: API url to post
-        :return: list: List of column names
+        """Submits malformed payload and extracts column names from it
+
+        Args:
+            url: API url to post
+
+        Returns:
+            list: List of column names
         """
         r = self.post(url, json=dict(snapshot=self.snapshot_id, columns=["*"]))
         if r.status_code == 422:
@@ -178,7 +193,44 @@ class IPFClient(IPFabricAPI):
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         snapshot: bool = True,
-    ):
+        payload: dict,
+        data: Optional[Union[list, None]] = None,
+        limit: int = 1000,
+        start: int = 0,
+    ) -> list:
+        """Loops through and collects all the data from the tables
+
+        Args:
+        url: Full URL to post to
+        payload: Data to submit to IP Fabric
+        data: List of data to append subsequent calls
+        start: Where to start for the data
+
+        Returns:
+            list: List of dictionaries
+        """
+        data = data or list()
+
+        payload["pagination"] = dict(limit=limit, start=start)
+        r = self.post(url, json=payload)
+        r.raise_for_status()
+        r_data = r.json()["data"]
+        data.extend(r_data)
+        if limit == len(r_data):
+            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
+        return data
+
+    def get_count(self, url: str, filters: Optional[Union[dict, str]] = None, snapshot_id: Optional[str] = None) -> int:
+        """Get a total number of rows
+
+        Args:
+            url: Full URL to post to
+            filters: Optional dictionary of filters
+            snapshot_id: Optional snapshot_id to override default
+
+        Returns:
+            int: a count of rows
+        """
         payload = dict(columns=["id"], pagination=dict(limit=1, start=0), snapshot=snapshot_id or self.snapshot_id)
         payload = self._check_payload(payload, snapshot, filters, None, None, attr_filters)
         res = self.post(url, json=payload)

@@ -10,9 +10,94 @@ from ipfabric.technology import *
 logger = logging.getLogger("ipfabric")
 
 IGNORE_COLUMNS = {"id"}
+class Site(BaseModel):
+    """model for a site
+    """
+    _sitename: str = Field(alias="siteName")
+    _name: str = Field(alias="name")
+    uid: str
+    site_id: Optional[str] = Field(None, alias="id")
+
+    @property
+    def site_name(self):
+        return self._name or self._sitename
+
+
+class Error(BaseModel):
+    """model for errors
+    """
+    error_type: str = Field(alias="errorType")
+    count: int
+
+
+class Snapshot(BaseModel):
+    """model for a snapshot
+    """
+    snapshot_id: str = Field(alias="id")
+    name: Optional[str]
+    note: Optional[str]
+    count: int = Field(alias="totalDevCount")
+    licensed_count: int = Field(alias="licensedDevCount")
+    status: str
+    state: str
+    locked: bool
+    start: datetime = Field(alias="tsStart")
+    end: Optional[datetime] = Field(alias="tsEnd")
+    version: Optional[str] = None
+    initial_version: Optional[str] = Field(alias="initialVersion")
+    sites: List[Site]
+    errors: Optional[List[Error]]
+
+    @property
+    def loaded(self):
+        return self.state == "loaded"
+
+    def unload(self, ipf) -> bool:
+        """unload a Snapshot
+        Args:
+            ipf: IPFClient
+        Returns:
+            bool type that indicates the snapshot was successfully unloaded
+        """
+        if self.loaded:
+            res = ipf.post(
+                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
+            res.raise_for_status()
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
+        return True
+
+    def load(self, ipf) -> bool:
+        """load a Snapshot
+        Args:
+            ipf: IPFClient
+        Returns:
+            bool type that indicates the snapshot was successfully unloaded
+        """
+        if not self.loaded:
+            res = ipf.post(
+                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
+            )
+            res.raise_for_status()
+        else:
+            logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
+        return True
+
+    def attributes(self, ipf):
+        """Load attributes of a Snapshot
+        
+        Args:
+            ipf: IPFClient
+        
+        Returns:
+            bool type that indicates the snapshot was successfully unloaded
+        """
+        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
 
 
 class Table(BaseModel):
+    """model for table data"""
     endpoint: str
     client: Any
     snapshot: bool = True
@@ -31,18 +116,20 @@ class Table(BaseModel):
         sort: Optional[dict] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
-    ):
-        """
-        Gets all data from corresponding endpoint
-        :param columns: list: Optional columns to return, default is all
-        :param filters: dict: Optional filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param snapshot_id: str: Optional snapshot ID to override class
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :param limit: int: Default to 1,000 rows
-        :param start: int: Starts at 0
-        :return: list: List of Dictionaries
+    ) -> list[dict]:
+        """Gets all data from corresponding endpoint
+
+        Args:
+            columns: Optional columns to return, default is all
+            filters: Optional filters
+            snapshot_id: Optional snapshot ID to override class
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            limit: Default to 1,000 rows
+            start: Starts at 0
+
+        Returns:
+            list: List of Dictionaries
         """
         return self.client.fetch(
             self.endpoint,
@@ -66,15 +153,16 @@ class Table(BaseModel):
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
     ):
-        """
-        Gets all data from corresponding endpoint
-        :param columns: list: Optional columns to return, default is all
-        :param filters: dict: Optional filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param snapshot_id: str: Optional snapshot ID to override class
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :return: list: List of Dictionaries
+        """Gets all data from corresponding endpoint
+
+        Args:
+            columns: Optional columns to return, default is all
+            filters: Optional filters
+            snapshot_id: Optional snapshot ID to override class
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+        Returns:
+            list: List of Dictionaries
         """
         return self.client.fetch_all(
             self.endpoint,
@@ -254,6 +342,8 @@ class Table(BaseModel):
 
 
 class Inventory(BaseModel):
+    """model for inventories
+    """
     client: Any
 
     @property

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Union, List
+from typing import Any, Union, List, Tuple
 
 from pydantic.dataclasses import dataclass
 
@@ -14,14 +14,18 @@ COLUMNS = ["id", "sn", "hostname", "loginIp", "loginType", "ts", "username", "us
 class DiscoveryHistory:
     ipf: Any
 
-    def get_all_history(self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc"):
-        """
+    def get_all_history(self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc") -> list[dict]:
+        """returns information about the discovery process
 
-        :param columns: list: Default All
-        :param sort: dict: Default timestamp descending
-        :param filters: dict: Default None
-        :param ts_format: str: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
-        :return: List[Dict]
+        Args:
+        
+        columns: columns for discovery-history table
+        sort: Default timestamp descending
+        filters: filter for discovery-history table
+        ts_format: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
+        
+        Returns: 
+            List[Dict]
         """
         columns = columns or COLUMNS
         if ts_format not in ["utc", "datetime", "int"] and "ts" in columns:
@@ -38,15 +42,18 @@ class DiscoveryHistory:
 
     def get_snapshot_history(
         self, snapshot_id: str = None, columns: list = None, sort: dict = None, ts_format: str = "utc"
-    ):
-        """
-
-        :param snapshot_id: str: Specific ID or defaults to class initialized ID
-        :param columns: list: Default All
-        :param sort: dict: Default timestamp descending
-        :param ts_format: str: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
-        :return: List[Dict], List[Dict]: First list has history of devices in the snapshot, second list has device that
-                                         did not have history usually because it is an AP or API connection
+    ) -> tuple[list[Any], list[Any]]:
+        """returns information about a specific snapshot
+        
+        Args: 
+            snapshot_id: Specific ID or defaults to class initialized ID
+            columns: Default All
+            sort: Default timestamp descending
+            ts_format: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
+        
+        Returns: 
+            First list has history of devices in the snapshot, second list has device that
+            did not have history usually because it is an AP or API connection
         """
         snapshot = self.ipf.snapshots[snapshot_id or self.ipf.snapshot_id]
         hist = {
@@ -65,17 +72,19 @@ class DiscoveryHistory:
 
     def get_history_date(
         self, daterange: Union[tuple, str, int], columns: list = None, sort: dict = None, ts_format: str = "utc"
-    ):
-        """
+    ) -> list[dict]:
+        """get a full history of a snapshot
+        
+        Args:
+            daterange: Date can be string or int in seconds "11/22/ 1:30" or 1637629200
+                        This will filter from that date to now
+                        Or can be a tuple of a date range to filter history in that range.
+            columns: Default All
+            sort: Default timestamp descending
+            ts_format: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
 
-        :param daterange: Union[tuple, str, int]: Date can be string or int in seconds "11/22/ 1:30" or 1637629200
-                                                  This will filter from that date to now
-                                                  Or can be a tuple of a date range to filter history in that range.
-        :param columns: list: Default All
-        :param sort: dict: Default timestamp descending
-        :param ts_format: str: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
-        :return: List[Dict], List[Dict]: First list has history of devices in the snapshot, second list has device that
-                                         did not have history usually because it is an AP or API connection
+        Returns: First list has history of devices in the snapshot, second list has device that
+                did not have history usually because it is an AP or API connection
         """
         if isinstance(daterange, tuple):
             filters = {
@@ -99,11 +108,13 @@ class DiscoveryHistory:
         logger.debug(f"{history_id}")
         return True
 
-    def delete_history_prior_to_ts(self, timestamp: Union[int, str]):
-        """
+    def delete_history_prior_to_ts(self, timestamp: Union[int, str]) -> list:
+        """removes history from IPF based on the date passed to timestamp
 
-        :param timestamp: Union[int, str]: Can be string or int in seconds "11/22/ 1:30" or 1637629200
-        :return: list: List of history
+        Args:
+            timestamp: Can be string or int in seconds "11/22/ 1:30" or 1637629200
+        Returns:
+            List of history
         """
         filters = {"ts": ["lte", int(date_parser(timestamp).timestamp() * 1000)]}
         history = self.get_all_history(filters=filters)
