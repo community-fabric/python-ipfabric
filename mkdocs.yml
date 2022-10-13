@@ -1,0 +1,36 @@
+site_name: Python IP Fabric
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - mdx_truly_sane_lists
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Python IP Fabric: index.md
+  - Getting Started:
+      - 'Installation': Getting_Started/getting_started.md
+  - References:
+      - 'All References': References/reference.md
+      - 'API': References/API.md
+      - 'Client': References/Client.md
+      - 'Intent': References/intent.md
+      - 'Settings': References/Settings.md
