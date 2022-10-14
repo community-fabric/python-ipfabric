@@ -369,7 +369,7 @@ class Jobs(BaseModel):
         list_to_return = list()
         job_filter = dict()
         job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
-        job_filter["name"] = ["eq", "snapshotDownload"],
+        job_filter["name"] = ["eq", "snapshotDownload"]
         for snapshot in self.all_jobs.all(filters=job_filter):
             list_to_return.append(snapshot)
         logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
@@ -389,8 +389,8 @@ class Jobs(BaseModel):
                 job_id = job_ids[-1]
             elif len(jobs) == 0:
                 logger.warning(f"No download job found for snapshot {snapshot_id}")
-            retry += retry + 1
-            logger.info(f"retry status: {retry}")
+            retries += retries + 1
+            logger.info(f"retry status: {retries}")
         return job_id
 
     def get_snapshot_download_job_id(self, snapshot_id: str, retry:int = 5):
