@@ -12,9 +12,11 @@
 ### Feature
 
 * Updates for v6.0
+* Will only initialize loaded only snapshots unless `unloaded=True`
 * Update Dev Dependencies
 * Update for AWS API for multiple regions/AssumeRoles
 * Add Lock/Unlock snapshots
+* Added get_snapshot(snapshot_id) to find a snapshot_id
 
 ## 5.0.15 (2022-10-05)
 

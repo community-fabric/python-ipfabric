@@ -8,6 +8,11 @@ from ipfabric.technology import *
 
 logger = logging.getLogger("python-ipfabric")
 
+SNAPSHOT_COLUMNS = ['id', 'status', 'finishStatus', 'loadedSize', 'unloadedSize', 'name', 'note', 'sites',
+                    'fromArchive', 'loading', 'locked', 'deviceAddedCount', 'deviceRemovedCount',
+                    'interfaceActiveCount', 'interfaceCount', 'interfaceEdgeCount', 'totalDevCount',
+                    'isLastSnapshot', 'tsChange', 'tsEnd', 'tsStart', 'userCount']
+
 
 class Error(BaseModel):
     error_type: str = Field(alias="errorType")
@@ -19,7 +24,7 @@ class Snapshot(BaseModel):
     name: Optional[str]
     note: Optional[str]
     total_dev_count: int = Field(alias="totalDevCount")
-    licensed_dev_count: int = Field(alias="licensedDevCount")
+    licensed_dev_count: Optional[int] = Field(alias="licensedDevCount")
     user_count: int = Field(alias='userCount')
     interface_active_count: int = Field(alias="interfaceActiveCount")
     interface_count: int = Field(alias="interfaceCount")

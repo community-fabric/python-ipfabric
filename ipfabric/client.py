@@ -36,6 +36,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: str = DEFAULT_ID,
         username: Optional[str] = None,
         password: Optional[str] = None,
+        unloaded: bool = False,
         **kwargs,
     ):
         """
@@ -45,7 +46,7 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        super().__init__(base_url, api_version, token, snapshot_id, username, password, **kwargs)
+        super().__init__(base_url, api_version, token, snapshot_id, username, password, unloaded, **kwargs)
         self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)
