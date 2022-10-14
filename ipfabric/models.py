@@ -113,6 +113,7 @@ class Snapshot(BaseModel):
 class Table(BaseModel):
     endpoint: str
     client: Any
+    snapshot: bool = True
 
     @property
     def name(self):
@@ -148,6 +149,7 @@ class Table(BaseModel):
             sort=sort,
             limit=limit,
             start=start,
+			snapshot=self.snapshot,
         )
 
     def all(
@@ -174,6 +176,7 @@ class Table(BaseModel):
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
+			snapshot=self.snapshot,
         )
 
     def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
@@ -187,6 +190,7 @@ class Table(BaseModel):
             self.endpoint,
             filters=filters,
             snapshot_id=snapshot_id,
+            snapshot=self.snapshot,
         )
 
 
@@ -352,3 +356,51 @@ class Technology(BaseModel):
     @property
     def wireless(self):
         return Wireless(client=self.client)
+
+
+class Jobs(BaseModel):
+    client: Any
+
+    @property
+    def all_jobs(self):
+        return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
+
+    def _get_download_job_by_snapshot_id(self, snapshot_id):
+        list_to_return = list()
+        job_filter = dict()
+        job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
+        job_filter["name"] = ["eq", "snapshotDownload"],
+        for snapshot in self.all_jobs.all(filters=job_filter):
+            list_to_return.append(snapshot)
+        logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
+        return list_to_return
+
+    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry):
+        retries = 0
+        job_id = None
+        while retries < retry:
+            jobs = self._get_download_job_by_snapshot_id(snapshot_id)
+            if len(jobs) > 1:
+                logger.warning(
+                    "multiple snapshots downloaded recently with the same snapshot_id,"
+                    " using most recent job_id."
+                )
+                job_ids = sorted([int(job['id']) for job in jobs])
+                job_id = job_ids[-1]
+            elif len(jobs) == 0:
+                logger.warning(f"No download job found for snapshot {snapshot_id}")
+            retry += retry + 1
+            logger.info(f"retry status: {retry}")
+        return job_id
+
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry:int = 5):
+        """Returns a Job Id to use to in a download snapshot
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            job_id: str: id to use when downloading a snapshot
+        """
+        return self._confirm_snapshot_ready_for_download(snapshot_id, retry)
