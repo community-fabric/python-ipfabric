@@ -1,6 +1,7 @@
 import logging
 from typing import Optional, List, Any
 
+from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 logger = logging.getLogger("python-ipfabric")
@@ -8,18 +9,28 @@ logger = logging.getLogger("python-ipfabric")
 
 @dataclass
 class Attributes:
-    client: Any
-    snapshot_id: Optional[str] = None
+    """
+    Class to retrieve Global and Local (Snapshot specific) Attributes.  You must specify snapshot_id to use local.
+    """
+    client: Any = Field(description='IPFClient')
+    snapshot_id: Optional[str] = Field(default=None, description='Snapshot ID to switch to Local Attributes')
+
+    def __post_init__(self):
+        self.snapshot_id = self.client.get_snapshot(self.snapshot_id).snapshot_id
 
     @property
     def endpoint(self):
         return "attributes/local" if self.snapshot_id else "attributes/global"
 
+    @property
+    def post_endpoint(self):
+        return "tables/snapshot-attributes" if self.snapshot_id else "tables/global-attributes"
+
     def all(
-        self,
-        columns: list = None,
-        filters: Optional[dict] = None,
-        sort: Optional[dict] = None,
+            self,
+            columns: list = None,
+            filters: Optional[dict] = None,
+            sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -28,15 +39,14 @@ class Attributes:
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionaries
         """
-        return self.client.fetch_all(
-            "tables/global-attributes", columns=columns, filters=filters, sort=sort, snapshot=False
-        ) if self.snapshot_id else self.client.fetch_all(
-            "tables/snapshot-attributes", columns=columns, filters=filters, sort=sort, snapshot_id=self.snapshot_id
-        )
+        return self.client.fetch_all(self.post_endpoint, columns=columns, filters=filters, sort=sort,
+                                     snapshot=True if self.snapshot_id else False, snapshot_id=self.snapshot_id)
 
     def set_attribute_by_sn(self, serial_number, name, value):
         """
-        Set a single site by serial number
+        Set a single Attribute by serial number.
+        If Global will Error if already set.
+        If Local will not error and either Add or Update
         :param serial_number: str: IP Fabric Unique Serial Number
         :param name: str: Attribute name (case sensitive)
         :param value: str: Attribute value (case sensitive)
@@ -51,7 +61,8 @@ class Attributes:
 
     def set_attributes_by_sn(self, attributes: List[dict]):
         """
-        Sets a list of sites for devices based on serial numbers.
+        Sets a list of Attributes for devices based on serial numbers.
+        Will Add or Update Attributes.
         :param attributes: list: [{'sn': 'IPF SERIAL NUMBER', 'name': 'attributeName', 'value': 'SITE NAME'}]
         :return:
         """
@@ -65,6 +76,8 @@ class Attributes:
     def set_site_by_sn(self, serial_number, site_name):
         """
         Set a single site by serial number
+        If Global will Error if already set.
+        If Local will not error and either Add or Update
         :param serial_number: str: IP Fabric Unique Serial Number
         :param site_name: str: Site name for device.
         :return:
@@ -82,7 +95,7 @@ class Attributes:
 
     def delete_attribute_by_sn(self, *serial_numbers):
         """
-        Deletes attributes by Unique IP Fabric Serial Number(s)
+        Deletes Attributes by Unique IP Fabric Serial Number(s)
         :param serial_numbers: str: Serial Numbers
         :return:
         """
@@ -95,7 +108,7 @@ class Attributes:
 
     def delete_attribute_by_id(self, *attribute_ids):
         """
-        Deletes attributes by Attribute ID(s)
+        Deletes Attributes by Attribute ID(s)
         :param attribute_ids: str: Attribute IDs
         :return:
         """
