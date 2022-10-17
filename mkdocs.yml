@@ -23,17 +23,6 @@ markdown_extensions:
 
 plugins:
   - mkdocstrings
-
-nav:
-  - Python IP Fabric: index.md
-  - Getting Started:
-      - 'Installation': Getting_Started/getting_started.md
-  - References:
-      - 'All References': References/reference.md
-      - 'API': References/API.md
-      - 'Client': References/Client.md
-      - 'Intent': References/intent.md
-      - 'Settings': References/Settings.md
   - search:
   - social:
 
@@ -47,4 +36,3 @@ extra:
       link: https://twitter.com/IPFabric
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/company/ip-fabric/
-
