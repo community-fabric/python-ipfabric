@@ -1,12 +1,5 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ipfabric import IPFClient
-
 import logging
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from pydantic.dataclasses import dataclass
 
@@ -15,8 +8,8 @@ logger = logging.getLogger("python-ipfabric")
 
 @dataclass
 class Attributes:
-    client: IPFClient
-    snapshot_id: Optional[str]
+    client: Any
+    snapshot_id: Optional[str] = None
 
     @property
     def endpoint(self):
@@ -49,18 +42,23 @@ class Attributes:
         :param value: str: Attribute value (case sensitive)
         :return:
         """
-        resp = self.client.post(self.endpoint, json=dict(name=name, sn=serial_number, value=value))
+        attribute = dict(name=name, sn=serial_number, value=value)
+        if self.snapshot_id:
+            return self.set_attributes_by_sn([attribute])
+        resp = self.client.post(self.endpoint, json=attribute)
         resp.raise_for_status()
         return resp.json()
 
-    def set_attributes_by_sn(self, sites: List[dict]):
+    def set_attributes_by_sn(self, attributes: List[dict]):
         """
         Sets a list of sites for devices based on serial numbers.
-        :param sites: list: [{'sn': 'IPF SERIAL NUMBER', 'value': 'SITE NAME'}]
+        :param attributes: list: [{'sn': 'IPF SERIAL NUMBER', 'name': 'attributeName', 'value': 'SITE NAME'}]
         :return:
         """
-        [a.update(dict(name="siteName")) for a in sites]
-        resp = self.client.put(self.endpoint, json=dict(attributes=sites))
+        payload = dict(attributes=attributes)
+        if self.snapshot_id:
+            payload['snapshot'] = self.snapshot_id
+        resp = self.client.put(self.endpoint, json=payload)
         resp.raise_for_status()
         return resp.json()
 
@@ -80,9 +78,7 @@ class Attributes:
         :return:
         """
         [a.update(dict(name="siteName")) for a in sites]
-        resp = self.client.put(self.endpoint, json=dict(attributes=sites))
-        resp.raise_for_status()
-        return resp.json()
+        return self.set_attributes_by_sn(sites)
 
     def delete_attribute_by_sn(self, *serial_numbers):
         """
@@ -90,8 +86,10 @@ class Attributes:
         :param serial_numbers: str: Serial Numbers
         :return:
         """
-        serial_numbers = [str(i) for i in serial_numbers]
-        resp = self.client.request("DELETE", self.endpoint, json=dict(attributes=dict(sn=serial_numbers)))
+        payload = dict(attributes=dict(sn=[str(i) for i in serial_numbers]))
+        if self.snapshot_id:
+            payload['snapshot'] = self.snapshot_id
+        resp = self.client.request("DELETE", self.endpoint, json=payload)
         resp.raise_for_status()
         return True
 
@@ -101,7 +99,17 @@ class Attributes:
         :param attribute_ids: str: Attribute IDs
         :return:
         """
-        attribute_ids = [str(i) for i in attribute_ids]
-        resp = self.client.request("DELETE", self.endpoint, json=dict(attributes=dict(id=attribute_ids)))
+        payload = dict(attributes=dict(sn=[str(i) for i in attribute_ids]))
+        if self.snapshot_id:
+            payload['snapshot'] = self.snapshot_id
+        resp = self.client.request("DELETE", self.endpoint, json=payload)
         resp.raise_for_status()
         return True
+
+    def delete_attribute(self, *attributes):
+        """
+        Deletes attributes by Attribute
+        :param attributes: dict: Attribute dictionaries
+        :return:
+        """
+        return self.delete_attribute_by_id(*[str(i['id']) for i in attributes])

@@ -1,13 +1,6 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ipfabric import IPFClient
-
 import logging
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from pydantic import BaseModel, Field
 
@@ -53,7 +46,7 @@ class Snapshot(BaseModel):
     loaded_size: int = Field(alias='loadedSize')
     unloaded_size: int = Field(alias='unloadedSize')
 
-    def lock(self, ipf: IPFClient):
+    def lock(self, ipf: Any):
         if not self.locked and self.loaded:
             res = ipf.post(f'snapshots/{self.snapshot_id}/lock')
             res.raise_for_status()
@@ -64,7 +57,7 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already locked.")
         return True
 
-    def unlock(self, ipf: IPFClient):
+    def unlock(self, ipf: Any):
         if self.locked and self.loaded:
             res = ipf.post(f'snapshots/{self.snapshot_id}/unlock')
             res.raise_for_status()
@@ -78,7 +71,7 @@ class Snapshot(BaseModel):
     def loaded(self):
         return self.status == "done" and self.finish_status == "done"
 
-    def unload(self, ipf: IPFClient):
+    def unload(self, ipf: Any):
         """
         Load Snapshot
         :param ipf: IPFClient
@@ -93,7 +86,7 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
         return True
 
-    def load(self, ipf: IPFClient):
+    def load(self, ipf: Any):
         """
         Load Snapshot
         :param ipf: IPFClient
@@ -119,7 +112,7 @@ class Snapshot(BaseModel):
 
 class Table(BaseModel):
     endpoint: str
-    client: IPFClient
+    client: Any
     snapshot: bool = True
 
     @property
@@ -127,14 +120,14 @@ class Table(BaseModel):
         return self.endpoint.split("/")[-1]
 
     def fetch(
-        self,
-        columns: list = None,
-        filters: Optional[dict] = None,
-        snapshot_id: Optional[str] = None,
-        reports: Optional[str] = None,
-        sort: Optional[dict] = None,
-        limit: Optional[int] = 1000,
-        start: Optional[int] = 0,
+            self,
+            columns: list = None,
+            filters: Optional[dict] = None,
+            snapshot_id: Optional[str] = None,
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None,
+            limit: Optional[int] = 1000,
+            start: Optional[int] = 0,
     ):
         """
         Gets all data from corresponding endpoint
@@ -156,16 +149,16 @@ class Table(BaseModel):
             sort=sort,
             limit=limit,
             start=start,
-			snapshot=self.snapshot,
+            snapshot=self.snapshot,
         )
 
     def all(
-        self,
-        columns: list = None,
-        filters: Optional[dict] = None,
-        snapshot_id: Optional[str] = None,
-        reports: Optional[str] = None,
-        sort: Optional[dict] = None,
+            self,
+            columns: list = None,
+            filters: Optional[dict] = None,
+            snapshot_id: Optional[str] = None,
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -183,7 +176,7 @@ class Table(BaseModel):
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
-			snapshot=self.snapshot,
+            snapshot=self.snapshot,
         )
 
     def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
@@ -202,7 +195,7 @@ class Table(BaseModel):
 
 
 class Inventory(BaseModel):
-    client: IPFClient
+    client: Any
 
     @property
     def sites(self):
@@ -270,7 +263,7 @@ class Inventory(BaseModel):
 
 
 class Technology(BaseModel):
-    client: IPFClient
+    client: Any
 
     @property
     def platforms(self):
@@ -400,7 +393,7 @@ class Jobs(BaseModel):
             logger.info(f"retry status: {retries}")
         return job_id
 
-    def get_snapshot_download_job_id(self, snapshot_id: str, retry:int = 5):
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5):
         """Returns a Job Id to use to in a download snapshot
 
         Args:
