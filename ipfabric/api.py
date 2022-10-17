@@ -43,15 +43,15 @@ class Settings(BaseSettings):
 
 class IPFabricAPI(Client):
     def __init__(
-            self,
-            base_url: Optional[str] = None,
-            api_version: Optional[str] = None,
-            token: Optional[str] = None,
-            snapshot_id: Optional[str] = DEFAULT_ID,
-            username: Optional[str] = None,
-            password: Optional[str] = None,
-            unloaded: bool = False,
-            **kwargs,
+        self,
+        base_url: Optional[str] = None,
+        api_version: Optional[str] = None,
+        token: Optional[str] = None,
+        snapshot_id: Optional[str] = DEFAULT_ID,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        unloaded: bool = False,
+        **kwargs,
     ):
         """
         Initializes the IP Fabric Client
@@ -176,20 +176,20 @@ class IPFabricAPI(Client):
         if snapshot_id in self.snapshots:
             return self.snapshots[snapshot_id]
         else:
-            payload = {
-                "columns": snapshot_models.SNAPSHOT_COLUMNS,
-                "filters": {"id": ["eq", snapshot_id]}
-            }
-            results = self._ipf_pager('tables/management/snapshots', payload)
+            payload = {"columns": snapshot_models.SNAPSHOT_COLUMNS, "filters": {"id": ["eq", snapshot_id]}}
+            results = self._ipf_pager("tables/management/snapshots", payload)
             if not results:
                 logger.error(f"Snapshot {snapshot_id} not found.")
                 return None
             get_results = self._get_snapshots()
             s = results[0]
-            return snapshot_models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
-                                            errors=get_results[s['id']].get('errors', None),
-                                            version=get_results[s['id']]['version'],
-                                            initialVersion=get_results[s['id']].get('initialVersion', None))
+            return snapshot_models.Snapshot(
+                **s,
+                licensedDevCount=get_results[s["id"]].get("licensedDevCount", None),
+                errors=get_results[s["id"]].get("errors", None),
+                version=get_results[s["id"]]["version"],
+                initialVersion=get_results[s["id"]].get("initialVersion", None),
+            )
 
     def _get_snapshots(self):
         """
@@ -202,29 +202,29 @@ class IPFabricAPI(Client):
         """
         res = self.get("/snapshots")
         res.raise_for_status()
-        return {s['id']: s for s in res.json()}
+        return {s["id"]: s for s in res.json()}
 
     def get_snapshots(self):
         """
         Gets all snapshots from IP Fabric and returns a dictionary of {ID: Snapshot_info}
         :return: dict[str, Snapshot]: Dictionary with ID as key and dictionary with info as the value
         """
-        payload = {
-            "columns": snapshot_models.SNAPSHOT_COLUMNS,
-            "sort": {"order": "desc", "column": "tsEnd"}
-        }
+        payload = {"columns": snapshot_models.SNAPSHOT_COLUMNS, "sort": {"order": "desc", "column": "tsEnd"}}
         if not self.unloaded:
             logger.warning("Retrieving only loaded snapshots. To load all snapshots set `unloaded` to True.")
-            payload['filters'] = {"and": [{"status": ["eq", "done"]}, {"finishStatus": ["eq", "done"]}]}
-        results = self._ipf_pager('tables/management/snapshots', payload)
+            payload["filters"] = {"and": [{"status": ["eq", "done"]}, {"finishStatus": ["eq", "done"]}]}
+        results = self._ipf_pager("tables/management/snapshots", payload)
         get_results = self._get_snapshots()
 
         snap_dict = OrderedDict()
         for s in results:
-            snap = snapshot_models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
-                                            errors=get_results[s['id']].get('errors', None),
-                                            version=get_results[s['id']]['version'],
-                                            initialVersion=get_results[s['id']].get('initialVersion', None))
+            snap = snapshot_models.Snapshot(
+                **s,
+                licensedDevCount=get_results[s["id"]].get("licensedDevCount", None),
+                errors=get_results[s["id"]].get("errors", None),
+                version=get_results[s["id"]]["version"],
+                initialVersion=get_results[s["id"]].get("initialVersion", None),
+            )
             snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
@@ -237,12 +237,12 @@ class IPFabricAPI(Client):
         return snap_dict
 
     def _ipf_pager(
-            self,
-            url: str,
-            payload: dict,
-            data: Optional[Union[list, None]] = None,
-            limit: int = 1000,
-            start: int = 0,
+        self,
+        url: str,
+        payload: dict,
+        data: Optional[Union[list, None]] = None,
+        limit: int = 1000,
+        start: int = 0,
     ):
         """
         Loops through and collects all the data from the tables

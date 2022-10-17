@@ -12,8 +12,9 @@ class Attributes:
     """
     Class to retrieve Global and Local (Snapshot specific) Attributes.  You must specify snapshot_id to use local.
     """
-    client: Any = Field(description='IPFClient')
-    snapshot_id: Optional[str] = Field(default=None, description='Snapshot ID to switch to Local Attributes')
+
+    client: Any = Field(description="IPFClient")
+    snapshot_id: Optional[str] = Field(default=None, description="Snapshot ID to switch to Local Attributes")
 
     def __post_init__(self):
         self.snapshot_id = self.client.get_snapshot(self.snapshot_id).snapshot_id
@@ -27,10 +28,10 @@ class Attributes:
         return "tables/snapshot-attributes" if self.snapshot_id else "tables/global-attributes"
 
     def all(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            sort: Optional[dict] = None,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -39,8 +40,14 @@ class Attributes:
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
         :return: list: List of Dictionaries
         """
-        return self.client.fetch_all(self.post_endpoint, columns=columns, filters=filters, sort=sort,
-                                     snapshot=True if self.snapshot_id else False, snapshot_id=self.snapshot_id)
+        return self.client.fetch_all(
+            self.post_endpoint,
+            columns=columns,
+            filters=filters,
+            sort=sort,
+            snapshot=True if self.snapshot_id else False,
+            snapshot_id=self.snapshot_id,
+        )
 
     def set_attribute_by_sn(self, serial_number, name, value):
         """
@@ -68,7 +75,7 @@ class Attributes:
         """
         payload = dict(attributes=attributes)
         if self.snapshot_id:
-            payload['snapshot'] = self.snapshot_id
+            payload["snapshot"] = self.snapshot_id
         resp = self.client.put(self.endpoint, json=payload)
         resp.raise_for_status()
         return resp.json()
@@ -101,7 +108,7 @@ class Attributes:
         """
         payload = dict(attributes=dict(sn=[str(i) for i in serial_numbers]))
         if self.snapshot_id:
-            payload['snapshot'] = self.snapshot_id
+            payload["snapshot"] = self.snapshot_id
         resp = self.client.request("DELETE", self.endpoint, json=payload)
         resp.raise_for_status()
         return True
@@ -114,7 +121,7 @@ class Attributes:
         """
         payload = dict(attributes=dict(sn=[str(i) for i in attribute_ids]))
         if self.snapshot_id:
-            payload['snapshot'] = self.snapshot_id
+            payload["snapshot"] = self.snapshot_id
         resp = self.client.request("DELETE", self.endpoint, json=payload)
         resp.raise_for_status()
         return True
@@ -125,4 +132,4 @@ class Attributes:
         :param attributes: dict: Attribute dictionaries
         :return:
         """
-        return self.delete_attribute_by_id(*[str(i['id']) for i in attributes])
+        return self.delete_attribute_by_id(*[str(i["id"]) for i in attributes])

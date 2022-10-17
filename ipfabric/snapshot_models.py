@@ -13,10 +13,30 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger("python-ipfabric")
 
-SNAPSHOT_COLUMNS = ['id', 'status', 'finishStatus', 'loadedSize', 'unloadedSize', 'name', 'note', 'sites',
-                    'fromArchive', 'loading', 'locked', 'deviceAddedCount', 'deviceRemovedCount',
-                    'interfaceActiveCount', 'interfaceCount', 'interfaceEdgeCount', 'totalDevCount',
-                    'isLastSnapshot', 'tsChange', 'tsEnd', 'tsStart', 'userCount']
+SNAPSHOT_COLUMNS = [
+    "id",
+    "status",
+    "finishStatus",
+    "loadedSize",
+    "unloadedSize",
+    "name",
+    "note",
+    "sites",
+    "fromArchive",
+    "loading",
+    "locked",
+    "deviceAddedCount",
+    "deviceRemovedCount",
+    "interfaceActiveCount",
+    "interfaceCount",
+    "interfaceEdgeCount",
+    "totalDevCount",
+    "isLastSnapshot",
+    "tsChange",
+    "tsEnd",
+    "tsStart",
+    "userCount",
+]
 
 
 class Error(BaseModel):
@@ -30,12 +50,12 @@ class Snapshot(BaseModel):
     note: Optional[str]
     total_dev_count: int = Field(alias="totalDevCount")
     licensed_dev_count: Optional[int] = Field(alias="licensedDevCount")
-    user_count: int = Field(alias='userCount')
+    user_count: int = Field(alias="userCount")
     interface_active_count: int = Field(alias="interfaceActiveCount")
     interface_count: int = Field(alias="interfaceCount")
-    interface_edge_count: int = Field(alias='interfaceEdgeCount')
+    interface_edge_count: int = Field(alias="interfaceEdgeCount")
     device_added_count: int = Field(alias="deviceAddedCount")
-    device_removed_count: int = Field(alias='deviceRemovedCount')
+    device_removed_count: int = Field(alias="deviceRemovedCount")
     status: str
     finish_status: str = Field(alias="finishStatus")
     loading: bool
@@ -48,12 +68,12 @@ class Snapshot(BaseModel):
     initial_version: Optional[str] = Field(alias="initialVersion")
     sites: List[str]
     errors: Optional[List[Error]]
-    loaded_size: int = Field(alias='loadedSize')
-    unloaded_size: int = Field(alias='unloadedSize')
+    loaded_size: int = Field(alias="loadedSize")
+    unloaded_size: int = Field(alias="unloadedSize")
 
     def lock(self, ipf: IPFClient):
         if not self.locked and self.loaded:
-            res = ipf.post(f'snapshots/{self.snapshot_id}/lock')
+            res = ipf.post(f"snapshots/{self.snapshot_id}/lock")
             res.raise_for_status()
         elif not self.loaded:
             logger.error(f"Snapshot {self.snapshot_id} is not loaded.")
@@ -64,7 +84,7 @@ class Snapshot(BaseModel):
 
     def unlock(self, ipf: IPFClient):
         if self.locked and self.loaded:
-            res = ipf.post(f'snapshots/{self.snapshot_id}/unlock')
+            res = ipf.post(f"snapshots/{self.snapshot_id}/unlock")
             res.raise_for_status()
         elif not self.loaded:
             logger.error(f"Snapshot {self.snapshot_id} is not loaded.")

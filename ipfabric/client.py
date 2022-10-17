@@ -93,7 +93,7 @@ class IPFClient(IPFabricAPI):
         payload = dict(
             columns=columns or self._get_columns(url),
             pagination=dict(start=start, limit=limit),
-            snapshot=snapshot_id or self.snapshot_id
+            snapshot=snapshot_id or self.snapshot_id,
         )
         payload = self._check_payload(payload, snapshot, filters, reports, sort)
         res = self.post(url, json=payload)
@@ -157,11 +157,16 @@ class IPFClient(IPFabricAPI):
         else:
             r.raise_for_status()
 
-    def get_count(self, url: str, filters: Optional[Union[dict, str]] = None, snapshot_id: Optional[str] = None,
-                  snapshot: bool = True):
+    def get_count(
+        self,
+        url: str,
+        filters: Optional[Union[dict, str]] = None,
+        snapshot_id: Optional[str] = None,
+        snapshot: bool = True,
+    ):
         payload = dict(columns=["id"], pagination=dict(limit=1, start=0))
         if snapshot:
-            payload['snapshot'] = snapshot_id or self.snapshot_id
+            payload["snapshot"] = snapshot_id or self.snapshot_id
         if filters:
             payload["filters"] = filters
         res = self.post(url, json=payload)

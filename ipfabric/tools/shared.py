@@ -10,7 +10,7 @@ logger = logging.getLogger("python-ipfabric")
 
 
 class MAC(macaddress.MAC):
-    formats = ('xxxx.xxxx.xxxx',) + macaddress.MAC.formats
+    formats = ("xxxx.xxxx.xxxx",) + macaddress.MAC.formats
 
 
 def convert_timestamp(ts: int, ts_format: str = "datetime", milliseconds: bool = True, tzinfo: BaseTzInfo = utc):

@@ -18,14 +18,14 @@ class Table(BaseModel):
         return self.endpoint.split("/")[-1]
 
     def fetch(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None,
-            limit: Optional[int] = 1000,
-            start: Optional[int] = 0,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
+        limit: Optional[int] = 1000,
+        start: Optional[int] = 0,
     ):
         """
         Gets all data from corresponding endpoint
@@ -51,12 +51,12 @@ class Table(BaseModel):
         )
 
     def all(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -280,10 +280,9 @@ class Jobs(BaseModel):
             jobs = self._get_download_job_by_snapshot_id(snapshot_id)
             if len(jobs) > 1:
                 logger.warning(
-                    "multiple snapshots downloaded recently with the same snapshot_id,"
-                    " using most recent job_id."
+                    "multiple snapshots downloaded recently with the same snapshot_id," " using most recent job_id."
                 )
-                job_ids = sorted([int(job['id']) for job in jobs])
+                job_ids = sorted([int(job["id"]) for job in jobs])
                 job_id = job_ids[-1]
             elif len(jobs) == 0:
                 logger.warning(f"No download job found for snapshot {snapshot_id}")
