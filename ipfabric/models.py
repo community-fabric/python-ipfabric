@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ipfabric import IPFClient
+
 import logging
 from datetime import datetime
-from typing import Optional, Any, List
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
@@ -46,7 +53,7 @@ class Snapshot(BaseModel):
     loaded_size: int = Field(alias='loadedSize')
     unloaded_size: int = Field(alias='unloadedSize')
 
-    def lock(self, ipf):
+    def lock(self, ipf: IPFClient):
         if not self.locked and self.loaded:
             res = ipf.post(f'snapshots/{self.snapshot_id}/lock')
             res.raise_for_status()
@@ -57,7 +64,7 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already locked.")
         return True
 
-    def unlock(self, ipf):
+    def unlock(self, ipf: IPFClient):
         if self.locked and self.loaded:
             res = ipf.post(f'snapshots/{self.snapshot_id}/unlock')
             res.raise_for_status()
@@ -71,7 +78,7 @@ class Snapshot(BaseModel):
     def loaded(self):
         return self.status == "done" and self.finish_status == "done"
 
-    def unload(self, ipf):
+    def unload(self, ipf: IPFClient):
         """
         Load Snapshot
         :param ipf: IPFClient
@@ -86,7 +93,7 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
         return True
 
-    def load(self, ipf):
+    def load(self, ipf: IPFClient):
         """
         Load Snapshot
         :param ipf: IPFClient
@@ -112,7 +119,7 @@ class Snapshot(BaseModel):
 
 class Table(BaseModel):
     endpoint: str
-    client: Any
+    client: IPFClient
 
     @property
     def name(self):
@@ -191,7 +198,7 @@ class Table(BaseModel):
 
 
 class Inventory(BaseModel):
-    client: Any
+    client: IPFClient
 
     @property
     def sites(self):
@@ -259,7 +266,7 @@ class Inventory(BaseModel):
 
 
 class Technology(BaseModel):
-    client: Any
+    client: IPFClient
 
     @property
     def platforms(self):
