@@ -126,7 +126,7 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True
 
-    def attributes(self, IPFClient):
+    def attributes(self, ipf: IPFClient):
         """
         Load Snapshot
         :param ipf: IPFClient
