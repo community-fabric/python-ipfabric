@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
-from ipfabric.models import Technology, Inventory
+from ipfabric.models import Technology, Inventory, Jobs
 
 DEFAULT_ID = "$last"
 
@@ -50,6 +50,7 @@ class IPFClient(IPFabricAPI):
         self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)
+        self.jobs = Jobs(client=self)
 
     @staticmethod
     def _check_payload(payload, snapshot, filters, reports, sort):
