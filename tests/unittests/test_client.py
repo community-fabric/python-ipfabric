@@ -6,8 +6,8 @@ from packaging.version import parse
 
 from ipfabric import IPFClient
 from ipfabric.client import check_format
-from ipfabric.models import Snapshot
 from ipfabric.settings.user_mgmt import User
+from ipfabric.snapshot_models import Snapshot
 
 
 class Decorator(unittest.TestCase):

@@ -12,7 +12,7 @@ from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
 from pydantic import BaseSettings
 
-from ipfabric import models
+from ipfabric import snapshot_models
 from ipfabric.settings.user_mgmt import User
 
 logger = logging.getLogger("ipfabric")
@@ -177,7 +177,7 @@ class IPFabricAPI(Client):
             return self.snapshots[snapshot_id]
         else:
             payload = {
-                "columns": models.SNAPSHOT_COLUMNS,
+                "columns": snapshot_models.SNAPSHOT_COLUMNS,
                 "filters": {"id": ["eq", snapshot_id]}
             }
             results = self._ipf_pager('tables/management/snapshots', payload)
@@ -186,10 +186,10 @@ class IPFabricAPI(Client):
                 return None
             get_results = self._get_snapshots()
             s = results[0]
-            return models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
-                                   errors=get_results[s['id']].get('errors', None),
-                                   version=get_results[s['id']]['version'],
-                                   initialVersion=get_results[s['id']].get('initialVersion', None))
+            return snapshot_models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
+                                            errors=get_results[s['id']].get('errors', None),
+                                            version=get_results[s['id']]['version'],
+                                            initialVersion=get_results[s['id']].get('initialVersion', None))
 
     def _get_snapshots(self):
         """
@@ -210,7 +210,7 @@ class IPFabricAPI(Client):
         :return: dict[str, Snapshot]: Dictionary with ID as key and dictionary with info as the value
         """
         payload = {
-            "columns": models.SNAPSHOT_COLUMNS,
+            "columns": snapshot_models.SNAPSHOT_COLUMNS,
             "sort": {"order": "desc", "column": "tsEnd"}
         }
         if not self.unloaded:
@@ -221,10 +221,10 @@ class IPFabricAPI(Client):
 
         snap_dict = OrderedDict()
         for s in results:
-            snap = models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
-                                   errors=get_results[s['id']].get('errors', None),
-                                   version=get_results[s['id']]['version'],
-                                   initialVersion=get_results[s['id']].get('initialVersion', None))
+            snap = snapshot_models.Snapshot(**s, licensedDevCount=get_results[s['id']].get('licensedDevCount', None),
+                                            errors=get_results[s['id']].get('errors', None),
+                                            version=get_results[s['id']]['version'],
+                                            initialVersion=get_results[s['id']].get('initialVersion', None))
             snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
                 if "$lastLocked" not in snap_dict and snap.locked:
