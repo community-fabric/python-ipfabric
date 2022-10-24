@@ -135,7 +135,7 @@ class Attributes:
         :param attribute_ids: str: Attribute IDs
         :return:
         """
-        payload = dict(attributes=dict(sn=[str(i) for i in attribute_ids]))
+        payload = dict(attributes=dict(id=[str(i) for i in attribute_ids]))
         if self.snapshot_id:
             payload["snapshot"] = self.snapshot_id
         resp = self.client.request("DELETE", self.endpoint, json=payload)
@@ -149,3 +149,15 @@ class Attributes:
         :return:
         """
         return self.delete_attribute_by_id(*[str(i["id"]) for i in attributes])
+
+    def update_local_attr_from_global(self):
+        if not self.snapshot_id:
+            raise ImportError(f'Please initialize Attributes class with a snapshot_id.')
+        g_attrs = self.client.fetch_all('tables/global-attributes', columns=['name', 'value', 'sn'], snapshot=False)
+        if not g_attrs:
+            return False
+        local_attrs = self.all()
+        if local_attrs:
+            self.delete_attribute(*local_attrs)
+        self.set_attributes_by_sn(g_attrs)
+        return True
