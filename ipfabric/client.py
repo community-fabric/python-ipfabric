@@ -1,3 +1,4 @@
+import logging
 import re
 from json import loads
 from typing import Optional, Union, Dict, List
@@ -6,6 +7,8 @@ from urllib.parse import urlparse
 from ipfabric.api import IPFabricAPI
 from ipfabric.intent import Intent
 from ipfabric.models import Technology, Inventory, Jobs
+
+logger = logging.getLogger("ipfabric")
 
 DEFAULT_ID = "$last"
 
@@ -47,13 +50,26 @@ class IPFClient(IPFabricAPI):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         super().__init__(base_url, api_version, token, snapshot_id, username, password, unloaded, **kwargs)
+        self._attribute_filters = None
         self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)
         self.jobs = Jobs(client=self)
 
-    @staticmethod
-    def _check_payload(payload, snapshot, filters, reports, sort, attr_filters):
+    @property
+    def attribute_filters(self):
+        return self._attribute_filters
+
+    @attribute_filters.setter
+    def attribute_filters(self, attribute_filters: Union[Dict[str, List[str]], None]):
+        if attribute_filters:
+            logger.warning(f"Setting Global Attribute Filter for all tables until explicitly unset to None.\n"
+                           f"This may cause errors on some tables like in Settings.\n"
+                           f"Adding an Attribute Filter to any function will overwrite the Global Filter.\n"
+                           f"Filter: {attribute_filters}")
+        self._attribute_filters = attribute_filters
+
+    def _check_payload(self, payload, snapshot, filters, reports, sort, attr_filters):
         if not snapshot:
             payload.pop("snapshot", None)
         if filters:
@@ -62,8 +78,8 @@ class IPFClient(IPFabricAPI):
             payload["reports"] = reports
         if sort:
             payload["sort"] = sort
-        if attr_filters:
-            payload["attributeFilters"] = attr_filters
+        if attr_filters or self.attribute_filters:
+            payload["attributeFilters"] = attr_filters or self.attribute_filters
         return payload
 
     @check_format
