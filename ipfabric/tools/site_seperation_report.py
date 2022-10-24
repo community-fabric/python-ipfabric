@@ -50,7 +50,7 @@ def map_devices_to_rules(ipf, snapshot_id: str = "$last"):
                 matches.append(
                     Matches(
                         match["hostname"],
-                        devices[match["sn"]]['siteName'],
+                        devices[match["sn"]]["siteName"],
                         match["sn"],
                         site,
                         rule["type"],
