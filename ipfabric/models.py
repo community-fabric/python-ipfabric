@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, Dict, List
 
 from pydantic import BaseModel
 
@@ -21,6 +21,7 @@ class Table(BaseModel):
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -31,6 +32,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -42,6 +44,7 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
@@ -54,6 +57,7 @@ class Table(BaseModel):
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -62,6 +66,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -71,22 +76,30 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
             snapshot=self.snapshot,
         )
 
-    def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
+    def count(
+            self,
+            filters: Optional[dict] = None,
+            snapshot_id: Optional[str] = None,
+            attr_filters: Optional[Dict[str, List[str]]] = None
+    ):
         """
         Gets count of table
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :return: int: Count
         """
         return self.client.get_count(
             self.endpoint,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             snapshot=self.snapshot,
         )

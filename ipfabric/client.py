@@ -1,6 +1,6 @@
 import re
 from json import loads
-from typing import Optional, Union
+from typing import Optional, Union, Dict, List
 from urllib.parse import urlparse
 
 from ipfabric.api import IPFabricAPI
@@ -53,7 +53,7 @@ class IPFClient(IPFabricAPI):
         self.jobs = Jobs(client=self)
 
     @staticmethod
-    def _check_payload(payload, snapshot, filters, reports, sort):
+    def _check_payload(payload, snapshot, filters, reports, sort, attr_filters):
         if not snapshot:
             payload.pop("snapshot", None)
         if filters:
@@ -62,6 +62,8 @@ class IPFClient(IPFabricAPI):
             payload["reports"] = reports
         if sort:
             payload["sort"] = sort
+        if attr_filters:
+            payload["attributeFilters"] = attr_filters
         return payload
 
     @check_format
@@ -75,6 +77,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
     ):
         """
@@ -82,6 +85,7 @@ class IPFClient(IPFabricAPI):
         :param url: str: Example tables/vlan/device-summary
         :param columns: list: Optional list of columns to return, None will return all
         :param filters: dict: Optional dictionary of filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param limit: int: Default to 1,000 rows
         :param start: int: Starts at 0
         :param snapshot_id: str: Optional snapshot_id to override default
@@ -95,7 +99,7 @@ class IPFClient(IPFabricAPI):
             pagination=dict(start=start, limit=limit),
             snapshot=snapshot_id or self.snapshot_id,
         )
-        payload = self._check_payload(payload, snapshot, filters, reports, sort)
+        payload = self._check_payload(payload, snapshot, filters, reports, sort, attr_filters)
         res = self.post(url, json=payload)
         res.raise_for_status()
         return res.json()["data"]
@@ -109,6 +113,7 @@ class IPFClient(IPFabricAPI):
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
     ):
         """
@@ -116,6 +121,7 @@ class IPFClient(IPFabricAPI):
         :param url: str: Example tables/vlan/device-summary
         :param columns: list: Optional list of columns to return, None will return all
         :param filters: dict: Optional dictionary of filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot_id to override default
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -123,7 +129,7 @@ class IPFClient(IPFabricAPI):
         :return: list: List of Dictionary objects.
         """
         payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
-        payload = self._check_payload(payload, snapshot, filters, reports, sort)
+        payload = self._check_payload(payload, snapshot, filters, reports, sort, attr_filters)
         return self._ipf_pager(url, payload)
 
     @check_format
@@ -161,14 +167,12 @@ class IPFClient(IPFabricAPI):
         self,
         url: str,
         filters: Optional[Union[dict, str]] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         snapshot: bool = True,
     ):
-        payload = dict(columns=["id"], pagination=dict(limit=1, start=0))
-        if snapshot:
-            payload["snapshot"] = snapshot_id or self.snapshot_id
-        if filters:
-            payload["filters"] = filters
+        payload = dict(columns=["id"], pagination=dict(limit=1, start=0), snapshot=snapshot_id or self.snapshot_id)
+        payload = self._check_payload(payload, snapshot, filters, None, None, attr_filters)
         res = self.post(url, json=payload)
         res.raise_for_status()
         return res.json()["_meta"]["count"]
