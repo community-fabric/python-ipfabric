@@ -2,7 +2,7 @@ from httpx import HTTPStatusError
 
 from ipfabric import IPFClient
 from ipfabric.settings import VendorAPI, AWS, Azure, CheckPointApiKey, CheckPointUserAuth, \
-    CiscoFMC, Merakiv1, NSXT, SilverPeak, Versa, Viptela
+    CiscoFMC, Merakiv1, NSXT, SilverPeak, Versa, Viptela, AWS_REGIONS
 
 if __name__ == "__main__":
 
@@ -18,20 +18,32 @@ if __name__ == "__main__":
     except HTTPStatusError as err:
         print(err)
 
-    aws = AWS(apiKey='KEY', apiSecret='SECRET', region='eu-central-1', respectSystemProxyConfiguration=True)
-    aws_assume = AWS(apiKey='KEY', apiSecret='SECRET', region='eu-central-1', assumeRole='arn:aws:iam::ID:role/NAME')
+    aws = AWS(apiKey='KEY', apiSecret='SECRET', regions=['eu-central-1'], respectSystemProxyConfiguration=True)
+    aws_assume = AWS(apiKey='KEY', apiSecret='SECRET', regions=AWS_REGIONS, assumeRoles=['arn:aws:iam::ID:role/NAME'])
+    # Above will add ALL AWS Regions
 
-    add = api.add_vendor_api(aws)
+    add = api.add_vendor_api(aws_assume)
     print(add)
     """
     {
-        'region': 'eu-central-1', 
-        'isEnabled': True, 
-        'type': 'aws-ec2', 
-        'apiVersion': '2016-11-15', 
-        'baseUrl': 'https://ec2.eu-central-1.amazonaws.com', 
-        'id': '1379621882', 
-        'details': 'eu-central-1'
+      "type": "aws-ec2",
+      "apiKey": "KEY",
+      "apiSecret": "SECRET",
+      "isEnabled": true,
+      "regions": [
+            "us-east-2",
+            "us-east-1",
+            "us-west-1",
+            "us-west-2",
+            "af-south-1",
+            ...
+        ],
+      "respectSystemProxyConfiguration": false,
+      "assumeRoles": [
+        {
+          "role": "arn:aws:iam::ID:role/NAME"
+        }
+      ]
     }
     """
 

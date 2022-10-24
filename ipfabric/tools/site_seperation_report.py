@@ -13,7 +13,8 @@ logger = logging.getLogger("python-ipfabric")
 class Matches:
     hostname: str
     sn: str
-    site_name: str
+    old_site_name: str
+    new_site_name: Optional[str]
     rule_type: str
     rule_number: Optional[int]
     rule_note: Optional[str]
@@ -49,6 +50,7 @@ def map_devices_to_rules(ipf, snapshot_id: str = "$last"):
                 matches.append(
                     Matches(
                         match["hostname"],
+                        devices[match["sn"]]["siteName"],
                         match["sn"],
                         site,
                         rule["type"],
@@ -61,5 +63,5 @@ def map_devices_to_rules(ipf, snapshot_id: str = "$last"):
                 devices.pop(match["sn"], None)
 
     for sn, dev in devices.items():
-        matches.append(Matches(dev["hostname"], sn, dev["siteName"], "noMatchingRule", None, None, None, None))
+        matches.append(Matches(dev["hostname"], sn, dev["siteName"], None, "noMatchingRule", None, None, None, None))
     return [m.__dict__ for m in matches]

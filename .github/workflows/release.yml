@@ -33,10 +33,12 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
       - name: Run functional tests
+        if: "!contains(github.ref, 'beta')"
         env:
           IPF_URL: ${{ secrets.IPF_URL }}
           IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
         run: poetry run python -m pytest tests/functional
+
   publish:
     runs-on: ubuntu-latest
     name: Publish to PyPi

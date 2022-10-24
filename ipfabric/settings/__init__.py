@@ -7,6 +7,7 @@ from .user_mgmt import UserMgmt
 from .vendor_api import VendorAPI
 from .vendor_api_models import (
     AWS,
+    AWS_REGIONS,
     Azure,
     CheckPointApiKey,
     CheckPointUserAuth,
@@ -26,6 +27,7 @@ __all__ = [
     "Attributes",
     "VendorAPI",
     "AWS",
+    "AWS_REGIONS",
     "Azure",
     "CheckPointApiKey",
     "CheckPointUserAuth",

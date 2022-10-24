@@ -25,8 +25,10 @@ if __name__ == '__main__':
     True
     """
 
-    ipf = IPFClient(snapshot_id="$prev")
+    ipf = IPFClient(snapshot_id="$prev")  # New in v6.0: Retrieves loaded only snapshots.
     # ipf = IPFClient('https://demo3.ipfabric.io/', snapshot_id="$lastLocked", token='token', verify=False, timeout=15)
+
+    ipf = IPFClient(snapshot_id="$prev", unloaded=True)  # Retrieves all snapshots including unloaded.
 
     print(f"IP Fabric version: {ipf.os_version}")
     """
