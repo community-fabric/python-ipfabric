@@ -11,7 +11,8 @@ jobs:
   test:
     if: |
       github.repository == 'community-fabric/python-ipfabric' &&
-      startsWith(github.ref, 'refs/tags/v')
+      startsWith(github.ref, 'refs/tags/v') &&
+      "!contains(github.ref, 'beta')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,7 +34,6 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
       - name: Run functional tests
-        if: "!contains(github.ref, 'beta')"
         env:
           IPF_URL: ${{ secrets.IPF_URL }}
           IPF_TOKEN: ${{ secrets.IPF_TOKEN }}
