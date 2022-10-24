@@ -1,10 +1,13 @@
 import logging
+import re
 from typing import Optional, List, Any
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 logger = logging.getLogger("python-ipfabric")
+
+ATTR_REGEX = re.compile(r'^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$')
 
 
 @dataclass
@@ -26,6 +29,17 @@ class Attributes:
     @property
     def post_endpoint(self):
         return "tables/snapshot-attributes" if self.snapshot_id else "tables/global-attributes"
+
+    @staticmethod
+    def check_attribute_name(attributes: set):
+        invalid = list()
+        for attribute in attributes:
+            if not ATTR_REGEX.match(attribute):
+                invalid.append(attribute)
+        if invalid:
+            raise NameError(f'The following Attribute Names are invalid and do match regex rule '
+                            f'"^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$":\n{invalid}')
+        return True
 
     def all(
         self,
@@ -59,6 +73,7 @@ class Attributes:
         :param value: str: Attribute value (case sensitive)
         :return:
         """
+        self.check_attribute_name({name})
         attribute = dict(name=name, sn=serial_number, value=value)
         if self.snapshot_id:
             return self.set_attributes_by_sn([attribute])
@@ -73,6 +88,7 @@ class Attributes:
         :param attributes: list: [{'sn': 'IPF SERIAL NUMBER', 'name': 'attributeName', 'value': 'SITE NAME'}]
         :return:
         """
+        self.check_attribute_name({v['name'] for v in attributes})
         payload = dict(attributes=attributes)
         if self.snapshot_id:
             payload["snapshot"] = self.snapshot_id
