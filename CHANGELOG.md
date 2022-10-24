@@ -17,6 +17,12 @@
 * Update for AWS API for multiple regions/AssumeRoles
 * Add Lock/Unlock snapshots
 * Added get_snapshot(snapshot_id) to find a snapshot_id
+* Added Local Attributes
+* Added Jobs
+
+### CI/CD
+
+* Do not run functional tests for beta release
 
 ## 5.0.15 (2022-10-05)
 
