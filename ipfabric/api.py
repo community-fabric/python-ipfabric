@@ -5,7 +5,7 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional, Union
+from typing import Optional, Union, Dict, List
 from urllib.parse import urljoin
 
 from httpx import Client
@@ -93,11 +93,25 @@ class IPFabricAPI(Client):
         # Get Current User, by doing that we are also ensuring the token is valid
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
+        self._attribute_filters = None
         self.snapshot_id = snapshot_id
         logger.debug(
             f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
             f"as user '{self.user.username}'"
         )
+
+    @property
+    def attribute_filters(self):
+        return self._attribute_filters
+
+    @attribute_filters.setter
+    def attribute_filters(self, attribute_filters: Union[Dict[str, List[str]], None]):
+        if attribute_filters:
+            logger.warning(f"Setting Global Attribute Filter for all tables/diagrams until explicitly unset to None.\n"
+                           f"This may cause errors on some tables like in Settings.\n"
+                           f"Adding an Attribute Filter to any function will overwrite the Global Filter.\n"
+                           f"Filter: {attribute_filters}")
+        self._attribute_filters = attribute_filters
 
     def get_user(self):
         """
