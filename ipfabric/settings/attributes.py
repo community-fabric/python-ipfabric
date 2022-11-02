@@ -7,7 +7,7 @@ from pydantic.dataclasses import dataclass
 
 logger = logging.getLogger("python-ipfabric")
 
-ATTR_REGEX = re.compile(r'^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$')
+ATTR_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$")
 
 
 @dataclass
@@ -20,7 +20,8 @@ class Attributes:
     snapshot_id: Optional[str] = Field(default=None, description="Snapshot ID to switch to Local Attributes")
 
     def __post_init__(self):
-        self.snapshot_id = self.client.get_snapshot(self.snapshot_id).snapshot_id
+        if self.snapshot_id:
+            self.snapshot_id = self.client.get_snapshot(self.snapshot_id).snapshot_id
 
     @property
     def endpoint(self):
@@ -37,8 +38,10 @@ class Attributes:
             if not ATTR_REGEX.match(attribute):
                 invalid.append(attribute)
         if invalid:
-            raise NameError(f'The following Attribute Names are invalid and do match regex rule '
-                            f'"^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$":\n{invalid}')
+            raise NameError(
+                f"The following Attribute Names are invalid and do match regex rule "
+                f'"^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$":\n{invalid}'
+            )
         return True
 
     def all(
@@ -88,7 +91,7 @@ class Attributes:
         :param attributes: list: [{'sn': 'IPF SERIAL NUMBER', 'name': 'attributeName', 'value': 'SITE NAME'}]
         :return:
         """
-        self.check_attribute_name({v['name'] for v in attributes})
+        self.check_attribute_name({v["name"] for v in attributes})
         payload = dict(attributes=attributes)
         if self.snapshot_id:
             payload["snapshot"] = self.snapshot_id
@@ -152,8 +155,8 @@ class Attributes:
 
     def update_local_attr_from_global(self):
         if not self.snapshot_id:
-            raise ImportError(f'Please initialize Attributes class with a snapshot_id.')
-        g_attrs = self.client.fetch_all('tables/global-attributes', columns=['name', 'value', 'sn'], snapshot=False)
+            raise ImportError(f"Please initialize Attributes class with a snapshot_id.")
+        g_attrs = self.client.fetch_all("tables/global-attributes", columns=["name", "value", "sn"], snapshot=False)
         if not g_attrs:
             return False
         local_attrs = self.all()

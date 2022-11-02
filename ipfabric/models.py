@@ -84,10 +84,10 @@ class Table(BaseModel):
         )
 
     def count(
-            self,
-            filters: Optional[dict] = None,
-            snapshot_id: Optional[str] = None,
-            attr_filters: Optional[Dict[str, List[str]]] = None
+        self,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
     ):
         """
         Gets count of table

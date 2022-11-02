@@ -107,10 +107,12 @@ class IPFabricAPI(Client):
     @attribute_filters.setter
     def attribute_filters(self, attribute_filters: Union[Dict[str, List[str]], None]):
         if attribute_filters:
-            logger.warning(f"Setting Global Attribute Filter for all tables/diagrams until explicitly unset to None.\n"
-                           f"This may cause errors on some tables like in Settings.\n"
-                           f"Adding an Attribute Filter to any function will overwrite the Global Filter.\n"
-                           f"Filter: {attribute_filters}")
+            logger.warning(
+                f"Setting Global Attribute Filter for all tables/diagrams until explicitly unset to None.\n"
+                f"This may cause errors on some tables like in Settings.\n"
+                f"Adding an Attribute Filter to any function will overwrite the Global Filter.\n"
+                f"Filter: {attribute_filters}"
+            )
         self._attribute_filters = attribute_filters
 
     def get_user(self):
