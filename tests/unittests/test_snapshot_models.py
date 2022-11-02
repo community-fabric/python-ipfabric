@@ -1,12 +1,13 @@
 import datetime
 import unittest
+from unittest.mock import MagicMock
 
 from ipfabric import snapshot_models
 
 
 class SnapshotModels(unittest.TestCase):
-    def test_snapshot(self):
-        s = snapshot_models.Snapshot(
+    def setUp(self) -> None:
+        self.snap = snapshot_models.Snapshot(
             **{
                 "loadedSize": "172267939",
                 "name": None,
@@ -35,7 +36,39 @@ class SnapshotModels(unittest.TestCase):
 
             }
         )
-        self.assertIsInstance(s, snapshot_models.Snapshot)
-        self.assertIsInstance(s.start, datetime.datetime)
-        self.assertTrue(s.loaded)
 
+    def test_snapshot(self):
+        self.assertIsInstance(self.snap, snapshot_models.Snapshot)
+        self.assertIsInstance(self.snap.start, datetime.datetime)
+        self.assertTrue(self.snap.loaded)
+
+    def test_lock(self):
+        self.assertTrue(self.snap.lock(MagicMock()))
+        self.assertTrue(self.snap.lock(MagicMock()))
+
+    def test_lock_false(self):
+        self.snap.status = 'unloaded'
+        self.assertFalse(self.snap.lock(MagicMock()))
+
+    def test_unlock(self):
+        self.snap.locked = True
+        self.assertTrue(self.snap.unlock(MagicMock()))
+        self.assertTrue(self.snap.unlock(MagicMock()))
+
+    def test_unlock_unloaded(self):
+        self.snap.status = 'unloaded'
+        self.assertTrue(self.snap.unlock(MagicMock()))
+
+    def test_unload(self):
+        self.assertTrue(self.snap.unload(MagicMock()))
+        self.assertTrue(self.snap.unload(MagicMock()))
+
+    def test_load(self):
+        self.assertTrue(self.snap.load(MagicMock()))
+        self.snap.status = 'unloaded'
+        self.assertTrue(self.snap.load(MagicMock()))
+
+    def test_attributes(self):
+        ipf = MagicMock()
+        ipf.fetch_all.return_value = [{'name': 'siteName', 'value': 'TEST', 'sn': 'TEST', 'id': '1'}]
+        self.assertEqual(self.snap.attributes(ipf)[0]['id'], '1')

@@ -291,3 +291,54 @@ class Client(unittest.TestCase):
     def test_ipf_count(self, post):
         post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
         self.assertEqual(self.ipf.get_count('test'), 1)
+
+    def test_filter(self):
+        self.ipf.attribute_filters = {"FLOOR": ["12"]}
+        self.assertEqual(self.ipf.attribute_filters, {"FLOOR": ["12"]})
+
+    @patch("ipfabric.IPFClient.update")
+    def test_unloaded_snapshots(self, update):
+        self.assertEqual(self.ipf.unloaded_snapshots, {})
+
+    def test_get_snapshot(self):
+        self.assertEqual(self.ipf.get_snapshot('$last'), self.ipf.snapshots['$last'])
+
+    @patch('ipfabric.api.IPFabricAPI._ipf_pager')
+    @patch("httpx.Client.get")
+    def test_get_snapshot_from_server(self, get, pager):
+        pager.return_value = [
+            {
+                "name": None,
+                "status": "unloaded",
+                "locked": True,
+                "totalDevices": 642,
+                "totalDevCount": 642,
+                "tsEnd": 1637156346509,
+                "tsStart": 1637154608164,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+                "sites": ["BRANCH"],
+                "unloadedSize": 10,
+                "loadedSize": 50,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
+            }
+        ]
+        get().is_error = None
+        get().json.return_value = [
+            {
+                "licensedDevCount": 600,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+                "version": "4.1.1",
+                "initialVersion": "4.0.0",
+                "errors": [{"errorType": "ABMapResultError", "count": 1}],
+            }
+        ]
+        self.assertEqual(self.ipf.get_snapshot('631ac652-1f72-417f-813f-b8a8c8730158').snapshot_id,
+                         '631ac652-1f72-417f-813f-b8a8c8730158')
