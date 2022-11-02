@@ -97,7 +97,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: $SDK_VERSION
+          version: ${{ env.SDK_VERSION }}
         if: success()
       - name: Notify on Community Slack
         uses: openhousepvt/slack@v1.3.2
@@ -106,7 +106,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: $SDK_VERSION
+          version: ${{ env.SDK_VERSION }}
         if: success()
     needs:
       - publish
@@ -171,7 +171,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: $SDK_VERSION
+          version: ${{ env.SDK_VERSION }}
         if: success()
     needs:
       - publish-beta
