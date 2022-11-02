@@ -28,7 +28,13 @@ if __name__ == '__main__':
     ipf = IPFClient(snapshot_id="$prev")  # New in v6.0: Retrieves loaded only snapshots.
     # ipf = IPFClient('https://demo3.ipfabric.io/', snapshot_id="$lastLocked", token='token', verify=False, timeout=15)
 
-    ipf = IPFClient(snapshot_id="$prev", unloaded=True)  # Retrieves all snapshots including unloaded.
+    ipf = IPFClient(snapshot_id="$prev", unloaded=True)
+    """
+    Default: unloaded=False
+    Set to True to get metadata from all unloaded snapshots.
+    Collecting unloaded snapshot metadata could increase memory requirements significantly depending on how many
+    unloaded snapshots are on your system.
+    """
 
     print(f"IP Fabric version: {ipf.os_version}")
     """
@@ -50,7 +56,7 @@ if __name__ == '__main__':
      'count': 640,
      'end': datetime.datetime(2021, 10, 21, 12, 37, 3, 513000),
      'snapshot_id': 'd3bd033e-1ba6-4b27-86f5-18824a1a495e',
-     'state': 'loaded',
+     'state': 'done',
      'locked': True,
      'name': 'Baseline 10-21',
      'start': datetime.datetime(2021, 10, 21, 11, 59, 54, 941000)
@@ -60,7 +66,10 @@ if __name__ == '__main__':
 
     # Unload and load snapshots
     ipf.snapshots['$last'].unload(ipf)
-
     sleep(240)
-    ipf.update()
     ipf.snapshots['c8684ea9-dfd8-400d-a4b8-ba1c4bc7c185'].load(ipf)
+    sleep(240)
+
+    ipf.snapshots['c8684ea9-dfd8-400d-a4b8-ba1c4bc7c185'].lock(ipf)
+    sleep(5)
+    ipf.snapshots['c8684ea9-dfd8-400d-a4b8-ba1c4bc7c185'].unlock(ipf)

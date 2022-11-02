@@ -75,6 +75,7 @@ class Snapshot(BaseModel):
         if not self.locked and self.loaded:
             res = ipf.post(f"snapshots/{self.snapshot_id}/lock")
             res.raise_for_status()
+            self.locked = True
         elif not self.loaded:
             logger.error(f"Snapshot {self.snapshot_id} is not loaded.")
             return False
@@ -86,6 +87,7 @@ class Snapshot(BaseModel):
         if self.locked and self.loaded:
             res = ipf.post(f"snapshots/{self.snapshot_id}/unlock")
             res.raise_for_status()
+            self.locked = False
         elif not self.loaded:
             logger.error(f"Snapshot {self.snapshot_id} is not loaded.")
         else:
@@ -107,6 +109,7 @@ class Snapshot(BaseModel):
                 "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
             )
             res.raise_for_status()
+            self.status = "unloaded"
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
         return True
@@ -122,6 +125,7 @@ class Snapshot(BaseModel):
                 "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
             )
             res.raise_for_status()
+            self.status = "done"
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True
