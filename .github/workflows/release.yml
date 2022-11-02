@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Get version from tag
         id: version
-        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+        run: echo "SDK_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
         shell: bash
 
       - name: Notify on Slack
@@ -97,7 +97,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: ${{ steps.version.outputs.version }}
+          version: $SDK_VERSION
         if: success()
       - name: Notify on Community Slack
         uses: openhousepvt/slack@v1.3.2
@@ -106,7 +106,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: ${{ steps.version.outputs.version }}
+          version: $SDK_VERSION
         if: success()
     needs:
       - publish
@@ -161,7 +161,7 @@ jobs:
     steps:
       - name: Get version from tag
         id: version
-        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+        run: echo "SDK_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
         shell: bash
 
       - name: Notify on Slack
@@ -171,7 +171,7 @@ jobs:
         with:
           status: ${{ job.status }}
           platform: 'PYPI'
-          version: ${{ steps.version.outputs.version }}
+          version: $SDK_VERSION
         if: success()
     needs:
       - publish-beta
