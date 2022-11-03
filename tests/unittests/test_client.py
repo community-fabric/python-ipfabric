@@ -39,8 +39,9 @@ class FailedClient(unittest.TestCase):
             ipf = IPFClient()
 
     @patch.dict(os.environ, {}, clear=True)
+    @patch('dotenv.load_dotenv', return_value=None)
     @patch("ipfabric.IPFClient.check_version")
-    def test_no_token(self, version):
+    def test_no_token(self, version, dotenv):
         env = dict()
         version.return_value = 'v5', parse('v5.0.1')
         with self.assertRaises(RuntimeError) as err:
