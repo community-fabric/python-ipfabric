@@ -11,6 +11,7 @@ from urllib.parse import urljoin
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
 from pydantic import BaseSettings
+import dotenv
 
 from ipfabric import snapshot_models
 from ipfabric.settings.user_mgmt import User
@@ -61,6 +62,8 @@ class IPFabricAPI(Client):
         :param kwargs: dict: Keyword args to pass to httpx
         """
         self.unloaded = unloaded
+        # find env file
+        dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
             super().__init__(
                 timeout=kwargs.get("timeout", True),
