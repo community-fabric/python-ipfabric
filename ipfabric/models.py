@@ -1,91 +1,17 @@
 import logging
-from datetime import datetime
-from typing import Optional, Any, List
+from typing import Optional, Any, Dict, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from ipfabric.technology import *
 
 logger = logging.getLogger("python-ipfabric")
 
 
-class Site(BaseModel):
-    _sitename: str = Field(alias="siteName")
-    _name: str = Field(alias="name")
-    uid: str
-    site_id: Optional[str] = Field(None, alias="id")
-
-    @property
-    def site_name(self):
-        return self._name or self._sitename
-
-
-class Error(BaseModel):
-    error_type: str = Field(alias="errorType")
-    count: int
-
-
-class Snapshot(BaseModel):
-    snapshot_id: str = Field(alias="id")
-    name: Optional[str]
-    note: Optional[str]
-    count: int = Field(alias="totalDevCount")
-    licensed_count: int = Field(alias="licensedDevCount")
-    status: str
-    state: str
-    locked: bool
-    start: datetime = Field(alias="tsStart")
-    end: Optional[datetime] = Field(alias="tsEnd")
-    version: Optional[str] = None
-    sites: List[Site]
-    errors: Optional[List[Error]]
-
-    @property
-    def loaded(self):
-        return self.state == "loaded"
-
-    def unload(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if self.loaded:
-            res = ipf.post(
-                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
-        return True
-
-    def load(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if not self.loaded:
-            res = ipf.post(
-                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
-        return True
-
-    def attributes(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
-
-
 class Table(BaseModel):
     endpoint: str
     client: Any
+    snapshot: bool = True
 
     @property
     def name(self):
@@ -95,6 +21,7 @@ class Table(BaseModel):
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -105,6 +32,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -116,17 +44,20 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
             limit=limit,
             start=start,
+            snapshot=self.snapshot,
         )
 
     def all(
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -135,6 +66,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -144,22 +76,32 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
+            snapshot=self.snapshot,
         )
 
-    def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
+    def count(
+        self,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
+    ):
         """
         Gets count of table
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :return: int: Count
         """
         return self.client.get_count(
             self.endpoint,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
+            snapshot=self.snapshot,
         )
 
 
@@ -325,3 +267,50 @@ class Technology(BaseModel):
     @property
     def wireless(self):
         return Wireless(client=self.client)
+
+
+class Jobs(BaseModel):
+    client: Any
+
+    @property
+    def all_jobs(self):
+        return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
+
+    def _get_download_job_by_snapshot_id(self, snapshot_id):
+        list_to_return = list()
+        job_filter = dict()
+        job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
+        job_filter["name"] = ["eq", "snapshotDownload"]
+        for snapshot in self.all_jobs.all(filters=job_filter):
+            list_to_return.append(snapshot)
+        logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
+        return list_to_return
+
+    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry):
+        retries = 0
+        job_id = None
+        while retries < retry:
+            jobs = self._get_download_job_by_snapshot_id(snapshot_id)
+            if len(jobs) > 1:
+                logger.warning(
+                    "multiple snapshots downloaded recently with the same snapshot_id," " using most recent job_id."
+                )
+                job_ids = sorted([int(job["id"]) for job in jobs])
+                job_id = job_ids[-1]
+            elif len(jobs) == 0:
+                logger.warning(f"No download job found for snapshot {snapshot_id}")
+            retries += retries + 1
+            logger.info(f"retry status: {retries}")
+        return job_id
+
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5):
+        """Returns a Job Id to use to in a download snapshot
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            job_id: str: id to use when downloading a snapshot
+        """
+        return self._confirm_snapshot_ready_for_download(snapshot_id, retry)
