@@ -17,17 +17,23 @@ class Decorator(unittest.TestCase):
             return (url, kwargs)
 
         tests = [
-            'v5/tables/addressing/ipv6-neighbors',
-            'v5.0/tables/addressing/ipv6-neighbors',
-            'api/v5/tables/addressing/ipv6-neighbors',
-            'https://demo3.ipfabric.io/api/v5.0/tables/addressing/ipv6-neighbors',
-            '/tables/addressing/ipv6-neighbors',
-            'tables/addressing/ipv6-neighbors'
+            ('v5/tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('v5.0/tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('api/v5/tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('https://demo3.ipfabric.io/api/v5.0/tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('/tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('tables/addressing/ipv6-neighbors', "tables/addressing/ipv6-neighbors"),
+            ('v5/tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
+            ('v5.0/tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
+            ('api/v5/tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
+            ('https://demo3.ipfabric.io/api/v5.0/tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
+            ('/tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
+            ('tables/routing/protocols/ospf-v3/neighbors', "tables/routing/protocols/ospf-v3/neighbors"),
         ]
 
         for test in tests:
-            result = tester(None, test, filters='{"test": "Hello World"}')
-            self.assertEqual(result[0], "tables/addressing/ipv6-neighbors", msg=test)
+            result = tester(None, test[0], filters='{"test": "Hello World"}')
+            self.assertEqual(result[0], test[1], msg=test[0])
             self.assertEqual(result[1], {"filters": {"test": "Hello World"}})
 
 
