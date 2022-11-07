@@ -1,6 +1,5 @@
 # Changelog
 
-=======
 ## 6.0.0 (2022-10-XX)
 
 ### Breaking Change
