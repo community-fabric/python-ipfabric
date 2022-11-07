@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.16 (2022-11-07)
+### Fix
+* Fix for the URL formatter.
+
 ## 5.0.15 (2022-10-05)
 ### Feature
 * Added ipfabric.settings.SiteSeparation
