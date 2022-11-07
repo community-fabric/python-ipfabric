@@ -6,8 +6,8 @@ from packaging.version import parse
 
 from ipfabric import IPFClient
 from ipfabric.client import check_format
-from ipfabric.models import Snapshot
 from ipfabric.settings.user_mgmt import User
+from ipfabric.snapshot_models import Snapshot
 
 
 class Decorator(unittest.TestCase):
@@ -45,8 +45,9 @@ class FailedClient(unittest.TestCase):
             ipf = IPFClient()
 
     @patch.dict(os.environ, {}, clear=True)
+    @patch('dotenv.load_dotenv', return_value=None)
     @patch("ipfabric.IPFClient.check_version")
-    def test_no_token(self, version):
+    def test_no_token(self, version, dotenv):
         env = dict()
         version.return_value = 'v5', parse('v5.0.1')
         with self.assertRaises(RuntimeError) as err:
@@ -65,7 +66,6 @@ class Client(unittest.TestCase):
             "$last": Snapshot(
                 **{
                     "name": None,
-                    "state": "loaded",
                     "locked": False,
                     "totalDevices": 642,
                     "status": "done",
@@ -75,8 +75,20 @@ class Client(unittest.TestCase):
                     "tsStart": 1637154608164,
                     "id": "631ac652-1f72-417f-813f-b8a8c8730157",
                     "version": "4.1.1",
-                    "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
+                    "initialVersion": "3.8.0",
+                    "sites": ["BRANCH"],
                     "errors": [{"errorType": "ABMapResultError", "count": 1}],
+                    "loadedSize": 10,
+                    "unloadedSize": 0,
+                    "fromArchive": True,
+                    "loading": False,
+                    "finishStatus": "done",
+                    "userCount": 10,
+                    "interfaceActiveCount": 10,
+                    "interfaceCount": 10,
+                    "interfaceEdgeCount": 10,
+                    "deviceAddedCount": 10,
+                    "deviceRemovedCount": 10,
                 }
             )
         }
@@ -106,10 +118,10 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.get")
     def test_check_version_no_version(self, get):
         get().is_error = None
-        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        get().json.return_value = {"apiVersion": "v6.1", "releaseVersion": "6.0.1+10"}
         api_version, os_version = self.ipf.check_version(None, 'TEST')
-        self.assertEqual(api_version, f"v5.0")
-        self.assertEqual(str(os_version), "5.0.1+10")
+        self.assertEqual(api_version, f"v6.0")
+        self.assertEqual(str(os_version), "6.0.1+10")
 
     @patch("httpx.Client.get")
     def test_check_version_api_gt_os(self, get):
@@ -133,54 +145,99 @@ class Client(unittest.TestCase):
         with self.assertRaises(RuntimeError) as err:
             self.ipf.check_version('v1', 'TEST')
 
+    @patch('ipfabric.api.IPFabricAPI._ipf_pager')
     @patch("httpx.Client.get")
-    def test_snapshots(self, get):
-        get().is_error = None
-        get().json.return_value = [
+    def test_snapshots(self, get, pager):
+        pager.return_value = [
             {
                 "name": "Test",
-                "state": "loaded",
+                "status": "done",
                 "locked": False,
                 "totalDevices": 642,
-                "status": "done",
                 "totalDevCount": 642,
-                "licensedDevCount": 600,
                 "tsEnd": 1637156346509,
                 "tsStart": 1637154608164,
                 "id": "631ac652-1f72-417f-813f-b8a8c8730157",
-                "version": "4.1.1",
-                "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
-                "errors": [{"errorType": "ABMapResultError", "count": 1}],
-                "note": "Test"
+                "sites": ["BRANCH"],
+                "note": "Test",
+                "loadedSize": 50,
+                "unloadedSize": 10,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
             },
             {
                 "name": None,
-                "state": "done",
+                "status": "unloaded",
                 "locked": True,
                 "totalDevices": 642,
-                "status": "done",
                 "totalDevCount": 642,
-                "licensedDevCount": 600,
                 "tsEnd": 1637156346509,
                 "tsStart": 1637154608164,
                 "id": "631ac652-1f72-417f-813f-b8a8c8730158",
-                "version": "4.1.1",
-                "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
-                "errors": [{"errorType": "ABMapResultError", "count": 1}],
+                "sites": ["BRANCH"],
+                "unloadedSize": 10,
+                "loadedSize": 50,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
             },
             {
                 "name": None,
-                "state": "loaded",
+                "status": "done",
                 "locked": True,
                 "totalDevices": 642,
-                "status": "done",
                 "totalDevCount": 642,
-                "licensedDevCount": 600,
                 "tsEnd": 1637156346509,
-                "tsStart": 1637154608164,
+                "tsStart": 1637154608159,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730159",
+                "sites": ["BRANCH"],
+                "unloadedSize": 10,
+                "loadedSize": 50,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
+            },
+        ]
+        get().is_error = None
+        get().json.return_value = [
+            {
+                "licensedDevCount": 600,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730157",
+                "version": "4.1.1",
+                "initialVersion": "4.0.0",
+                "errors": [{"errorType": "ABMapResultError", "count": 1}],
+            },
+            {
+                "licensedDevCount": 600,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+                "version": "4.1.1",
+                "initialVersion": "4.0.0",
+                "errors": [{"errorType": "ABMapResultError", "count": 1}],
+            },
+            {
+                "licensedDevCount": 600,
                 "id": "631ac652-1f72-417f-813f-b8a8c8730159",
                 "version": "4.1.1",
-                "sites": [{"siteName": "BRANCH", "uid": "BRANCH", "id": "2342875"}],
+                "initialVersion": "4.0.0",
                 "errors": [{"errorType": "ABMapResultError", "count": 1}],
             },
         ]
@@ -241,3 +298,54 @@ class Client(unittest.TestCase):
     def test_ipf_count(self, post):
         post().json.return_value = {"data": ["hello"], "_meta": {"count": 1}}
         self.assertEqual(self.ipf.get_count('test'), 1)
+
+    def test_filter(self):
+        self.ipf.attribute_filters = {"FLOOR": ["12"]}
+        self.assertEqual(self.ipf.attribute_filters, {"FLOOR": ["12"]})
+
+    @patch("ipfabric.IPFClient.update")
+    def test_unloaded_snapshots(self, update):
+        self.assertEqual(self.ipf.unloaded_snapshots, {})
+
+    def test_get_snapshot(self):
+        self.assertEqual(self.ipf.get_snapshot('$last'), self.ipf.snapshots['$last'])
+
+    @patch('ipfabric.api.IPFabricAPI._ipf_pager')
+    @patch("httpx.Client.get")
+    def test_get_snapshot_from_server(self, get, pager):
+        pager.return_value = [
+            {
+                "name": None,
+                "status": "unloaded",
+                "locked": True,
+                "totalDevices": 642,
+                "totalDevCount": 642,
+                "tsEnd": 1637156346509,
+                "tsStart": 1637154608164,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+                "sites": ["BRANCH"],
+                "unloadedSize": 10,
+                "loadedSize": 50,
+                "fromArchive": True,
+                "loading": False,
+                "finishStatus": "done",
+                "userCount": 10,
+                "interfaceActiveCount": 10,
+                "interfaceCount": 10,
+                "interfaceEdgeCount": 10,
+                "deviceAddedCount": 10,
+                "deviceRemovedCount": 10,
+            }
+        ]
+        get().is_error = None
+        get().json.return_value = [
+            {
+                "licensedDevCount": 600,
+                "id": "631ac652-1f72-417f-813f-b8a8c8730158",
+                "version": "4.1.1",
+                "initialVersion": "4.0.0",
+                "errors": [{"errorType": "ABMapResultError", "count": 1}],
+            }
+        ]
+        self.assertEqual(self.ipf.get_snapshot('631ac652-1f72-417f-813f-b8a8c8730158').snapshot_id,
+                         '631ac652-1f72-417f-813f-b8a8c8730158')

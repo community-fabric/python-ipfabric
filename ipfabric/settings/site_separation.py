@@ -21,6 +21,7 @@ class SiteSeparation:
 
     @staticmethod
     def _create_rule(transformation, regex):
+        transformation = transformation.lower()
         if transformation not in ["uppercase", "lowercase", "none"]:
             raise SyntaxError(f'Transformation type is not in ["uppercase", "lowercase", "none"].')
         return {"regex": regex, "transformation": transformation}

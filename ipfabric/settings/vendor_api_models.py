@@ -48,16 +48,29 @@ class UserAuthBaseUrl(BaseModel):
 class AWS(SystemProxy, BaseModel):
     apiKey: str
     apiSecret: str
-    region: str
-    assumeRole: Optional[str] = Field(default=None)
+    regions: list
+    assumeRoles: Optional[List[str]] = Field(default=None)
     isEnabled: bool = Field(default=True, const=True)
     type: str = Field(default="aws-ec2", const=True)
 
-    @validator("region")
-    def check_region(cls, r):
-        if r.lower() not in AWS_REGIONS:
-            raise ValueError(f"{r} is not a valid AWS Region")
-        return r.lower()
+    @validator("regions")
+    def check_region(cls, regions):
+        for r in regions:
+            if r.lower() not in AWS_REGIONS:
+                raise ValueError(f"{r} is not a valid AWS Region")
+        return [r.lower() for r in regions]
+
+    # @validator("assumeRoles")
+    # def check_roles(cls, roles):
+    #     validated_roles = list()
+    #     for role in roles:
+    #         if isinstance(role, str):
+    #             validated_roles.append(AssumeRole(role=role))
+    #         elif isinstance(role, dict):
+    #             validated_roles.append(AssumeRole(**role))
+    #         elif isinstance(role, AssumeRole):
+    #             validated_roles.append(role)
+    #     return validated_roles
 
 
 class Azure(SystemProxy, BaseModel):
