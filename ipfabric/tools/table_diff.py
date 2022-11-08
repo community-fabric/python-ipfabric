@@ -88,8 +88,8 @@ class IpfTableDiff(BaseModel):
         if snapshot:
             return self.client.snapshots[snapshot.snapshot_id].snapshot_id
         if snapshot_name:
-            for snap in self.client.snapshots:
-                if snapshot_name == snap["name"]:
+            for snap in list(self.client.snapshots.values()):
+                if snapshot_name == snap.name:
                     return snap.snapshot_id
         if snapshot_id:
             return self.client.snapshots[snapshot_id].snapshot_id
