@@ -1,17 +1,19 @@
 import argparse
-import yaml
-from ipfabric import IPFClient
 import logging
-import sys
 import os
+import sys
 
-logger = logging.getLogger("RBAC")
+import yaml
+
+from ipfabric import IPFClient
+
+logger = logging.getLogger('RBAC')
+
 
 def delete_rbac(ipf) -> int:
-    logger.info("Deleting RBAC")
+    logger.info('Deleting RBAC')
     resp = ipf.get('roles')
     resp.raise_for_status()
-
 
     for role in resp.json()['data']:
         if not role['isSystem']:
@@ -30,6 +32,7 @@ def delete_rbac(ipf) -> int:
 
     return 0
 
+
 def create_rbac(ipf, roles, policies) -> int:
     data = yaml.safe_load(policies)
 
@@ -42,33 +45,33 @@ def create_rbac(ipf, roles, policies) -> int:
 
             scopes = [x['scope'] for x in m_values]
             if scopes:
-                name = f"{name} ({method.upper()})"
+                name = f'{name} ({method.upper()})'
                 payload = {
-                    "name": name,
-                    "description": name,
-                    "apiScopeIds": scopes
+                    'name': name,
+                    'description': name,
+                    'apiScopeIds': scopes
                 }
                 try:
-                    logger.info(f"Creating Policy {name}")
+                    logger.info(f'Creating Policy {name}')
                     res = ipf.post('policies/scopes/api', json=payload)
                     res.raise_for_status()
                 except Exception as e:
-                    logger.info(f"Policy Already Present: {name}")
+                    logger.info(f'Policy Already Present: {name}')
 
     data = yaml.safe_load(roles)
     data = data['roles']
 
     policies = ipf.get('policies').json()['data']
 
-
     name_to_id = {}
 
     for policy in policies:
-            name_to_id[policy['name']] = policy['id']
+        name_to_id[policy['name']] = policy['id']
 
     for role in data:
-        policies = [name_to_id[f"{x}"] for x in role['policies']]
-        payload = {"name":role['name'],"description": role.get("description", ""),"policyIds": policies}
+        policies = [name_to_id[f'{x}'] for x in role['policies']]
+        payload = {'name': role['name'], 'description': role.get(
+            'description', ''), 'policyIds': policies}
         try:
             logger.info(f"Creating Role: {role['name']}")
             resp = ipf.post('roles', json=payload)
@@ -76,23 +79,30 @@ def create_rbac(ipf, roles, policies) -> int:
         except Exception as e:
             logger.info(f"Role Already Present: {role['name']}")
 
-
     return 0
 
+
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="IP Fabric RBAC Script", description="Configures IP Fabric RBAC Policies from YAML files.")
-    parser.add_argument("--roles", type=argparse.FileType('r'), default="roles.yaml", help="Path to roles YAML file.")
-    parser.add_argument("--policies", type=argparse.FileType('r'), default="policies.yaml", help="Path to policies YAML file.")
-    parser.add_argument("--delete-all", action="store_true", help="Delete all RBAC none default roles and policies.")
-    parser.add_argument("--verify", action="store_false", help="This will disable SSL certificate verification.")
-    parser.add_argument("--version", help="Specify API Version.")
-    parser.add_argument("--verbose", action="store_true", help="Enable stdout console logging.")
+    parser = argparse.ArgumentParser(
+        prog='IP Fabric RBAC Script', description='Configures IP Fabric RBAC Policies from YAML files.')
+    parser.add_argument('--roles', type=argparse.FileType('r'),
+                        default='roles.yaml', help='Path to roles YAML file.')
+    parser.add_argument('--policies', type=argparse.FileType('r'),
+                        default='policies.yaml', help='Path to policies YAML file.')
+    parser.add_argument('--delete-all', action='store_true',
+                        help='Delete all RBAC none default roles and policies.')
+    parser.add_argument('--verify', action='store_false',
+                        help='This will disable SSL certificate verification.')
+    parser.add_argument('--version', help='Specify API Version.')
+    parser.add_argument('--verbose', action='store_true',
+                        help='Enable stdout console logging.')
     args = parser.parse_args()
 
     if args.verbose:
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(logging.DEBUG)
-        handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(handler)
         logger.setLevel(logging.DEBUG)
 
@@ -106,5 +116,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     raise SystemExit(main())
