@@ -6,7 +6,7 @@ roles:
       - Login (READ)
   - name: Settings (Read)
     description: Access to read all settings
-    policies: 
+    policies:
       - SSH (READ)
       - Security (READ)
       - Api token (READ)
@@ -104,3 +104,6 @@ roles:
   - name: Management (READ)
     policies:
       - Management (READ)
+  - name: Technology (READ)
+    policies:
+      - Technology (READ)

@@ -335,6 +335,9 @@ jobs:
   - path: /jobs/:key/read
     scope: f02182f15c3200b83948626e4c65570182a8d3ec
     summary: Return job information
+  - path: /tables/jobs
+    scope: 5fd6f107524d27bc33de517ed329cbe6708ff06b
+    summary: Platform Jobs
   write:
   - path: /jobs/:key/cancel
     scope: 43a6426e27bf66f5a659fa25f10423698288ee33
@@ -427,7 +430,7 @@ operating_system:
     scope: 5fb6d59b30fe50f2e0624e9dffa3c80338799a06
     summary: Generate techsupport file
 oui:
-  read: 
+  read:
   - path: /tables/reports/settings-oui
     scope: 3266d5d60fcaa70b8c9e3b3162806abe2b63d73a
     summary: Settings for OUI Discovery
@@ -454,7 +457,7 @@ oui:
     scope: f52db9bb947e2e59196c6cfa07537a61bb7de462
     summary: Update OUI settings
 scopes:
-  read: 
+  read:
   - path: /tables/scopes/api
     scope: 751705d05842f7c672be15f08a3b6b124f353c3a
     summary: POST /tables/scopes/api
@@ -911,21 +914,9 @@ inventory:
   - path: /tables/management/osver-consistency
     scope: 7072e17771ff98bb019aab662d660c9b43167816
     summary: OS Version Consistency
-  # - path: /tables/platforms/fabric-path/summary
-  #   scope: f83cbf239cf378a0b65d964e461fb71820f0bd4a
-  #   summary: POST /tables/platforms/fabric-path/summary
-  # - path: /tables/platforms/fabric-path/neighbors
-  #   scope: 35aef73100f72ab0e0126c96f9b94f9a9bb466f5
-  #   summary: POST /tables/platforms/fabric-path/neighbors
-  # - path: /tables/platforms/fabric-path/switches
-  #   scope: 6a987ce761acb660c58e8a8afa3a6982b4d986b8
-  #   summary: POST /tables/platforms/fabric-path/switches
-  # - path: /tables/platforms/fabric-path/routes
-  #   scope: 6a0e223d15246ac72e63254b2cb0ad7769207162
-  #   summary: POST /tables/platforms/fabric-path/routes
   write: []
 management:
-  read: 
+  read:
   - path: /tables/inventory/discovery-history
     scope: 80270bc86b703bca1062673a80977e7e80ac05a9
     summary: Discovery History
@@ -956,5 +947,837 @@ management:
   - path: /tables/management/configuration
     scope: e5cac6dcf2d741c053f58fbcda2b0d3f88dbf4a2
     summary: Configuration Files
+  - path: /tables/management/connectivity-errors
+    scope: 8ff0b8fbbd918cc544206aa0d4b4feaecf1cc544
+    summary: Configuration Management Connectivity Errors
   write: []
-
+Technology:
+  read:
+    - path: /tables/aci/dtep
+      scope: 1e59228ef7e29180ad59f674a5069f708374daff
+      summary: DTEP Inventory
+    - path: /tables/aci/endpoints
+      scope: 8377957b155db2db2fe4fdde54bba5a645e84612
+      summary: ACI Endpoint
+    - path: /tables/aci/vlan
+      scope: 521712216816bf6ffe1260cf9a8040adb3e341dd
+      summary: ACI VLAN
+    - path: /tables/aci/vrf
+      scope: 8800985b8f133246c0f03b4b3a3031ca625e6945
+      summary: ACI VRF
+    - path: /tables/addressing/arp
+      scope: 22bb05c6b1f06bce692dd02f7113e0c944bae4ec
+      summary: ARP Table
+    - path: /tables/addressing/mac
+      scope: a97aa4c973ddef344684436badc40fa5fd6d5e2b
+      summary: MAC Table
+    - path: /tables/addressing/nat/pools
+      scope: 447b60566dcaf782b9a6c4c6a549d7c66df5c3d9
+      summary: NAT Pools
+    - path: /tables/addressing/nat/rules
+      scope: 7dcc0cb55001b692d4a273a880673dab3c78bfa4
+      summary: NAT Rules
+    - path: /tables/addressing/duplicate-ip
+      scope: b57f0159953704683e4c6dbcb52fbf2c9ae4a657
+      summary: Duplicate IP
+    - path: /tables/addressing/ipv6-neighbors
+      scope: 2c64d326d8d979b9084e63cb21021a8680693d4e
+      summary: IPv6 Neighbor discovery
+    - path: /tables/addressing/managed-devs
+      scope: d11dae27159ec2f8ad49b5ff3793346760547326
+      summary: Managed IPv4 addresses
+    - path: /tables/addressing/ipv6-managed-devs
+      scope: adfde3593455992b53ceba8013eece37ea60c172
+      summary: Managed IPv6 addresses
+    - path: /tables/addressing/path-lookup-first-hops
+      scope: b40b73f5f323984b20fae87347eceb5ee5d06359
+      summary: POST /tables/addressing/path-lookup-first-hops
+    - path: /tables/addressing/path-lookup-sources
+      scope: 1dd5bc8efdd6c32a73ccb9cf9a40008a44662fa3
+      summary: POST /tables/addressing/path-lookup-sources
+    - path: /tables/apic/applications
+      scope: a2539bd51c8d19aeb19678f0a7fbb9997379861f
+      summary: APIC Applications
+    - path: /tables/apic/contexts
+      scope: 26bf59496c1aed1763b8d2eec18a9ce6323f2d1a
+      summary: APIC Contexts
+    - path: /tables/apic/contracts
+      scope: 32009950f96b207cb23f48d6bb6aea004fffa677
+      summary: APIC Contracts
+    - path: /tables/apic/controllers
+      scope: 30ba8f81ceeb27989a0b15429c02b89bf50dea1b
+      summary: Controllers
+    - path: /tables/apic/bridge-domains
+      scope: 6c44dbdbc71937871ada66f59fcca23c4b83131a
+      summary: APIC Bridge Domains
+    - path: /tables/apic/endpoint-groups/contracts
+      scope: e3e7838393599ff81d47a268fe05f96589fef66f
+      summary: Endpoint Groups - Contracts
+    - path: /tables/apic/endpoint-groups
+      scope: 00e8efe24aeb7068affad09141dc91ffb0ddeb82
+      summary: Endpoint Groups
+    - path: /tables/cloud/virtual-machines
+      scope: 845ee1f3eeb63f6daabff1c11d5cfb1330eda9e1
+      summary: Virtual Machines
+    - path: /tables/cloud/virtual-machines-interfaces
+      scope: 6ae9e708aaad8029584abab2d39014caef632261
+      summary: Virtual Machines Interfaces
+    - path: /tables/dhcp/relay/interfaces
+      scope: b15866e556186706040db812bc17b82300e74890
+      summary: DHCP Relay Interfaces
+    - path: /tables/dhcp/relay/interfaces-stats/received
+      scope: 71f56607fadf9778d20720b921d885c8eb4adfe0
+      summary: DHCP Relay Interfaces stats - Received
+    - path: /tables/dhcp/relay/interfaces-stats/relayed
+      scope: 59dc994dd10fd6a2759645e5fbd3e0b68213ebcc
+      summary: DHCP Relay Interfaces stats - Relayed
+    - path: /tables/dhcp/relay/interfaces-stats/sent
+      scope: 25ba9479038c2644d62f38ff4b4ac9f9b8b8370a
+      summary: DHCP Relay Interfaces stats - Sent
+    - path: /tables/dhcp/relay/global-stats/received
+      scope: b05678b196ad2944a184f09d48042ffefbec040a
+      summary: DHCP Relay Global statistics - received
+    - path: /tables/dhcp/relay/global-stats/relayed
+      scope: 1b26c6a2c608fc547040f5756b9ccd042fad1c48
+      summary: DHCP Relay Global statistics - Relayed
+    - path: /tables/dhcp/relay/global-stats/sent
+      scope: 5eac1ba680f1f318a577ac4b184961323746dcad
+      summary: DHCP Relay Global statistics - Sent
+    - path: /tables/dhcp/relay/global-stats/summary
+      scope: 07d758f84c68ea84bcb21ca3411fb77db96f5b48
+      summary: DHCP Relay Global stats summary
+    - path: /tables/dhcp/server/interfaces
+      scope: 3e0a61543fd85e7d14dca2b7bc33966a81a20e22
+      summary: DHCP Server Interfaces
+    - path: /tables/dhcp/server/leases
+      scope: df053403d81a055d9dacd6ca83ce379a320233ab
+      summary: DHCP Server Leases
+    - path: /tables/dhcp/server/pools
+      scope: 0272de31f9cc4b2eb99c98019662373ad313eb72
+      summary: DHCL Server Pools
+    - path: /tables/dhcp/server/summary
+      scope: 5bd9af227930616f4b790a7a4495e1c2a5607f64
+      summary: DHCP Server Summary
+    - path: /tables/dhcp/server/excluded-ranges
+      scope: 99d16794d1d2f025f1cd8f2d04da13b4edf0dae1
+      summary: DHCP Server Excluded Ranges
+    - path: /tables/fhrp/balancing
+      scope: 9a13e4af94cf0b36dd961fbe07635442b812eb5d
+      summary: Active FHRP gateway balancing
+    - path: /tables/fhrp/glbp-forwarders
+      scope: e43daff2e67dcbd8f3dc23d0c0da851041b439d6
+      summary: GLBP forwarders
+    - path: /tables/fhrp/group-members
+      scope: 8dde2c05e424950eabfe4c1f3d96f8c31cfa68d7
+      summary: HSRP/VRRP/GLBP Group members
+    - path: /tables/fhrp/group-state
+      scope: a93fab66e04c9ec69c28f3c780afe0faf0a40b1d
+      summary: HSRP/VRRP/GLBP Group State
+    - path: /tables/fhrp/stproot-alignment
+      scope: 3bfd2b41fc7a20ee62a7bd41514b8f1619ef0a48
+      summary: FHRP Gateway and STP Root Aligment
+    - path: /tables/fhrp/virtual-gateways
+      scope: 1a71450017c72c31e8f659137c654bfd155f02ce
+      summary: Arista VARP
+    - path: /tables/interfaces/counters/inbound
+      scope: 9585e835675c9a6833b98059cdd94b3b10f3877e
+      summary: Interfaces Counters - Inbound
+    - path: /tables/interfaces/counters/outbound
+      scope: 8feb39afbeda7b063265225dcd0f0ac460f7d992
+      summary: Interfaces Counters - Oubound
+    - path: /tables/interfaces/drops/bidirectional
+      scope: 55d36efb15d823453e640a21479e832131ce9afe
+      summary: Bidirectional Interface Drops
+    - path: /tables/interfaces/drops/inbound
+      scope: c12f0e948f78f3ad7c859768b1874f0187fa9e7f
+      summary: Inbound Interface Drops
+    - path: /tables/interfaces/drops/outbound
+      scope: 17fbfe82210952b858a2cd2daddf7430aeafa502
+      summary: Outbound Interface Drops
+    - path: /tables/interfaces/drops/bidirectional-device
+      scope: d450e0e8e4f75918fc478c05898c951fca66e293
+      summary: Per-Device Bidirectional Interface Drops
+    - path: /tables/interfaces/drops/inbound-device
+      scope: c38e8e6b75840aef445c1ebcccbc471b6767fd19
+      summary: Per-Device Inbound Interface Drops
+    - path: /tables/interfaces/drops/outbound-device
+      scope: cf72f642a249e5a614a1eb798f672840e42311e9
+      summary: Per-Device Outbound Interface Drops
+    - path: /tables/interfaces/duplex
+      scope: a1ccbb224b7191ef8c2b1c65ad28c2a3b2777ff6
+      summary: Duplex interface matrix
+    - path: /tables/interfaces/errors/bidirectional
+      scope: 2cb7ec9e5e7c1354dc90b89a34497489148908f0
+      summary: Bidirectional Interface Errors
+    - path: /tables/interfaces/errors/disabled
+      scope: 44dbf28ae5ee9173b282db75edcf43abbb2d7baa
+      summary: Error-Disabled interfaces
+    - path: /tables/interfaces/errors/inbound
+      scope: 468742fac6ba3687fe28cb1e4a6080d98dfeecb9
+      summary: Inbound Interface Errors
+    - path: /tables/interfaces/errors/outbound
+      scope: f8e2d3777206f652f3941d24ab28bd764fe64d67
+      summary: Outbound Interface Errors
+    - path: /tables/interfaces/errors/bidirectional-device
+      scope: da6bd6dabe772a333a496b2f1f29e4160020f2ca
+      summary: Per-Device Bidirectional Interface Errors
+    - path: /tables/interfaces/errors/inbound-device
+      scope: ee8e51dfbce7c1bfb1980988d36f80f42a101a16
+      summary: Per-Device Inbound Interface Errors
+    - path: /tables/interfaces/errors/outbound-device
+      scope: f50046c5c6c9803ae0e34b04d6219f54b9f7b846
+      summary: Per-Device Outbound Interface Errors
+    - path: /tables/interfaces/inconsistencies/details
+      scope: 40d00675840b09d377ec2d55e4263a0361cfa2d1
+      summary: VLANs without STP instance - Detail
+    - path: /tables/interfaces/inconsistencies/summary
+      scope: 66e774e452a0de72bffcbc2edb91bc5dcbd69230
+      summary: VLANs without STP instance - Summary
+    - path: /tables/interfaces/load/bidirectional
+      scope: 1803e43ebe8097525694112dd415016689a11322
+      summary: Interfaces Bidirectional load
+    - path: /tables/interfaces/load/inbound
+      scope: f13e3c4d12edc78761d9e77ac745fe56396ea422
+      summary: Interfaces Inbound load
+    - path: /tables/interfaces/load/outbound
+      scope: 6cb01cc705e980dec5a6ec78ba3a411fb0a50021
+      summary: Interfaces Outbound load
+    - path: /tables/interfaces/mtu
+      scope: 872798e56e1c263fed7403c72f8a22003fd986a7
+      summary: Maximum Transmission Unit Matrix
+    - path: /tables/interfaces/pppoe
+      scope: 8e8ccbd7823eab1014e0d1f4d649558ecfc441a1
+      summary: PPPoE interfaces
+    - path: /tables/interfaces/pppoe/sessions
+      scope: 5cc25601bec2e60dd0856b57fa88b8ffcf6c50e0
+      summary: PPPoE sessions
+    - path: /tables/interfaces/switchports
+      scope: db92291d321f3cd7dc8ed226810dd6769427b50c
+      summary: Interfaces Switchport
+    - path: /tables/interfaces/transceivers/errors
+      scope: 828e3070cf04347f7f9fe3cd6679130c5b5e76df
+      summary: Transceivers Errors
+    - path: /tables/interfaces/transceivers/inventory
+      scope: b785b906c2aa75c8a6596ad065460cef328f46bd
+      summary: Transceivers Inventory
+    - path: /tables/interfaces/transceivers/statistics
+      scope: 3f69d2448d97d72abb4298a0a11bfe678421fcc9
+      summary: Transceivers Statistics
+    - path: /tables/interfaces/transceivers/thresholds
+      scope: a40e0396c0197d37f2ba1592a045d2cfaa341e22
+      summary: Transceivers Triggered Thresholds
+    - path: /tables/interfaces/tunnels/ipv4
+      scope: 9fe34a5d8c4ba0fc884a4d2f9d997b00c0eaf807
+      summary: IPv4 Tunnels
+    - path: /tables/interfaces/tunnels/ipv6
+      scope: d8ca81b4bcae5a87466caf73f6a51e3567bfa426
+      summary: IPv6 Tunnels
+    - path: /tables/interfaces/connectivity-matrix
+      scope: a3137fc62a0e223ff0361957fb4b2b1f14ced97e
+      summary: Connectivity matrix
+    - path: /tables/interfaces/connectivity-matrix/unmanaged-neighbors/detail
+      scope: bdc9d74ab378e68c5b0afa3604ad661aead4a70a
+      summary: Unmanaged Neighbors Detail
+    - path: /tables/interfaces/connectivity-matrix/unmanaged-neighbors/summary
+      scope: 50778eb92b26f715d12e836feb43136450a1ba6b
+      summary: Unmanaged Neighbors Summary
+    - path: /tables/interfaces/port-channel/balance/inbound
+      scope: 8dca3d9008c4106fd0ffb84fc81c5ce955059444
+      summary: Port Link-Aggregation inbound
+    - path: /tables/interfaces/port-channel/balance/outbound
+      scope: f2c6640a91ce438523e14c42a3a979260923aec1
+      summary: Port Link-Aggregation Outbound
+    - path: /tables/interfaces/port-channel/member-status
+      scope: af69f8a8b7ef9551dd624d74504a71c00a821e90
+      summary: Port Link-Aggregation Member Status
+    - path: /tables/interfaces/transfer-rates/bidirectional
+      scope: 83e4917aaf74ad60f01d76d4cbd9929745362bfa
+      summary: Bidirectional Interface Rates
+    - path: /tables/interfaces/transfer-rates/inbound
+      scope: cb0492b17a9d7fedb5c3a3aace3f40694e6f6da3
+      summary: Inbound Interface Transfer Rates
+    - path: /tables/interfaces/transfer-rates/outbound
+      scope: 6b1c68eeee092c5497798689c7e6b07ff5c11e07
+      summary: Outbound Interface Transfer Rates
+    - path: /tables/interfaces/transfer-rates/bidirectional-device
+      scope: 81f2c4d4e770942f7d338ea7da98c3ee9824fd06
+      summary: Per-Device Bidirectional Transfer Rates
+    - path: /tables/interfaces/transfer-rates/inbound-device
+      scope: 709b279b23ba8bafda8aefa88da761970434ef0a
+      summary: Per-Device Inbound Interface Transfer Rates
+    - path: /tables/interfaces/transfer-rates/outbound-device
+      scope: 9b50ccd8960c187487f69d88019f07d791a3c330
+      summary: Per-Device Outbound Interface Transfer Rates
+    - path: /tables/interfaces/storm-control/all
+      scope: 12d83131919fbbe887dac1acf741631ff44212d1
+      summary: Storm Control - All Traffic
+    - path: /tables/interfaces/storm-control/broadcast
+      scope: 0dbe90d070c013fead0bb1d3eaf12f99fc657222
+      summary: Storm Control - Broadcast
+    - path: /tables/interfaces/storm-control/multicast
+      scope: 42ef5f9a374112076110e811e281e958a1bf2ae4
+      summary: Storm Control - Unicast
+    - path: /tables/interfaces/storm-control/unicast
+      scope: 6b658b47f5b8a2fff8ed759a262a5ecb6c8890dc
+      summary: Storm Control - Multicast
+    - path: /tables/inventory/fans
+      scope: 512962c963edf9758d1dfef99eb4e90fdf23ad8a
+      summary: Environment - Fans
+    - path: /tables/inventory/modules
+      scope: d4769862d55464e1b9fdb16103a9f5432de432a6
+      summary: Environment - Modules
+    - path: /tables/inventory/phones
+      scope: adc2e1502c234d6ba717a50e15cb0d06d5853e1a
+      summary: IP Phones and Connected Devices
+    - path: /tables/inventory/power-supplies
+      scope: 8ccd4c725aefc8efa41dd74685da5711b3e550e2
+      summary: Environment - Power Supplies
+    - path: /tables/inventory/power-supplies-fans
+      scope: 8fd8461fcc4364f29bc852f9dd78ac6b30b1314d
+      summary: Environment - Power Supplies Fans
+    - path: /tables/management/configuration/saved
+      scope: 953130708a830c65095c48804e9c0fc647964b3e
+      summary: Saved Config Consistency
+    - path: /tables/management/dns/servers
+      scope: f84fc1283440f332105f9414add605617ab09366
+      summary: DNS Servers
+    - path: /tables/management/dns/settings
+      scope: 1d4366f0342d43cc41c8dc28a22a1c300d4c4d05
+      summary: DNS Settings
+    - path: /tables/management/flow/netflow/collectors
+      scope: 66a23028ec74211250e2fe8df9e612c509babd3b
+      summary: NetFlow Collectors
+    - path: /tables/management/flow/netflow/devices
+      scope: 3032ab06eb03a1554de2df293f6a22fd607959ff
+      summary: NetFlow Devices
+    - path: /tables/management/flow/netflow/interfaces
+      scope: 480c1176444e47070d4a1cb5a067b19c5a994976
+      summary: NetFlow Interfaces
+    - path: /tables/management/flow/overview
+      scope: 71c12b11bddc390ec742bb6427ff1ab1638be831
+      summary: Flow Overview
+    - path: /tables/management/flow/sflow/collectors
+      scope: 8a006a5d361cca0e0d7ad0fd66dd9949d5ca73b4
+      summary: sFlow Collectors
+    - path: /tables/management/flow/sflow/devices
+      scope: 5f4dda4c06013f386007d2cff645bd3dc2abe783
+      summary: sFlow Devices
+    - path: /tables/management/flow/sflow/sources
+      scope: fb837401d54309a07526cf56705b77604d8ba2c3
+      summary: sFlow Data Sources
+    - path: /tables/management/licenses/detail
+      scope: 797b10d2df5344b4b49eb5ffb62806a75ff69980
+      summary: Managed License detail
+    - path: /tables/management/licenses/summary
+      scope: 56cd5ca1a301d8086eea37cf5b0f3f3f2a3079ab
+      summary: Managed License Summary
+    - path: /tables/management/licenses
+      scope: f786373f6201bef7901c1bf4dc314f5264a2b73c
+      summary: Managed Licenses
+    - path: /tables/management/licenses/cisco-smart-licenses/authorization
+      scope: 917f80405318bb3e6b96e276670243646b73c25a
+      summary: Cisco Smart License Authorization
+    - path: /tables/management/licenses/cisco-smart-licenses/registration
+      scope: b85a242f2218df05186feff2ab82ff5a51e700c6
+      summary: Cisco Smart License Registration
+    - path: /tables/management/licenses/cisco-smart-licenses/reservations
+      scope: cf34c0ca4fb85974d8f90f46fbef5c956a546749
+      summary: Cisco Smart License Reservations
+    - path: /tables/management/logging/local
+      scope: 29756ab38005275650d8e2ed736a749407f8a4f2
+      summary: Local Logging Services
+    - path: /tables/management/logging/remote
+      scope: 5df3b4c4257934ea75d454e22f0227f5c3b2069f
+      summary: Remote Logging Services
+    - path: /tables/management/logging/summary
+      scope: 5951a8aead84a9c584038cdf5df254a625d6c9ea
+      summary: Logging Summary
+    - path: /tables/management/ntp/sources
+      scope: 8143afdb75d5e9a6723cbd4cc380555c2c944d74
+      summary: NTP Sources
+    - path: /tables/management/ntp/summary
+      scope: bd057398905b7d0a1f542a44b0d7808e3b2a5a45
+      summary: NTP Summary
+    - path: /tables/management/oam/unidirectional-link-detection/interfaces
+      scope: b15757f254cb2f507ab029c8b2a48389b9f83f5e
+      summary: UDLD Interfaces
+    - path: /tables/management/oam/unidirectional-link-detection/neighbors
+      scope: b300075b857ff6a82d2646a72f27393cfa1753d3
+      summary: UDLD Neighbors
+    - path: /tables/management/snmp/communities
+      scope: a6e5ab3146ba3c9827722721933cba16f12fbb21
+      summary: SNMP Communities
+    - path: /tables/management/snmp/summary
+      scope: 2cf111de911fa7e51eb3b937cdd554585e768691
+      summary: SNMP Summary
+    - path: /tables/management/snmp/users
+      scope: c74db4530690b81bc9356d33e5eb29502be8a530
+      summary: SNMP Users
+    - path: /tables/management/snmp/trap-hosts
+      scope: 9d89048ea1bfeb940974f945b9a951f060872550
+      summary: SNMP Hosts
+    - path: /tables/management/port-mirroring
+      scope: 33e21fcd65a0e77d842f7e5ac27090b0588f351a
+      summary: Port Mirroring
+    - path: /tables/management/ptp/interfaces
+      scope: 2e1545c12090b11848dcba90747f86c21b5c2877
+      summary: PTP Interfaces
+    - path: /tables/management/ptp/local-clock
+      scope: 98f5bcd4708d7b2cc0067be361429a7b8ef49a57
+      summary: PTP Local clock
+    - path: /tables/management/ptp/masters
+      scope: 97e1325ac052d315a8b74d01428bb43740891ff8
+      summary: PTP Masters
+    - path: /tables/mpls/forwarding
+      scope: d8e037c5b3c9d6932a5d838f17f0d658982b50d3
+      summary: MPLS Forwarding
+    - path: /tables/mpls/ldp/interfaces
+      scope: 0a2ca2f54da9c530f16ff6c93e8ecd217dcd0ad5
+      summary: LDP Interfaces
+    - path: /tables/mpls/ldp/neighbors
+      scope: 76fbda3767ec3045a39337cfd3ff1d54f1b8bc76
+      summary: LDP Neighbors
+    - path: /tables/mpls/rsvp/interfaces
+      scope: 1c9518f9324c531a7e3c9ac6e83a25475115ac2c
+      summary: RSVP Interfaces
+    - path: /tables/mpls/rsvp/neighbors
+      scope: ef6caf43c344e8cdfef7196e1793efd95c1b1645
+      summary: RSVP Neighbors
+    - path: /tables/mpls/l2-vpn/pseudowires
+      scope: fc9af0690e54bee2e22a882b7fa126c55e37d92e
+      summary: All Pseudowires
+    - path: /tables/mpls/l2-vpn/curcit-cross-connect
+      scope: e563a4c649ced703ac8952f3722f242b157fb2f3
+      summary: Circuit Cross-Connect
+    - path: /tables/mpls/l2-vpn/point-to-multipoint
+      scope: fb24ca98d610d19369c2d436fff4b309b1f72ad9
+      summary: Point to multipoint - VPLS
+    - path: /tables/mpls/l2-vpn/point-to-point-vpws
+      scope: fe3360d96de49c731288cde73f4b3936a3e95377
+      summary: Point to point - VPWS
+    - path: /tables/mpls/l3-vpn/pe-routers
+      scope: 1cfed70287e758cc8071aeeeadc4756b1e2d1bcc
+      summary: PE Routers
+    - path: /tables/mpls/l3-vpn/pe-routes
+      scope: 065884fa26510a46d9872f036030f82fb718b0f2
+      summary: PE Routes
+    - path: /tables/mpls/l3-vpn/pe-vrfs
+      scope: bfa6fae289b59bc14e2948a07d67f8f1880d226a
+      summary: VRFs on PE Routers
+    - path: /tables/mpls/l3-vpn/vrf-targets
+      scope: 8be522685b7bba581fa7344211199166a09afab2
+      summary: VRF Route Targets
+    - path: /tables/multicast/igmp/groups
+      scope: 38cc3d8adec28713bc38d8d04415b811fc6672f4
+      summary: IGMP Groups
+    - path: /tables/multicast/igmp/interfaces
+      scope: ad3146326a1275d2bcbab09d0e8e3a8c18f4ddea
+      summary: IGMP Interfaces
+    - path: /tables/multicast/igmp/snooping/global
+      scope: f3b9756d2b115896e1e2370da8aea74fe48f9944
+      summary: IGMP Snooping
+    - path: /tables/multicast/igmp/snooping/groups
+      scope: 11b3b8381499a8e82f53cac2b28e304491788813
+      summary: IGMP Snooping Groups
+    - path: /tables/multicast/igmp/snooping/vlans
+      scope: 1bac49fe53b01f55508ab37e0e676123d28da514
+      summary: IGMP Snooping Vlans
+    - path: /tables/multicast/mac
+      scope: 610c9297a0c6d81127c9b2a4b1ef38ffd268d948
+      summary: Multicast MAC Table
+    - path: /tables/multicast/pim/interfaces
+      scope: 68755dc320dd425915159c25fa4b0cc39a370575
+      summary: PIM Interfaces
+    - path: /tables/multicast/pim/neighbors
+      scope: 5f49a26c60451da92a9d644c43b265f74f97be49
+      summary: PIM Neighbors
+    - path: /tables/multicast/pim/rp/bsr
+      scope: c01133c1598bf86c392c132b8b3f6747a98008f7
+      summary: PIM Bootstrap RP
+    - path: /tables/multicast/pim/rp/mappings
+      scope: f3bd34f02855b4978032f2e49e05906674bbe8a6
+      summary: PIM Boostrap RP mappings
+    - path: /tables/multicast/pim/rp/overview
+      scope: 4eef5c24a1ac421d259e76caf9e7b34c106a7f6e
+      summary: RP Routers
+    - path: /tables/multicast/pim/rp/mappings-groups
+      scope: 34d0e544083871a64602b364b0c0348985cf2662
+      summary: PIM Bootstrap RP mappings groups
+    - path: /tables/multicast/routes/counters
+      scope: a6764383fe5a005530269edb27703c1d789434a1
+      summary: MRoute Counters
+    - path: /tables/multicast/routes/overview
+      scope: c2b90837f180df63efa3ab4f67c7114dd86d5a97
+      summary: MRoute Overview
+    - path: /tables/multicast/routes/sources
+      scope: 47addb3582a3f5c3e689abc9ddc5085427f7f44e
+      summary: Routers with Multicast Sources
+    - path: /tables/multicast/routes/table
+      scope: a77fd5a614ecdb3c3d3f0fd09c8aff1119c7388b
+      summary: Multicast Routing Table
+    - path: /tables/multicast/routes/first-hop-router
+      scope: a2d8d8caafa37b2b7cebcdb342ec755b40627a8f
+      summary: Multicast First Hop Routers
+    - path: /tables/multicast/routes/outgoing-interfaces
+      scope: 218d0c9b6e89ee9f1c4cc3892b5bd99587c77202
+      summary: Multicast OIL
+    - path: /tables/neighbors/all
+      scope: f8a11e7f648c796c51d0edc3e8198382e9b22e11
+      summary: Discovery Protocol Neighbors
+    - path: /tables/neighbors/endpoints
+      scope: 6f9d12326a55c51f87ae978c06f0c0a403441108
+      summary: Discovery Protocols - Endpoints
+    - path: /tables/neighbors/unidirectional
+      scope: e354e80204b939083c3f7c3bec2f43fb297d22f3
+      summary: Discovery Protocols - Unidirectional Neighbors
+    - path: /tables/neighbors/unmanaged
+      scope: 02f378dc295d5eaa5fb6e5e0957d19887132dd2e
+      summary: Discovery protocols - Unmanaged Neighbors
+    - path: /tables/networks/domain
+      scope: f2253e88edbf0f0db2ad794d08be6aecf37390e7
+      summary: POST /tables/networks/domain
+    - path: /tables/networks/policies/routing/interfaces
+      scope: c718018bdcbca27e50ce8b156b9277bcb88b85c1
+      summary: POST /tables/networks/policies/routing/interfaces
+    - path: /tables/networks/policies/routing
+      scope: b05911a0cdc128efc32b4b8c7e523ddb79b298a6
+      summary: POST /tables/networks/policies/routing
+    - path: /tables/networks/policies/prefix-lists/ipv4
+      scope: 5343e14f5a81bc4f16ee3efe2257078b10bf7abf
+      summary: POST /tables/networks/policies/prefix-lists/ipv4
+    - path: /tables/networks/policies/prefix-lists/ipv6
+      scope: 12910b3fba7152fb29785afe67e8d8a757df79a0
+      summary: POST /tables/networks/policies/prefix-lists/ipv6
+    - path: /tables/networks/routes
+      scope: 30e1e29a9e033f86d03a7512dc31fbb36ff1f113
+      summary: IPv4 Routing Table
+    - path: /tables/networks/summary/protocols/bgp
+      scope: e2f318fc70da867d8e8e7d8ce3ba9e39135b46e1
+      summary: BGP Protocol Routes Summary
+    - path: /tables/networks/summary/protocols/eigrp
+      scope: 78fc4db6c1f540647668280b112bb33232d20668
+      summary: EIGRP Protocol Routes Summary
+    - path: /tables/networks/summary/protocols/isis
+      scope: 38fae7a5d58999f7e6d6ae5e31d9b15dea8c7738
+      summary: IS-IS Protocol Routes Summary
+    - path: /tables/networks/summary/protocols/ospf
+      scope: 395ba95624cadfd1c00e32e63d2eaf520623fa9d
+      summary: OSPF Protocol Routes Summary
+    - path: /tables/networks/summary/protocols/ospfv3
+      scope: 362c08e1e4e80909934abee4cb603c6b4f9b16ea
+      summary: OSPFv3 Protocol Routes Summary
+    - path: /tables/networks/summary/protocols/rip
+      scope: d7c820202fd1854f4bd45067810489e694f1e9c9
+      summary: RIP Protocol Routes Summary
+    - path: /tables/networks/summary/protocols
+      scope: eeb72ee377ca3c157bf8200a204e18f6e28d8492
+      summary: Network Routing Protocols Summary
+    - path: /tables/networks
+      scope: 78d74b21341d6a85cdcbcbd23a17d9aaf8e03ea0
+      summary: Managed Networks
+    - path: /tables/networks/ipv6-routes
+      scope: f3147d62d2934793c72f4fc2cc2f2dfe48cf1272
+      summary: IPv6 Routing Table
+    - path: /tables/networks/gateway-redundancy
+      scope: ae4a4ce3081fe067d9dc37056bfcdebb4b87d3f2
+      summary: Gateway Redundancy
+    - path: /tables/networks/path-lookup-checks
+      scope: fd66c4e4b8932edbeaaf88675387bed884fffd18
+      summary: Saved Path Simulations
+    - path: /tables/networks/route-stability
+      scope: 8ded207b292a9d31bbd7e77008b30a4f78d70b1e
+      summary: Routing Stability
+    - path: /tables/platforms/cluster/srx
+      scope: 187d681ac6b407b47f3de45fa632c75311e9f838
+      summary: Juniper SRX Cluster
+    - path: /tables/platforms/fex/interfaces
+      scope: e8d8e9697cbb8eb2b52897d2c0aa1c8ed2499dec
+      summary: Cisco FEX Interfaces
+    - path: /tables/platforms/fex/modules
+      scope: e3be061e5ea5e1570781d59f69e82fdcc9577f67
+      summary: Cisco FEX Modules
+    - path: /tables/platforms/mlag/pairs
+      scope: 444b1dcf0a46e57d6e98d7bf9499cabea55e6b1b
+      summary: MLAG Pairs
+    - path: /tables/platforms/mlag/peers
+      scope: c319cfac38fbb9ea69aca2ebcb8bd6b85bf09f1b
+      summary: MLAG Peer Links
+    - path: /tables/platforms/mlag/switches
+      scope: e3664685096c7786e0d3ffba191e36ba7a5100cc
+      summary: MLAG Switches
+    - path: /tables/platforms/mlag/vpc
+      scope: cecba1b8270e3d2ee71559886918522fc8ee42da
+      summary: Cisco vPC
+    - path: /tables/platforms/poe/devices
+      scope: d5522f6c8199ccf6f7125941ac475625c47f533c
+      summary: PoE devices
+    - path: /tables/platforms/poe/interfaces
+      scope: a6a18c3800462f8f32e2278c7d9152db25430db8
+      summary: PoE Interfaces
+    - path: /tables/platforms/poe/modules
+      scope: ec2a43566668c0449697b7c964d76d2ca20215fd
+      summary: PoE - Device Modules
+    - path: /tables/platforms/stack/connections
+      scope: f94f12a874c98dc87364fc2b3274d4663aebac6a
+      summary: Stack Ports
+    - path: /tables/platforms/stack/members
+      scope: 07dd88ff9bfac76fd033ed2652b9959d4350972f
+      summary: Stack Members
+    - path: /tables/platforms/stack
+      scope: da7ed9e38b0603a54f286215468a90798f076010
+      summary: Switch stacks
+    - path: /tables/platforms/vdc/devices
+      scope: d94e8955d01b0b4503056bcf1a4e535aaca43fe3
+      summary: Cisco VDC Devices
+    - path: /tables/platforms/vss/chassis
+      scope: 021e079d6db2f173e8722e92c09e815b79a668f0
+      summary: Cisco VSS Chassis
+    - path: /tables/platforms/vss/overview
+      scope: 5ad3125d271b5320330be789aa30df1ff8983807
+      summary: Cisco VSS Overview
+    - path: /tables/platforms/vss/vsl
+      scope: c9e20e6789632450df1a0b2a834e16eec52b5d64
+      summary: Cisco VSL
+    - path: /tables/qos/marking
+      scope: 8e867f17d7bc390ac2617361dd25bac7f62a74cb
+      summary: QoS Marking
+    - path: /tables/qos/policing
+      scope: aae6de361822629184e1caea9e9db97574b83bd9
+      summary: QoS Policing
+    - path: /tables/qos/queuing
+      scope: c2280632a9e108c34bd95e84cdc4cd78cbd6de05
+      summary: QoS Queuing
+    - path: /tables/qos/shaping
+      scope: 63b4f74373646727d5fcd62596386a78ba5414c5
+      summary: QoS Shaping
+    - path: /tables/qos/policy-maps
+      scope: c5c1ff8b85866f16e4fb1b1b1164ce48338d4653
+      summary: QoS Applied Service-Policies
+    - path: /tables/qos/priority-queuing
+      scope: 7f7a72478c960027cff50bf0a3196087f2d2c514
+      summary: QoS Priority Policies and Classes
+    - path: /tables/qos/random-drops
+      scope: aba7749bf3212fffdcf8ffd8aca552af3fe0b33e
+      summary: QoS Classes with Random Drops
+    - path: /tables/routing/protocols/bgp/neighbors
+      scope: dd990ba242bda2a2ae7c32b374007d4118f3d339
+      summary: BGP Neighbors
+    - path: /tables/routing/protocols/bgp/address-families
+      scope: ab00a7512b6b7830cc84b22c3218ba957dc2a35f
+      summary: BGP Address Families
+    - path: /tables/routing/protocols/eigrp/interfaces
+      scope: 89245aacc9087285656253960f60db8626d4c79c
+      summary: EIGRP Interfaces
+    - path: /tables/routing/protocols/eigrp/neighbors
+      scope: b6e85f47108d926ca2d8f766f265e4252b8af2d6
+      summary: EIGRP Neighbors
+    - path: /tables/routing/protocols/ospf/interfaces
+      scope: 84f41fd8a870c5a4d9dc9f88417e59666c493b9a
+      summary: OSPF Interfaces
+    - path: /tables/routing/protocols/ospf/neighbors
+      scope: 7937e1737301106eca31020b0c44947fa0eabf0e
+      summary: OSPF Neighbors
+    - path: /tables/routing/protocols/rip/interfaces
+      scope: e13369c009bcf86cf61f1ac3b5c60d1eb15204c7
+      summary: RIP Interfaces
+    - path: /tables/routing/protocols/rip/neighbors
+      scope: 9a0af78f7deea13b3f3ab3a8e232d40a9929718a
+      summary: RIP Neighbors
+    - path: /tables/routing/protocols/is-is/interfaces
+      scope: 87fea9657fe0ceecd66e5224177421ca1f5ce7d4
+      summary: IS-IS Interfaces
+    - path: /tables/routing/protocols/is-is/neighbors
+      scope: 06df6fbcc2030512927e6815328eefec4f46828f
+      summary: IS-IS Neighbors
+    - path: /tables/routing/protocols/ospf-v3/interfaces
+      scope: 8f6d2fe138d03dac5eda01f1c8263d3638141228
+      summary: OSPF v3 Interfaces
+    - path: /tables/routing/protocols/ospf-v3/neighbors
+      scope: c31a9db0e79d5d487e0f933cf5d04a1bc755384e
+      summary: OSPF v3 Neighbors
+    - path: /tables/sdwan/links
+      scope: 4373ef2e727cfd894d709e6ee1c2adebc37299e2
+      summary: Versa Transport links
+    - path: /tables/sdwan/sites
+      scope: 434860af8c796bee668e396b23a3800dabe67abc
+      summary: Versa Sites
+    - path: /tables/security/aaa/accounting
+      scope: 7d5d6fce92648a1e7036920a8a475acc81b47832
+      summary: AAA Accounting
+    - path: /tables/security/aaa/authentication
+      scope: e2518f971c68f9282fc275f692f077cd22ecbec7
+      summary: AAA Authentication
+    - path: /tables/security/aaa/authorization
+      scope: fbcbd2df73f1c55b18116b639ae16d52ae7a45ed
+      summary: AAA Authorization
+    - path: /tables/security/aaa/lines
+      scope: 23943cd1167404a7fb4c5a3d10da10fece0db4f0
+      summary: AAA Lines
+    - path: /tables/security/aaa/servers
+      scope: bfc77f153b2e7f31ef0423d152543d30a7cfee17
+      summary: AAA Servers
+    - path: /tables/security/aaa/users
+      scope: 7efe128b51b65baa80516cf9482b93015424673a
+      summary: AAA Local Users
+    - path: /tables/security/aaa/password-strength
+      scope: b0a1aacfd62f7cb433535972f64db404a46146a6
+      summary: Password Strength
+    - path: /tables/security/acl/interfaces
+      scope: a942092c49050b26e00d4de74b495b885caffb97
+      summary: ACL and Filter Interfaces
+    - path: /tables/security/acl
+      scope: 2d1639f5c081d9043a7416cfc439f2d176a7148a
+      summary: Access Control List Entries
+    - path: /tables/security/acl/global-policies
+      scope: d5d1bac547ea78b54feae7edc6a6f1e6f17b1f65
+      summary: Global ACL policies
+    - path: /tables/security/dhcp/bindings
+      scope: b812b5db4781705202cde2ec12001c2f08806f70
+      summary: DHCP Snooping Binding Database
+    - path: /tables/security/dhcp/snooping
+      scope: 5a9cb46d953e42a28ca098c8264985e8b31b69eb
+      summary: DHCP Snooping
+    - path: /tables/security/dmvpn
+      scope: 3cdb4dcd074059f66ad395b16f8c998c3d4f836b
+      summary: DMVPN Summary
+    - path: /tables/security/ipsec/gateways
+      scope: 59c972df31071ad177740ebaf89adcaea46b6ad4
+      summary: IPSec gateways
+    - path: /tables/security/ipsec/tunnels
+      scope: 257769535da11554fef989811dcc6fdab52d2780
+      summary: IPSec tunnels
+    - path: /tables/security/enabled-telnet
+      scope: 25300ae072614ab6593ce7189bf2ee5c046fe0a2
+      summary: Telnet Access
+    - path: /tables/security/object-groups
+      scope: 88eb193dff9b57233051128d0bb232b199f8183c
+      summary: Security Object Groups
+    - path: /tables/security/secure-ports/devices
+      scope: dc62404f4a804f2ead5a76056f0ad47fe1ee0246
+      summary: 802.1x Secure ports - Devices
+    - path: /tables/security/secure-ports/interfaces
+      scope: b281ade7334dbc7a22bfa0834f2fabcfa86c0573
+      summary: 802.1x Secure ports - Interfaces
+    - path: /tables/security/secure-ports/users
+      scope: 35b2c2aef79451e7c6beb180645638348ffd30db
+      summary: 802.1x Secure ports - Users
+    - path: /tables/security/zone-firewall/interfaces
+      scope: cf6f4dd1573e802aafae22e38df61998c70576d3
+      summary: Zone Firewall - Interfaces
+    - path: /tables/security/zone-firewall/policies
+      scope: 6dc8f403807c3343f64b8b20f7b1f1b5de6d79cf
+      summary: Zone Firewall - Policies
+    - path: /tables/vlan/device
+      scope: 56568e03bc4cf792bd2296602128c8932d99d18b
+      summary: VLANs - Device Detail
+    - path: /tables/vlan/device-summary
+      scope: fc39974e11fc30a9488f6f2802d9292818974ef1
+      summary: VLANs - Device Summary
+    - path: /tables/vlan/l3-gateways
+      scope: 3985721e62fbfaac22bd269c4d08cab207df95e5
+      summary: L3 Gateways
+    - path: /tables/vlan/network-summary
+      scope: ff4f2af574d3e9dae254a81d3987ba363b4c7063
+      summary: VLANs - Network Summary
+    - path: /tables/vlan/site-summary
+      scope: f9221b6c36b8576b46df1c8ec0847b68a68957e8
+      summary: VLANs - Summary per Site
+    - path: /tables/vrf/detail
+      scope: 6b84960151fe991f1dd4f5a2b5888c4920a55965
+      summary: VRF Devices
+    - path: /tables/vrf/interfaces
+      scope: aa24fef60e95afd2f2216784150dfdaea9cc1557
+      summary: VRF Interfaces
+    - path: /tables/vrf/summary
+      scope: 97a2e35438a2a2cb3afb045f7faa765664573679
+      summary: VRF Summary
+    - path: /tables/vxlan/interfaces
+      scope: 5e2b2153f70005662761f89aa478843744f8e5ea
+      summary: VTEP Interfaces
+    - path: /tables/vxlan/peers
+      scope: 0b8ebbf68d3dbb9b557863ff4dc507cee018bc8b
+      summary: VTEP Peers
+    - path: /tables/vxlan/vni
+      scope: 26eb5f7ef155608cc045df062cc5b641dd877789
+      summary: VXLAN Network Identifier
+    - path: /tables/vxlan/vtep
+      scope: f78de74c207482ad3de80cf8828bf7ff74732426
+      summary: VXLAN Tunnel Endpoints
+    - path: /tables/wireless/clients
+      scope: ab2b47f3fc0061878d4d91037bdb2456264b9e55
+      summary: Wireless Clients
+    - path: /tables/wireless/controllers
+      scope: 57202e6caa54c5ebb4dd83da714200ad33fa543f
+      summary: Wireless Controllers
+    - path: /tables/wireless/radio
+      scope: a86fcefe3373c1206c2f3a0f4dd4e7366e28dd8a
+      summary: Wireless Radios & BSSID
+    - path: /tables/wireless/access-points
+      scope: 989c3820c6d3d3fe8ce084b18c9b7210fc925581
+      summary: Wireless Access Points
+    - path: /tables/wireless/ssid-summary
+      scope: 46afef4e48bcb78a68157f77a26fc4b11909442f
+      summary: Wireless SSID Summary
+    - path: /tables/load-balancing/f5-partitions
+      scope: 7b06a1adb684d5d9817314e5cbb000a7ac3321e2
+      summary: F5 Partitions
+    - path: /tables/load-balancing/virtual-servers/pools
+      scope: eacbfd8381e770faf6382444d34f45956921d0e0
+      summary: Virtual Servers - Pools
+    - path: /tables/load-balancing/virtual-servers
+      scope: e9022c4ef969209a382862d4e53405880dbce711
+      summary: Virtual Servers
+    - path: /tables/load-balancing/virtual-servers/pool-members
+      scope: b9a7e96661b01e097932614a33ca90a4da636eb3
+      summary: Virtual Servers - Pool members
+    - path: /tables/spanning-tree/bridges
+      scope: a8b7ab7c4e689937629699543914a015b639b2eb
+      summary: STP Bridges
+    - path: /tables/spanning-tree/guards
+      scope: 970f429fdc181a25cdd93996e41824609141c470
+      summary: STP Guards
+    - path: /tables/spanning-tree/inconsistencies/multiple-stp
+      scope: 448aa070411d0084e2f21cdd3d29373b5db62a43
+      summary: Multiple STPs
+    - path: /tables/spanning-tree/inconsistencies/neighbor-ports-vlan-mismatch
+      scope: 6992b7848d045065d0295a7d5c824ad35f1defa6
+      summary: STP Ports VLAN Mismatch
+    - path: /tables/spanning-tree/inconsistencies/ports-multiple-neighbors
+      scope: fe5ed75e32932dc9b06c10be9c32644348877883
+      summary: STP Ports Multiple Neighbors
+    - path: /tables/spanning-tree/inconsistencies/stp-cdp-ports-mismatch
+      scope: 786c4b98cf35a27a04fc873cda9c6a60f48fdb9c
+      summary: STP/CDP Mismatch
+    - path: /tables/spanning-tree/instances
+      scope: 51d1ebee0d39a16ff63fce2edac961c7b3154d83
+      summary: STP Instances
+    - path: /tables/spanning-tree/neighbors
+      scope: 56f6391a3fc294d45b8e6b3677fd877fd1314c32
+      summary: STP Peerings
+    - path: /tables/spanning-tree/ports
+      scope: 17cfb1b38ca20ac3e42b918aceb934443f60129e
+      summary: STP Virtual Ports
+    - path: /tables/spanning-tree/radius
+      scope: a6087fe22f2ee5581335df689ea5d0b6d2868945
+      summary: POST /tables/spanning-tree/radius
+    - path: /tables/spanning-tree/topology
+      scope: 7fabda7b35a8320c9edac7a31e9745c87bd81cc7
+      summary: STP Stability
+    - path: /tables/spanning-tree/vlans
+      scope: d155d2c73814c14440c2d44b2d17ff429641d456
+      summary: STP VLANs
+    - path: /tables/spanning-tree/instance-members
+      scope: 88d315d3e4e98a23bdd1df2d5cd7e9593f4a60a4
+      summary: POST /tables/spanning-tree/instance-members
+    - path: /tables/platforms/fabric-path/summary
+      scope: f83cbf239cf378a0b65d964e461fb71820f0bd4a
+      summary: POST /tables/platforms/fabric-path/summary
+    - path: /tables/platforms/fabric-path/neighbors
+      scope: 35aef73100f72ab0e0126c96f9b94f9a9bb466f5
+      summary: POST /tables/platforms/fabric-path/neighbors
+    - path: /tables/platforms/fabric-path/switches
+      scope: 6a987ce761acb660c58e8a8afa3a6982b4d986b8
+      summary: POST /tables/platforms/fabric-path/switches
+    - path: /tables/platforms/fabric-path/routes
+      scope: 6a0e223d15246ac72e63254b2cb0ad7769207162
+      summary: POST /tables/platforms/fabric-path/routes
