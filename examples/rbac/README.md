@@ -1,0 +1,2 @@
+# RBAC Configuration Script
+This example repo provides some default policies that the Solution Architecture team at IP Fabric have created to create read/write policies and roles for a number of common tasks. 

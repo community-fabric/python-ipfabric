@@ -1,0 +1,960 @@
+login:
+  read:
+  - path: /os/disk-space
+    scope: e5a3a2c0bc90f560a1af4f25647c70eec80f88f8
+    summary: Return available disk space information
+  - path: /snapshots
+    scope: 79ab4b0754b069399464a23c222725111915f8f9
+    summary: Return information on available snapshots
+  - path: /os/version
+    scope: 3636d4fd363d5e5fc6149e32e65327a683d10e86
+    summary: Return API and OS version
+api_token:
+  read:
+  - path: /api-tokens
+    scope: d4de930cc8384bdd853fcb37fae3ea83d8ce81b6
+    summary: Return all API tokens
+  - path: /api-tokens/roles
+    scope: 3220302a93b2a1819657c4ae4dd1b2b9c5294511
+    summary: Return all roles
+  write:
+  - path: /api-tokens
+    scope: ed53cdd671179f6d81508083e4f0c7580becfad4
+    summary: Create API token
+  - path: /api-tokens/:key
+    scope: 1b5049c70b57543353cacc48fe4dacdc6a7a0771
+    summary: Update API token
+  - path: /api-tokens/:key
+    scope: f43f5efc2d2e1cc22d02c9e93894ddde07e023c7
+    summary: Delete API token
+attributes:
+  read:
+  - path: /tables/attributes/filters/keys
+    scope: 6e4ae537964e8c367154a6d9c18b94364535fcd6
+    summary: POST /tables/attributes/filters/keys
+  - path: /tables/attributes/filters/values
+    scope: e4451c800dbc427892d0966f1c820d051a5c157d
+    summary: POST /tables/attributes/filters/values
+  - path: /tables/attributes/graphs
+    scope: 5ca7fa1061686eb1a61f6ee42853a87db19d4011
+    summary: POST /tables/attributes/graphs
+  - path: /tables/attributes/settings/keys
+    scope: efa97310d5316b63bda987235c76a21fe91a8b34
+    summary: POST /tables/attributes/settings/keys
+  - path: /tables/attributes/settings/values
+    scope: 2f9242273faa847abbff98d212ad716aa8cd8975
+    summary: POST /tables/attributes/settings/values
+  - path: /tables/attributes/summary
+    scope: 3a5ed41ba4bfd6e5789905185b7accdb3039617a
+    summary: POST /tables/attributes/summary
+  write:
+  - path: /attributes/global
+    scope: b3b194fa67955f74eeb25297fc5e2fd2a511e0d2
+    summary: PUT /attributes/global
+  - path: /attributes/global
+    scope: 1e7440a75057cad604f09e41a1c6032707833897
+    summary: Delete global attribute
+  - path: /attributes/global
+    scope: a6598cd8319efbedf228ce00f1ff8a8d53d209b2
+    summary: Create global attribute
+  - path: /attributes/global/:id
+    scope: a961a676f8d915e6ce71266e652166cfff5193f6
+    summary: Update specified attribute
+  - path: /attributes/local
+    scope: f00ed3c6f4a52fa3183d433db764bc91c7f0d7d8
+    summary: Update local attribute
+  - path: /attributes/local
+    scope: 4516a55b835cf6e19614912ed88b8d5dd65551ec
+    summary: Delete local attribute
+certificates:
+  read:
+  - path: /os/hostname
+    scope: e84f8aa0f2a5df15ce7055863c594416bd998a61
+    summary: Return platform hostname
+  - path: /settings/ca
+    scope: e72aaa769cf4528de1861756f5b9288555971a2f
+    summary: Return available certificates
+  write:
+  - path: /settings/ca
+    scope: 9535b8c74cfd7dd1c94f334d721898292ae7234e
+    summary: Upload certificate
+  - path: /settings/ca/:id
+    scope: 9d340337b6802c519250fd287dcca69f2b544de2
+    summary: Update certificate properties
+  - path: /settings/ca/:id
+    scope: ab249d5f9536e36264023c328375c8f34ab2c0fc
+    summary: Delete certificate
+credentials:
+  read:
+  - path: /settings/credentials
+    scope: 88ed10751dd49ddb2cec3bca287e0cc443e53158
+    summary: Return user credentials settings
+  write:
+  - path: /settings/credentials
+    scope: aa08d86833a47b6acdec71ab649db66924d44e8d
+    summary: Modify user credentials for discovery
+  - path: /settings/credentials
+    scope: bed2c82ff65866411f404e5d113da68a0edb470d
+    summary: Add user credentials for discovery
+  - path: /settings/credentials
+    scope: 13c8d70ffd178997ab6c652a1e792ae6bcbcf2af
+    summary: Delete user credentials for discovery
+  - path: /settings/credentials/:id
+    scope: 32c51c3031b93ee26a27a8497d6e63485d6947db
+    summary: Update specific user credentials
+  - path: /settings/credentials/:id
+    scope: 60c0c2abb147bf42ec7dc9831cffc782c1888716
+    summary: Delete specific user credentials
+dashboard:
+  read:
+  - path: /reports/groups
+    scope: 03c423bf43a13630e68b84661dd07058763441e3
+    summary: Return dashboard widgets
+  - path: /reports/groups/:key
+    scope: 288fd611b9e2299682891232d10ae665629bc7ac
+    summary: Return specific dashboard widget information
+  - path: /dashboard/vendors
+    scope: 2e5e65d4ca7f92211b858eb5472b88034d313422
+    summary: Read hardware vendors for discovered devices
+  - path: /dashboard/hosts
+    scope: aeedd7c0b46ec61ee1cf38c3e5fd4aeb76dcc929
+    summary: Return hardware manufacturers for endpoints
+  - path: /settings/dashboard
+    scope: 1a09b7fb6d07622744be13ff3cef1a0764319140
+    summary: Return complete dashboard setup
+  write:
+  - path: /discovery/history
+    scope: 40f4bce8f123a7866e9505d8ed6a6ce8b4ff33d0
+    summary: Return number of devices in snapshots
+  - path: /reports/groups
+    scope: 4eedd65dce1bb011e1c896ed00af6d23a009cb1f
+    summary: Update dashboard widgets
+  - path: /reports/groups/:key
+    scope: de7d3286dbe48c5424b61e9581cde9b6b491b080
+    summary: Update specific dashboard widget
+  - path: /reports/groups/:key
+    scope: b34cc6df078ba684243a8b2653d95a0fbeea7e54
+    summary: Delete dashboard widget
+  - path: /settings/dashboard
+    scope: 3dbb83254cd974e82a22b182b133bd812f7df4d5
+    summary: Update dashboard setup
+device_configuration:
+  read:
+  - path: /blobs/device-configuration/:key
+    scope: 5451784ecf14abb3cf3046aca642dac4f545a839
+    summary: Return network device configuration
+  write: []
+discovery:
+  read:
+  - path: /discovery/history
+    scope: 40f4bce8f123a7866e9505d8ed6a6ce8b4ff33d0
+    summary: Return number of devices in snapshots
+  - path: /discovery/shaper
+    scope: 67499a64a1e7bfd11cc8752a4fa4219ebfd799d6
+    summary: Read discovery shaper value
+  write:
+  - path: /discovery/history
+    scope: a10770d6889a52476d6b6c3cf711d5b3ca371afa
+    summary: Delete discovery history entry
+  - path: /discovery/clean
+    scope: fb050640dad99371d5b55931a226b72b94883bca
+    summary: POST /discovery/clean
+  - path: /discovery/shaper
+    scope: d1e06fceef878083005f471669daf3a80569cde0
+    summary: Change discovery shaper value
+  - path: /discovery/trigger-config-backup
+    scope: 764d7646373d60e3fe365dd6de68198437fbd829
+    summary: POST /discovery/trigger-config-backup
+discovery_tasks:
+  read:
+  - path: /settings/discovery-tasks
+    scope: 89ffc331b7b38cc0c4ed72b3313b9dd7fd708229
+    summary: Return all configured disabled tasks
+  write:
+  - path: /settings/discovery-tasks/:key
+    scope: a248f81af47c4dfee7ba2f371a47db38d922f9a9
+    summary: Delete specific disabled tasks
+  - path: /settings/discovery-tasks/:key
+    scope: 9797eff3c2040b68b74f20b6479659d6ab071988
+    summary: Update specific disabled tasks configuration
+  - path: /settings/discovery-tasks
+    scope: 8441cfb96169a3bf4c245573f4e1669615a267ef
+    summary: Configure disabled task for discovery
+  - path: /settings/discovery-tasks
+    scope: 6162a2ca5292efec02ab71de077c4e351413caed
+    summary: Update disabled tasks configuration
+  - path: /settings/discovery-tasks
+    scope: 71ed58af7e757953570b5002971c67516ea91aec
+    summary: Delete all configured disabled tasks
+filters:
+  read:
+  - path: /filters
+    scope: 3626b4fdd1d6d41ada277ede6173af58fb2fe6fb
+    summary: Return table filters
+  - path: /filters/:key
+    scope: d80ec7bd650c088b59aacb32711792c9b74fd8f4
+    summary: Return filter properties
+  write:
+  - path: /filters
+    scope: a7591a3057b4400453a5ef5c818a853e0b337229
+    summary: Create new table filter
+  - path: /filters/:key
+    scope: a3623d55d1525e2cb0fa8dd2e3f0cffc59b7eafd
+    summary: Update filter properties
+  - path: /filters/:key
+    scope: 8a67b6c40b57253a5cc490b045727faabc2b0c72
+    summary: Delete table filter
+graphs:
+  read:
+  - path: /tables/spanning-tree/instance-members
+    scope: 88d315d3e4e98a23bdd1df2d5cd7e9593f4a60a4
+    summary: POST /tables/spanning-tree/instance-members
+  - path: /tables/attributes/summary
+    scope: 3a5ed41ba4bfd6e5789905185b7accdb3039617a
+    summary: POST /tables/attributes/summary
+  - path: /graphs/presets
+    scope: 1ca10507a4ff02872de7c302140e55a2150d5987
+    summary: GET /graphs/presets
+  - path: /graphs/views
+    scope: 7fbb039f4056a9350714b77eec4c0dc4014c709d
+    summary: GET /graphs/views
+  - path: /graphs/views/:key
+    scope: b2fd68daec5d148d3731a1e465e666aeae41e670
+    summary: GET /graphs/views/:key
+  - path: /graphs/path-lookup/vrfs
+    scope: 0ff08329863a2dc1fa783b773aaf5f9892ba4156
+    summary: GET /graphs/path-lookup/vrfs
+  - path: /graphs/path-lookup/advanced-options
+    scope: 3d00a6d220915a284a451712e53be00f986d4602
+    summary: GET /graphs/path-lookup/advanced-options
+  - path: /graphs/default-positions/:path
+    scope: 41bafc4d78f41895385e4551308ee67aeb242ea4
+    summary: GET /graphs/default-positions/:path
+  - path: /graphs/default-layout/network-viewer
+    scope: ff63e4b7fd78f6ce63294a8a1efa9cc3a046a0f5
+    summary: GET /graphs/default-layout/network-viewer
+  - path: /graphs/urls/:key
+    scope: 5fb3658fa53eac2164a0f9a83a340e49d08edd35
+    summary: GET /graphs/urls/:key
+  - path: /graphs
+    scope: c348cca8a241a6b32697776c11b963c1c974af8b
+    summary: POST /graphs
+  write:
+  - path: /graphs/svg
+    scope: 13b07ad66a964d38214ece35e39c22b823a97ba1
+    summary: POST /graphs/svg
+  - path: /graphs/png
+    scope: 50c39a0506952b6265ee57083f6db818cf1c05ee
+    summary: POST /graphs/png
+  - path: /graphs/edges
+    scope: 98c2a9ecf697efc318913fcc6fe38b2a85ec9e64
+    summary: POST /graphs/edges
+  - path: /graphs/intents/summary/built-in
+    scope: e1eadf1f237f333d3a8937ac7fdd4e8024366f92
+    summary: POST /graphs/intents/summary/built-in
+  - path: /graphs/intents/summary/defined
+    scope: 9586a4126f9065b3f102cb9a6ca111e5496e89a9
+    summary: POST /graphs/intents/summary/defined
+  - path: /graphs/presets
+    scope: a4b2f8dffca0ca33ce4c5aa3ef8aeadc51c79b7d
+    summary: POST /graphs/presets
+  - path: /graphs/presets/:key
+    scope: 7aedc9ad2ffaf133af9d1b62b9790867c63abdf4
+    summary: DELETE /graphs/presets/:key
+  - path: /graphs/presets/:key
+    scope: 18112a50427cd9bf6fa2bfa47321eef2e7d005e8
+    summary: PUT /graphs/presets/:key
+  - path: /graphs/views
+    scope: a4fa2c80cc03c438554966ba761dca5de87ab9db
+    summary: POST /graphs/views
+  - path: /graphs/views
+    scope: 08adc8ae09c04e6d523b2f455feb9e6e701d10ee
+    summary: DELETE /graphs/views
+  - path: /graphs/views/:key/favorite
+    scope: b0131a7f16f20690c7814c703fcf9ff8676cbe42
+    summary: POST /graphs/views/:key/favorite
+  - path: /graphs/views/:key/favorite
+    scope: 7574da6bd806bde6a56e89a812d3695ff8a2a4f0
+    summary: DELETE /graphs/views/:key/favorite
+  - path: /graphs/views/:key
+    scope: 7d0d7cd73f3376e97bdcda8fbb3282e45e53a2ad
+    summary: DELETE /graphs/views/:key
+  - path: /graphs/views/:key
+    scope: 9c6542a26fc39c65eb2cab1e0416ba64b00b7b0b
+    summary: PUT /graphs/views/:key
+  - path: /graphs/path-lookup/checks/badge
+    scope: 0c17d007f6dffe264944837f4a9deb625c2ca758
+    summary: POST /graphs/path-lookup/checks/badge
+  - path: /graphs/path-lookup/checks
+    scope: 6d3d53fd4948c6be64281fb1fa00f01a01b5b8af
+    summary: POST /graphs/path-lookup/checks
+  - path: /graphs/path-lookup/checks/exists
+    scope: a24f43b609a8ab214719790b86670d984714ee17
+    summary: POST /graphs/path-lookup/checks/exists
+  - path: /graphs/path-lookup/checks/:key
+    scope: 078e619b1f91f7bd4dc0e8c30f1b41b90ae6e8f3
+    summary: PUT /graphs/path-lookup/checks/:key
+  - path: /graphs/path-lookup/checks/:key
+    scope: 0f4fc2608d5ff130b0a5bc8ac1336165cca6f6cd
+    summary: DELETE /graphs/path-lookup/checks/:key
+  - path: /graphs/path-lookup/advanced-options
+    scope: 01225a9fd3b98e00620558b1f5ef5311db51f4f7
+    summary: POST /graphs/path-lookup/advanced-options
+  - path: /graphs/path-lookup/advanced-options/:key
+    scope: a312946194d9022be1bd419e767827b257abf6f8
+    summary: DELETE /graphs/path-lookup/advanced-options/:key
+  - path: /graphs/path-lookup/advanced-options/:key
+    scope: 348db62ac88c1b43f2543f193f4af0d554d24ee6
+    summary: PUT /graphs/path-lookup/advanced-options/:key
+  - path: /graphs/default-positions
+    scope: 91dafa01f45e624fd376e6b0cdfe47bb92bdb7e0
+    summary: POST /graphs/default-positions
+  - path: /graphs/default-positions
+    scope: ac1ce5606d88ffcfeb90688ffa85badb8e57698c
+    summary: DELETE /graphs/default-positions
+  - path: /graphs/default-layout
+    scope: 7b80349cbcbbf52f5c59429ee16ebc98089ed955
+    summary: POST /graphs/default-layout
+  - path: /graphs/default-layout
+    scope: 19067404171d22a4514140f4cbc8f34dfdb4c57b
+    summary: DELETE /graphs/default-layout
+  - path: /graphs/urls
+    scope: ca255b2eb7ddd5c7fc8f0c0999dfe6f00e0e40da
+    summary: POST /graphs/urls
+  - path: /graphs/urls/:key
+    scope: 8a5d920af78796c560debc4ae997bd4e8a0f0b0f
+    summary: DELETE /graphs/urls/:key
+jobs:
+  read:
+  - path: /jobs/:key/download
+    scope: 4bbb0c9d739b9a34c9100d95a58a101997fee35f
+    summary: Return result of system job
+  - path: /jobs/read
+    scope: 893e492f08729aa1a4e2819390313cfa8720e688
+    summary: Return running jobs
+  - path: /jobs/:key/read
+    scope: f02182f15c3200b83948626e4c65570182a8d3ec
+    summary: Return job information
+  write:
+  - path: /jobs/:key/cancel
+    scope: 43a6426e27bf66f5a659fa25f10423698288ee33
+    summary: Cancel specific job
+  - path: /jobs/:key/stop
+    scope: aa57ce20e0cf1071c9bc4ddf842b454d16a2fa79
+    summary: Stop running system job
+jumphosts:
+  read:
+  - path: /settings/jumphosts/ssh-cert
+    scope: 73f90adb32b57a22ce6662b0b65cb9e0fe65474e
+    summary: Download jumphosts public key
+  - path: /tables/settings/jumphosts
+    scope: 8733038e31573cb3aafe69bc020272f19f73dd35
+    summary: POST /tables/settings/jumphosts
+  write:
+  - path: /settings/jumphosts/:key
+    scope: ac8e288c39b119f21909e6b5a9349b45b847506a
+    summary: Update specific jumphost properties
+  - path: /settings/jumphosts/:key
+    scope: 1cf36dde02324859e8d139e39beb61fb477e5025
+    summary: Rewrite jumphost properties
+  - path: /settings/jumphosts/:key
+    scope: af2fad9a9afd5e9c4cafd47a39e09a06db471379
+    summary: Delete jumphost item
+  - path: /settings/jumphosts
+    scope: d18f0356fd1be1f5ba03e7e33257decacb4e253e
+    summary: Add jumphost to global settings
+ldap:
+  read:
+  - path: /settings/ldap
+    scope: 9b31d69f9e1b1eada05c30e9452da1731dbc307b
+    summary: Return LDAP settings
+  - path: /settings/ldap/:id/groups
+    scope: ae49def06dfde0fa78fb61b361a26cc55f717c13
+    summary: Return LDAP groups from specific domain
+  write:
+  - path: /settings/ldap
+    scope: 0d084ac93ac435bd5d9335587eff5cd3cf386029
+    summary: Update LDAP settings
+  - path: /settings/ldap/:id
+    scope: 6b69a16ca79cdb3f889b69a174fb91eee80b4cae
+    summary: Update specific LDAP domain settings
+  - path: /settings/ldap/:id
+    scope: 7cff5c067a0172ca8e6089222c2892351282703c
+    summary: Delete specific LDAP domain
+license:
+  read: []
+  write: []
+operating_system:
+  read:
+  - path: /tables/url/:key
+    scope: 73a254f04bfef4ba7238ef394a02aeea0cabadda
+    summary: GET /tables/url/:key
+  - path: /tables/url
+    scope: 8949d19e4bed9609fc08a68d749d909728620d16
+    summary: POST /tables/url
+  - path: /os/disk-space
+    scope: e5a3a2c0bc90f560a1af4f25647c70eec80f88f8
+    summary: Return available disk space information
+  - path: /os/hostname
+    scope: e84f8aa0f2a5df15ce7055863c594416bd998a61
+    summary: Return platform hostname
+  - path: /os/logs/:collection/:key
+    scope: 199e19349b3f34564c741f8ab03baced848055eb
+    summary: Return specific logs
+  - path: /os/service-log/:serviceName/:snapshotKey
+    scope: bfdf655a2bc6775f829028eeaad25a78618b99d3
+    summary: Return snapshot service logs
+  write:
+  - path: /os/clean-db
+    scope: 0f7e8d381d48508d6290e092fe29ee1a9ccb8113
+    summary: Clean system database
+  - path: /os/maintenance
+    scope: 32ff036e4caf6aa6a5a00fb5da1f96774ba45385
+    summary: Trigger platform maintenance
+  - path: /os/snapshots-retention
+    scope: 41f5753d0d5fdab16a62d4f281d9aa5fa75168c4
+    summary: Trigger snapshot retention
+  - path: /os/generate-nimpee-cert
+    scope: 209c522b459a4604ae65d267a586279a98bd8f32
+    summary: Generate IP Fabric certificate
+  - path: /os/upload-nimpee-cert
+    scope: 0d133046bbcdfb27c2a37683ba93eca874e41902
+    summary: Upload certificate to platform
+  - path: /os/restart-service
+    scope: 6b1e4ea42fe4c3e6023ff7119bfe9cb7607c0d55
+    summary: Restart specific platform service
+  - path: /os/techsupport
+    scope: 5fb6d59b30fe50f2e0624e9dffa3c80338799a06
+    summary: Generate techsupport file
+oui:
+  read: 
+  - path: /tables/reports/settings-oui
+    scope: 3266d5d60fcaa70b8c9e3b3162806abe2b63d73a
+    summary: Settings for OUI Discovery
+  write:
+  - path: /settings/oui/enable-all
+    scope: d6cc29a782393dc163974ae326367cd8ea11c13c
+    summary: Enable all OUI items for discovery
+  - path: /settings/oui/disable-all
+    scope: 85ede9c2d083d04b59beb4cd4dd515095c3cffa9
+    summary: Disable all OUI items for discovery
+  - path: /settings/oui/:id
+    scope: 0ca8488a15c7f35e5e338219ac6580e4b2ea599a
+    summary: Update specific OUI item
+  - path: /settings/oui/:id
+    scope: 0579a95795007012b13ff63ff522ca402ab35b97
+    summary: Rewrite specific OUI item
+  - path: /settings/oui/reset
+    scope: 33cfeee821cb5bd42aeeee31ef4f1fd447bc5226
+    summary: Reset OUI settings to default
+  - path: /settings/oui
+    scope: f49c5ed60890dfd3a2091228e7c23a96a6bf8ace
+    summary: Add OUI item
+  - path: /settings/oui
+    scope: f52db9bb947e2e59196c6cfa07537a61bb7de462
+    summary: Update OUI settings
+scopes:
+  read: 
+  - path: /tables/scopes/api
+    scope: 751705d05842f7c672be15f08a3b6b124f353c3a
+    summary: POST /tables/scopes/api
+  - path: /tables/scopes/attributes
+    scope: ddacd53c6de2d12f2132ac504528ef0aa8c4f0e4
+    summary: POST /tables/scopes/attributes
+  write: []
+policies:
+  read:
+  - path: /reports
+    scope: 2ea5167a1d4af1a4fbc2c5d2464b3d808dbb7194
+    summary: Return available intent rules
+  - path: /tables/policies
+    scope: f7e39c75db2bf6e5b61c52246ff3dd0da8207890
+    summary: POST /tables/policies
+  - path: /policies/scopes/api/:policyKey
+    scope: d5b02848e00390c3ed7243d3fdec28e536b57d60
+    summary: Return basic information on a specific policy
+  - path: /policies/scopes/attributes/:policyKey
+    scope: 824acc854adefdb74a29ff082abb3c28e24e2a16
+    summary: Return information on attributes of a specific policy
+  - path: /policies
+    scope: f6af9235204a92a4ac8879005fc5eb45977b9ff9
+    summary: Return role-based access control policies
+  - path: /policies/:policyKey
+    scope: 6176def83ca1fcd1e62f03c17ad0ac86e101b0f4
+    summary: Return information on role-based access control policy
+  - path: /policies/scopes/api
+    scope: ad47424acdacfc14e803ca583b23c136cb4759c0
+    summary: Return basic information on all API scopes
+  - path: /policies/scopes/attributes
+    scope: 88f07e36672e9684023a54a4f39bee452c5eb961
+    summary: Return information on attributes of all policies
+  write:
+  - path: /policies/scopes/api/:policyKey
+    scope: dfba627ce571105f5acda916fbfd728ce780acc7
+    summary: Update single attributes of API policy
+  - path: /policies/scopes/api/:policyKey
+    scope: fff124946a96d8a6990993003f816aa4f294f500
+    summary: Rewrite single attributes of API policy
+  - path: /policies/scopes/api/:policyKey
+    scope: 59a66066c344ee99848eda0afd62c5376b0a9cc7
+    summary: Delete API scope assigned to a specific policy
+  - path: /policies/scopes/attributes/:policyKey
+    scope: bf4430c1f6c4d2bfbc21de985048a39711973e68
+    summary: Update single (or multiple) attributes of a policy
+  - path: /policies/scopes/attributes/:policyKey
+    scope: c247a3eae1c0b9691823f51b232fe9ca2a2abb12
+    summary: Rewrite attributes of a policy
+  - path: /policies/scopes/attributes/:policyKey
+    scope: 415cb4745cbeff334876ebf7006a52b39c55a4e7
+    summary: Delete the attribute assigned to a policy
+  - path: /policies
+    scope: 8f0e9dd08b3f25d536dca39b0eb6b43c3cd40851
+    summary: Create a role-based access control policy
+  - path: /policies/:policyKey
+    scope: dda1d8782ef2f2970f5baeef16bb75b97309e11c
+    summary: Update attributes of a policy
+  - path: /policies/:policyKey
+    scope: f0fe765c4f648000799fe4e924f2057a8d2d4e2c
+    summary: Rewrite attributes of a policy
+  - path: /policies/:policyKey
+    scope: d2d7bdc960c00fb8b0d4889da98a131ac61594ae
+    summary: Delete specific role-based access control policy
+privileges:
+  read:
+  - path: /settings/privileges
+    scope: f5cb102e084ae4561e561a3ceec67d25188f31ef
+    summary: Return configured enable passwords
+  - path: /settings/seed
+    scope: 7fb19843c4e5a7de613ca79ced9fddf88508668f
+    summary: Return global seed IP settings
+  write:
+  - path: /settings/privileges
+    scope: d3bbd1830572bd81289785d46290ff5d4717a928
+    summary: Update configured enable passwords
+  - path: /settings/privileges
+    scope: cd34016e9b0200ad42d024b38e3093c8d277445c
+    summary: Add new enable passwords
+  - path: /settings/privileges
+    scope: a7782dccffba4ec9952e7a83a7ef7f126fdb615c
+    summary: Delete all enable passwords
+  - path: /settings/privileges/:id
+    scope: 01d3b35e5b3458a0453aa74ac78da79c3ec97df9
+    summary: Update configured enable password
+  - path: /settings/seed
+    scope: 7577c0f2398e86ff51ec616775f92a704c5e7a5b
+    summary: Update global seed IP settings
+  - path: /settings/seed
+    scope: 2b95abb98e2e5b1117c42968cf97d7c20444565a
+    summary: Rewrite global seed IP settings
+  - path: /settings/seed
+    scope: 01591e95e2591fc0e3349d132ddb7d4e408c4fbf
+    summary: Delete seed IP addresses
+reports:
+  read:
+  - path: /reports/groups
+    scope: 03c423bf43a13630e68b84661dd07058763441e3
+    summary: Return dashboard widgets
+  - path: /reports/groups/:key
+    scope: 288fd611b9e2299682891232d10ae665629bc7ac
+    summary: Return specific dashboard widget information
+  - path: /tables/settings
+    scope: 5ff674e6deb981116c5e7d4b13385e1254cea467
+    summary: GET /tables/settings
+  - path: /tables/inventory/sites
+    scope: a067b848a10f9ef2989c1fcb058982213cb56167
+    summary: Sites Inventory
+  - path: /tables/reports/discovery-errors
+    scope: e5974cef09b170765ccc6956db6fd19707d1048f
+    summary: POST /tables/reports/discovery-errors
+  - path: /tables/reports/discovery-tasks
+    scope: 61217b3ed8eaa861461c820cfb09952ed8e74ede
+    summary: POST /tables/reports/discovery-tasks
+  - path: /tables/reports/settings-oui
+    scope: 3266d5d60fcaa70b8c9e3b3162806abe2b63d73a
+    summary: Settings for OUI Discovery
+  - path: /tables/roles
+    scope: 5fedc17c2d4dda62de3bf697f18cabd9179eb0aa
+    summary: RBAC - User Management Roles
+  - path: /tables/management/discovery-runs
+    scope: ad7a1cd54273549505a722cfd794af4cbc33dcfe
+    summary: Changes
+  - path: /reports
+    scope: 2ea5167a1d4af1a4fbc2c5d2464b3d808dbb7194
+    summary: Return available intent rules
+  - path: /reports/:key
+    scope: ff14b987acf7a01d84096bf796b251f918f5fb5c
+    summary: Return spcific intent rule information
+  write:
+  - path: /dashboard/vendors
+    scope: 2e5e65d4ca7f92211b858eb5472b88034d313422
+    summary: Read hardware vendors for discovered devices
+  - path: /dashboard/hosts
+    scope: aeedd7c0b46ec61ee1cf38c3e5fd4aeb76dcc929
+    summary: Return hardware manufacturers for endpoints
+  - path: /settings/dashboard
+    scope: 1a09b7fb6d07622744be13ff3cef1a0764319140
+    summary: Return complete dashboard setup
+  - path: /reports
+    scope: 7bcd1a168ebaa784bb8b81555410fc8bb745a6bc
+    summary: Create intent rule
+  - path: /reports/:key
+    scope: e1e9f0a98ae86a8e41def36a155662a19a2570e5
+    summary: Update intent rule
+  - path: /reports/:key
+    scope: 82a1da8370f28642c21635ae240d31e509197a3e
+    summary: Delete intent rule
+roles:
+  read:
+  - path: /tables/roles
+    scope: 5fedc17c2d4dda62de3bf697f18cabd9179eb0aa
+    summary: RBAC - User Management Roles
+  - path: /roles
+    scope: a7deb335c7308e03733cc3cef386088f70472014
+    summary: Return user management roles
+  - path: /roles/:roleKey
+    scope: f294dce1fea33cbf526db4e510e35312bc242941
+    summary: Return specific user management role
+  write:
+  - path: /roles
+    scope: e876a399864ae18aa6820a6797ee7591a631c7e0
+    summary: Update user management roles
+  - path: /roles/:roleKey
+    scope: 45800ada0108e228f67813f96e7c32518cf3b1fa
+    summary: Update specific user management role
+  - path: /roles/:roleKey
+    scope: 57e7c8a77047639164349a3c688e262f221c4562
+    summary: Rewrite specific user management role
+  - path: /roles/:roleKey
+    scope: 0e70056022e7dda55d24d166531c0875d5bf5bb4
+    summary: Delete user management roles
+security:
+  read:
+  - path: /security
+    scope: c4c7bba245dd80cbe60b0bf1bd9248265c7c1a45
+    summary: GET /security
+  write: []
+settings:
+  read:
+  - path: /tables/global-attributes
+    scope: 6190fa52f1dc472252730653d5b3f51aadc3c2b0
+    summary: Global Attributes
+  - path: /tables/settings
+    scope: 5ff674e6deb981116c5e7d4b13385e1254cea467
+    summary: GET /tables/settings
+  - path: /settings
+    scope: eec168308713df87d1da2ad144e9c073e654f85a
+    summary: Return global settings
+  - path: /tables/users
+    scope: 55ebdafabb0a68c1e2caaae7ac68c58108c770ad
+    summary: POST /tables/users
+  write:
+  - path: /settings
+    scope: 7c23c1ef3d3cc9e38685cb2284ddfd2a03a5d6a8
+    summary: Modify global settings
+site_separation:
+  read:
+  - path: /settings/site-separation
+    scope: 1684ef9eb144f32c0f44e6cdb9ddabc84c375c45
+    summary: Return global site-separation settings
+  write:
+  - path: /settings/site-separation
+    scope: 12b3f6d4f953729533d5eaf57e16769ceb59a793
+    summary: Rewrite global site-separation settings
+  - path: /settings/site-separation/test-regex
+    scope: 36304ff9acbff95e4138e4853219ceb5abd032bf
+    summary: Test configured RegEx for discovered hostname
+snapshot_retention:
+  read: []
+  write:
+  - path: /settings/snapshot-retention/reset
+    scope: 530728b799a95db6d7c1bc6fb0940e1ac7f33ac6
+    summary: Reset snapshot retention configuration
+snapshots:
+  read:
+  - path: /tables/management/snapshots
+    scope: 241f8bca75d6e0f568ec8ef5375e87b91ae20492
+    summary: POST /tables/management/snapshots
+  - path: /tables/settings
+    scope: 5ff674e6deb981116c5e7d4b13385e1254cea467
+    summary: GET /tables/settings
+  - path: /snapshots/:key/download
+    scope: a5dd67a96e5ed89c9a398ab6c4bbe344450f01c2
+    summary: Initiate snapshot download job
+  - path: /snapshots/:key/settings
+    scope: 898ce975d26dc606718e26028e90d6c2a62e43cb
+    summary: Return snapshot settings
+  - path: /snapshots
+    scope: 79ab4b0754b069399464a23c222725111915f8f9
+    summary: Return information on available snapshots
+  - path: /snapshots/:key
+    scope: 44f71c16e5af5c7f91450d2c0965c3ec767722e3
+    summary: Renturn information on specific snapshot
+  - path: /snapshots/load
+    scope: 4f704324bc081275e8994c1fa5a908b3f9b90af5
+    summary: Load snapshot
+  - path: /snapshots/:key/load
+    scope: 6ce8e27def381a244648998176eb7a218cb28e63
+    summary: Load snapshot
+  - path: /snapshots/unload
+    scope: fa504292aa87a9082da5a17d46000390aa9ddb4b
+    summary: Unload snapshot from HDD to RAM
+  - path: /snapshots/:key/unload
+    scope: 716f33a1497d9c0e7ace6499eb86751f0a5dd373
+    summary: Unload snapshot
+  - path: /tables/snapshot-attributes
+    scope: 4e31d8fdc457a0b4448e2e699dbde343807c2c2c
+    summary: POST /tables/snapshot-attributes
+  - path: /tables/snapshot-devices
+    scope: 1361822c3b08544fddb94e9197cd19fd407b3215
+    summary: POST /tables/snapshot-devices
+  write:
+  - path: /snapshots/upload
+    scope: 7c35c77e614863acfabc34c71bf5afec4f3da836
+    summary: Upload snapshot
+  - path: /snapshots/:key/devices
+    scope: 7f86e210b4539fc5c1fafe1521e6641eef4b488e
+    summary: Refresh snapshot devices
+  - path: /snapshots/:key/devices
+    scope: 20b133a39ab2fea96be270ba77bee2d3fb0b2f47
+    summary: Delete snapshot devices
+  - path: /snapshots/:key/subset
+    scope: de61a1edf2f8b8a74abc6339c273f2ec9a663861
+    summary: POST /snapshots/:key/subset
+  - path: /snapshots/:key/clone
+    scope: 09f8319c8e08e08a20a9cb5e8d73c49fa34a9d8f
+    summary: Clone snapshot
+  - path: /snapshots/:key/lock
+    scope: 1a46b67abd1050d85b1b2eb309015926cd656d6c
+    summary: Lock snapshot
+  - path: /snapshots/:key/unlock
+    scope: 944daf68871ba728d52c8d79e413f2ad8de62e0d
+    summary: Unlock snapshot
+  - path: /snapshots/:key/settings
+    scope: 5d8532598472ad4df5cd6f47d22614d2b76230fe
+    summary: Update snapshot settings
+  - path: /snapshots/:key/settings/vendor-api-from-global
+    scope: 7cd0eed02792d51c2a73f749686f395b549ad0fd
+    summary: Rewrite snapshot settings based on global for Vendors API
+  - path: /snapshots
+    scope: 31838e730636ba1c22ae6470602d33eacd30d58b
+    summary: Delete platform snapshots
+  - path: /snapshots
+    scope: 6d63407861093f750928bed2c039896174af6e50
+    summary: Create new snapshot
+  - path: /snapshots/:key
+    scope: f4455d9f6851e74e63a780d2d34310904b35a81e
+    summary: Delete specific snapshot
+  - path: /snapshots/:key
+    scope: 4aa7febd7cc54ed0c7235289116e689854851163
+    summary: Update specific snapshot properties
+ssh:
+  read:
+  - path: /settings/ports
+    scope: 122553206923cafe46232608dfdf357bcff251fb
+    summary: Return configured custom ports
+  - path: /settings/ports/:key
+    scope: 0fcec6c5c6a724290c07e9bfd52c549d4fa52434
+    summary: Return custom SSH ports
+  - path: /tables/settings/ports
+    scope: 1c73966d5d59dc31aef79269ff662ad80b5d6bb4
+    summary: POST /tables/settings/ports
+  write:
+  - path: /settings/ports
+    scope: bca079a9e794275af81274c24e2a8792e76d3d77
+    summary: Add new custom port
+  - path: /settings/ports
+    scope: 0ebee4e380b1a657496fab5c016966399a01ba8e
+    summary: Delete custom SSH ports
+  - path: /settings/ports/:key
+    scope: 84d014366c36eb43391ee7864aa1b09be84c92ff
+    summary: Delete custom SSH port
+  - path: /settings/ports/:key
+    scope: 0860a99dc18f259ad81eae4957d8d47d787c1dfd
+    summary: Update custom SSH port
+  - path: /settings/ports/:key
+    scope: 55c110bf9b1d5b9ece2c423002933f0fe1390c75
+    summary: Rewrite custom SSH port settings
+support:
+  read: []
+  write: []
+user_authentication:
+  read: []
+  write: []
+user_management:
+  read:
+  - path: /users
+    scope: 8ba2caafd63c17ba2307b4f8f31736627c5fdb8d
+    summary: Return user information
+  - path: /users/:userKey
+    scope: 3432ca5beb3f07b864b28dd64b55042fd11bd8cd
+    summary: Return specific user information
+  write:
+  - path: /users
+    scope: 137fafc179d76e970a73b460949c25ed857af568
+    summary: Create new user
+  - path: /users/:userKey
+    scope: 5e0feb0f382c276c1731a724654e96bee5e106ec
+    summary: Update specific user properties
+  - path: /users/:userKey
+    scope: 6db86486e030d6560f325957592e04ef7458aa40
+    summary: Delete user
+  - path: /users/:userKey/password
+    scope: a00748b84166621b9a8fa502183283bef77f58e3
+    summary: Update user password
+vendors_api:
+  read:
+  - path: /settings/vendor-api
+    scope: 1c14e9d7b434c087e6af6263967243caf848bb80
+    summary: Return configuration for API vendors
+  - path: /snapshots/:key/available-vendor-settings
+    scope: 6cba05386829358609e622905f084ec443e8e0a7
+    summary: Return information on configured vendor APIs
+  - path: /snapshots/:key/available-vendor-settings-per-type
+    scope: 6129adcf0075b6ba285dc79f4470adda612cbd5c
+    summary: Return information on Vendor API
+  write:
+  - path: /settings/vendor-api
+    scope: 895ecfeff533511d88505b8c5134ea890ed5b493
+    summary: Add new API vendor
+  - path: /settings/vendor-api/:id
+    scope: d2966132c79d8df4c9cb961dafc1dc3d7c82fe29
+    summary: Rewrite configured API vendor properties
+  - path: /settings/vendor-api/:id
+    scope: 29209de40ef8be2a220c8b2ba7309b21ccd790e9
+    summary: Update configured API vendor properties
+  - path: /settings/vendor-api/:id
+    scope: e53105f6ba4a494d6cf0b5e8f1ac350a96cccc4e
+    summary: Delete configured API vendor
+  - path: /settings/vendor-api/verify-connection
+    scope: 1c8073419f803027c0f94f42abd032846645dda4
+    summary: Test connection for API vendor configuration
+webhooks:
+  read:
+  - path: /webhooks
+    scope: 0fd61e6f5e47caa86b1e933c07e3e411426c84df
+    summary: Return webhook information
+  - path: /webhooks/types
+    scope: dbed2b18563b584fe1979dd23ce12eb1e649786e
+    summary: Return webhook types
+  - path: /webhooks/:key/delivery
+    scope: cb3d3b05a54be0077ff928395492ff9b30d9208f
+    summary: Return webhook delivery information
+  write:
+  - path: /webhooks
+    scope: ae8728113ce0cb279148dc97784d5784d311c2a4
+    summary: Create new webhook
+  - path: /webhooks/:key
+    scope: eb4aabbfee6bf6eca3fe257d27c17d57c35b1bbf
+    summary: Delete webhook
+  - path: /webhooks/:key
+    scope: 8569a5c988d516819bc84cfd5bba7100f2d4c33f
+    summary: Rewrite webhook configuration
+  - path: /webhooks/:key/test/:type/:action
+    scope: 88a9a3c4e7f6da2ba66d57d5c36a2c0880021a78
+    summary: Test specific webhook
+  - path: /webhooks/:key/delivery
+    scope: 77a6e5de6444926bfc073b137672341e74d5c6c6
+    summary: Delete specific webhook
+inventory:
+  read:
+  - path: /tables/addressing/hosts
+    scope: dd3e429da6bbb78f01b1a694d04b12a623e97cb6
+    summary: IPv4 Network Endpoints
+  - path: /tables/addressing/ipv6-hosts
+    scope: 80ba0a1528bd80b1b6235610789c3e36b9663e20
+    summary: IPv6 Network endpoints
+  - path: /tables/reports/eof/detail
+    scope: 039af94f43c029e25022d25b6076ad7d6638ae62
+    summary: Hardware EoL - Detail
+  - path: /tables/reports/eof/summary
+    scope: 61cd2bba1a3963371b948c297d85fe0c4e2758af
+    summary: Hardware EoL - Summary
+  - path: /tables/inventory/devices
+    scope: c701b81c3a91ebd953f0097a2fa520507745243f
+    summary: Device Inventory
+  - path: /tables/inventory/fans
+    scope: 512962c963edf9758d1dfef99eb4e90fdf23ad8a
+    summary: Environment - Fans
+  - path: /tables/inventory/interfaces
+    scope: fa462e10f3ff2a756fce2f862d6e08d913113cfd
+    summary: Interface Inventory
+  - path: /tables/inventory/modules
+    scope: d4769862d55464e1b9fdb16103a9f5432de432a6
+    summary: Environment - Modules
+  - path: /tables/inventory/pn
+    scope: efd238e0d15b04ad415446efaca80939e4186f72
+    summary: Modules and Part Numbers Inventory
+  - path: /tables/inventory/sites
+    scope: a067b848a10f9ef2989c1fcb058982213cb56167
+    summary: Sites Inventory
+  - path: /tables/inventory/summary/families
+    scope: 023573d36598f61c617939f256d986e21d878915
+    summary: Vendor Families Overview
+  - path: /tables/inventory/summary/models
+    scope: feb805028154b351a6397fd18d468eba808d37ca
+    summary: Vendor Models Overview
+  - path: /tables/inventory/summary/platforms
+    scope: 062b8c7e2a3e2323c7b7c71542b6566ae4851697
+    summary: Vendor Platforms Overview
+  - path: /tables/inventory/summary/vendors
+    scope: 3aed3be2e793d01ef760cab3dc683ccbc2c95be7
+    summary: Vendors Overview
+  - path: /tables/inventory/power-supplies
+    scope: 8ccd4c725aefc8efa41dd74685da5711b3e550e2
+    summary: Environment - Power Supplies
+  - path: /tables/inventory/power-supplies-fans
+    scope: 8fd8461fcc4364f29bc852f9dd78ac6b30b1314d
+    summary: Environment - Power Supplies Fans
+  - path: /tables/platforms/devices
+    scope: cf5fe334d51107ed9476b3f5afbba0f3b2d1c8f1
+    summary: POST /tables/platforms/devices
+  - path: /tables/management/osver-consistency
+    scope: 7072e17771ff98bb019aab662d660c9b43167816
+    summary: OS Version Consistency
+  # - path: /tables/platforms/fabric-path/summary
+  #   scope: f83cbf239cf378a0b65d964e461fb71820f0bd4a
+  #   summary: POST /tables/platforms/fabric-path/summary
+  # - path: /tables/platforms/fabric-path/neighbors
+  #   scope: 35aef73100f72ab0e0126c96f9b94f9a9bb466f5
+  #   summary: POST /tables/platforms/fabric-path/neighbors
+  # - path: /tables/platforms/fabric-path/switches
+  #   scope: 6a987ce761acb660c58e8a8afa3a6982b4d986b8
+  #   summary: POST /tables/platforms/fabric-path/switches
+  # - path: /tables/platforms/fabric-path/routes
+  #   scope: 6a0e223d15246ac72e63254b2cb0ad7769207162
+  #   summary: POST /tables/platforms/fabric-path/routes
+  write: []
+management:
+  read: 
+  - path: /tables/inventory/discovery-history
+    scope: 80270bc86b703bca1062673a80977e7e80ac05a9
+    summary: Discovery History
+  - path: /tables/management/changes/connectivity
+    scope: 205a406d59d39c5b5c3c03c64dbe0ed2a1a6a4e1
+    summary: Changes in connectivity matrix
+  - path: /tables/management/changes/devices
+    scope: bff34be4b27e5d76ec4a78857f2c7f0ca0b20530
+    summary: Changes in devices
+  - path: /tables/management/changes/pn
+    scope: 9449202b14ae1a0fea9fb19f82ac83682fe537e9
+    summary: Changes in Part Numbers
+  - path: /tables/management/changes/managed-devs
+    scope: 74bfe2920e6c6ba589df4951acb573654641dcaa
+    summary: Changes in Managed IP
+  - path: /tables/management/configuration/download
+    scope: 588c0e0b0ea5553cf5ea49801f715a06468a4617
+    summary: Download Configuration File
+  - path: /tables/management/configuration/inline
+    scope: b0a56f0abd419e7bcd09d9ad74f3a41a03eb178d
+    summary: Inline Mode Configuration File Comparison
+  - path: /tables/management/configuration/parallel
+    scope: 70b8607c72eb528c2af15797027cfadd75920f72
+    summary: Parallel Mode Configuration File Comparison
+  - path: /tables/management/configuration/saved
+    scope: 953130708a830c65095c48804e9c0fc647964b3e
+    summary: Saved Config Consistency
+  - path: /tables/management/configuration
+    scope: e5cac6dcf2d741c053f58fbcda2b0d3f88dbf4a2
+    summary: Configuration Files
+  write: []
+
