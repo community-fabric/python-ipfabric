@@ -57,9 +57,9 @@ def create_rbac(ipf, roles, policies) -> int:
 
     data = yaml.safe_load(roles)
     data = data['roles']
-    
+
     policies = ipf.get('policies').json()['data']
-    
+
 
     name_to_id = {}
 
@@ -95,7 +95,7 @@ def main() -> int:
         handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(handler)
         logger.setLevel(logging.DEBUG)
-    
+
     ipf = IPFClient(api_version=args.version, verify=args.verify)
 
     if args.delete_all:
