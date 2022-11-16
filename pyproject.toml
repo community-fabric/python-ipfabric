@@ -29,7 +29,7 @@ openpyxl = {version = "^3.0.9", optional = true}
 tabulate = {version = "^0.8.9",  optional = true}
 ipfabric-httpx-auth = "^5.0.0"
 python-json-logger = {version = "^2.0.4",  optional = true}
-macaddress = "^1.2.0"
+macaddress = "~2.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"
