@@ -220,7 +220,7 @@ PyJWT = ">=2.4.0,<3.0.0"
 
 [[package]]
 name = "macaddress"
-version = "1.2.0"
+version = "2.0.2"
 description = "Like ``ipaddress``, but for hardware identifiers such as MAC addresses."
 category = "main"
 optional = false
@@ -536,7 +536,7 @@ examples = ["tabulate", "pandas", "openpyxl", "python-json-logger"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "d43cbf6b7badb439402b64486a8a051f30c423fc31ac1377803b651ae279eab1"
+content-hash = "e6fce3ce3a4fc39e05446247e58133f334b232a06cfe25f3a33fb5abc67e82ef"
 
 [metadata.files]
 anyio = [
@@ -675,8 +675,8 @@ ipfabric-httpx-auth = [
     {file = "ipfabric_httpx_auth-5.0.0.tar.gz", hash = "sha256:e376f0381a2c286ebb4cb2e61168f03cecce09bd8b7044d5efe15db89a6291df"},
 ]
 macaddress = [
-    {file = "macaddress-1.2.0-py3-none-any.whl", hash = "sha256:09efb3fdd161643c1b53037647127ddf42071022f57d78cc8d4cca02633407e1"},
-    {file = "macaddress-1.2.0.tar.gz", hash = "sha256:e93d7fba733626f98c7567440ccd2e6768b5fb3fb474d45f55643670ac88b765"},
+    {file = "macaddress-2.0.2-py3-none-any.whl", hash = "sha256:6f4a0430f9b5af6d98a582b8d527ba2cd3f0825fce5503a9ce5c73acb772c30f"},
+    {file = "macaddress-2.0.2.tar.gz", hash = "sha256:1400ccdc28d747102d57ae61e5b78d8985872930810ceb8860cd49abd1e1fa37"},
 ]
 mccabe = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.1 (2022-11-16)
+
+### Feature
+
+* Update macaddress package
+
 ## 6.0.0 (2022-11-16)
 
 ### Breaking Change
