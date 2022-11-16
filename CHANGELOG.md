@@ -19,6 +19,7 @@
 * Added get_snapshot(snapshot_id) to find a snapshot_id
 * Added Local Attributes
 * Added Jobs
+* Added Attribute Filter
 
 ### CI/CD
 
