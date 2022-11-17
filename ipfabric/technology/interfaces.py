@@ -1,6 +1,8 @@
 import logging
-from pydantic import BaseModel
 from typing import Any
+
+from pydantic import BaseModel
+
 from ipfabric import models
 
 logger = logging.getLogger("python-ipfabric")
@@ -127,7 +129,7 @@ class Interfaces(BaseModel):
 
     @property
     def storm_control_all(self):
-        return models.Table(client=self.client, enpoint="tables/interfaces/storm-control/all")
+        return models.Table(client=self.client, endpoint="tables/interfaces/storm-control/all")
 
     @property
     def storm_control_broadcast(self):

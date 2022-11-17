@@ -3,6 +3,8 @@ import unittest
 
 from ipfabric import IPFClient
 
+os.environ["IPF_VERIFY"] = "false"
+
 condition = False if os.getenv("IPF_TOKEN", None) and os.getenv("IPF_URL", None) else True
 
 

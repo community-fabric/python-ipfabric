@@ -1,6 +1,12 @@
 # Changelog
 
-## 6.0.0 (2022-10-XX)
+## 6.0.1 (2022-11-16)
+
+### Feature
+
+* Update macaddress package
+
+## 6.0.0 (2022-11-16)
 
 ### Breaking Change
 
@@ -19,6 +25,7 @@
 * Added get_snapshot(snapshot_id) to find a snapshot_id
 * Added Local Attributes
 * Added Jobs
+* Added Attribute Filter
 
 ### CI/CD
 
