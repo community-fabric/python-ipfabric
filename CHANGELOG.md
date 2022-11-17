@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.2 (2022-11-17)
+
+### Fix
+
+* Fix for Attributes
+
 ## 6.0.1 (2022-11-16)
 
 ### Feature

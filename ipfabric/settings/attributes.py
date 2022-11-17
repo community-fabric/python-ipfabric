@@ -20,7 +20,7 @@ class Attributes:
     snapshot_id: Optional[str] = Field(default=None, description="Snapshot ID to switch to Local Attributes")
 
     def __post_init__(self):
-        if self.snapshot_id:
+        if isinstance(self.snapshot_id, str):
             self.snapshot_id = self.client.get_snapshot(self.snapshot_id).snapshot_id
 
     @property
