@@ -15,10 +15,11 @@ import dotenv
 
 from ipfabric import snapshot_models
 from ipfabric.settings.user_mgmt import User
+from uuid import UUID
 
 logger = logging.getLogger("ipfabric")
 
-DEFAULT_ID = "$last"
+LAST_ID, PREV_ID, LASTLOCKED_ID = "$last", "$prev", "$lastLocked"
 
 
 class Settings(BaseSettings):
@@ -48,7 +49,7 @@ class IPFabricAPI(Client):
         base_url: Optional[str] = None,
         api_version: Optional[str] = None,
         token: Optional[str] = None,
-        snapshot_id: Optional[str] = DEFAULT_ID,
+        snapshot_id: Optional[str] = LAST_ID,
         username: Optional[str] = None,
         password: Optional[str] = None,
         unloaded: bool = False,
@@ -180,7 +181,7 @@ class IPFabricAPI(Client):
 
     @snapshot_id.setter
     def snapshot_id(self, snapshot_id):
-        snapshot_id = snapshot_id or DEFAULT_ID
+        snapshot_id = snapshot_id or LAST_ID
         if not self.loaded_snapshots:
             logger.warning("No Snapshots are currently loaded.  Please load a snapshot before querying any data.")
             self._snapshot_id = None
@@ -209,6 +210,32 @@ class IPFabricAPI(Client):
                 version=get_results[s["id"]]["version"],
                 initialVersion=get_results[s["id"]].get("initialVersion", None),
             )
+
+    def get_snapshot_id(
+            self,
+            snapshot: Union[snapshot_models.Snapshot, str]
+    ):
+        """
+        Returns a Snapshot ID for a given input.
+
+        Args:
+            snapshot: Snapshot model, name, or ID
+
+        Returns:
+            Snapshot ID
+        """
+        if isinstance(snapshot, snapshot_models.Snapshot):
+            return snapshot.snapshot_id
+        elif snapshot in [LAST_ID, PREV_ID, LASTLOCKED_ID]:
+            return self.snapshots[snapshot].snapshot_id
+        try:
+            UUID(snapshot, version=4)
+            return self.snapshots[snapshot].snapshot_id
+        except ValueError:
+            for snap in list(self.snapshots.values()):
+                if snapshot == snap.name:
+                    return snap.snapshot_id
+        raise ValueError(f"Could not locate Snapshot ID for {snapshot}.")
 
     def _get_snapshots(self):
         """
@@ -246,13 +273,13 @@ class IPFabricAPI(Client):
             )
             snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
-                if "$lastLocked" not in snap_dict and snap.locked:
-                    snap_dict["$lastLocked"] = snap
-                if DEFAULT_ID not in snap_dict:
-                    snap_dict[DEFAULT_ID] = snap
+                if LASTLOCKED_ID not in snap_dict and snap.locked:
+                    snap_dict[LASTLOCKED_ID] = snap
+                if LAST_ID not in snap_dict:
+                    snap_dict[LAST_ID] = snap
                     continue
-                if "$prev" not in snap_dict:
-                    snap_dict["$prev"] = snap
+                if PREV_ID not in snap_dict:
+                    snap_dict[PREV_ID] = snap
         return snap_dict
 
     def _ipf_pager(
