@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from ipfabric import IPFClient
     from ipfabric.snapshot_models import Snapshot
 import logging
-from typing import Any
 import jsondiff as jd
 from pydantic import BaseModel
 
@@ -92,7 +92,7 @@ TECH_TABLE_METHODS_IGNORE = [
 
 
 class IpfTableDiff(BaseModel):
-    client: Any
+    client: IPFClient
 
     def _check_tech_table_attr(self, tech_table: [str, tuple[str, str]]):
         """Takes a 'dotted' string representing location of tech table.
