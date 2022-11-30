@@ -32,6 +32,22 @@ if __name__ == '__main__':
       'value': '35HEADOFFICE'},
         ...]
     """
+
+    # Set Attributes from CSV
+    df = pd.read_csv(r'attributes.csv')
+
+    custom_attributes = list()
+    for index, row in df.iterrows():
+        custom_attributes.append({'value': row['REGION'], 'sn': row['SN'], 'name': 'REGION'})
+        if 'COUNTRY' in row and isinstance(row['COUNTRY'], str):
+            custom_attributes.append({'value': row['COUNTRY'], 'sn': row['SN'], 'name': 'REGION_COUNTRY'})
+
+    custom = ipf_attr.set_attributes_by_sn(custom_attributes)
+    pprint(custom[0])
+    """
+    {'id': '908636142', 'name': 'REGION', 'sn': 'Q2QN-Q6EY-NP7J', 'value': 'CLOUD'}
+    """
+
     attributes = [
         dict(serial_number='a23ffc0', name='FLOOR', value='1'),
         dict(serial_number='a23ffbe', name='FLOOR', value='2')
