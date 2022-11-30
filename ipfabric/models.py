@@ -174,24 +174,24 @@ class Table(BaseModel):
         table_cols = self.client._get_columns(self.endpoint)
 
         # determine which columns to use in query
-        if columns or columns_ignore:
-            cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
-            if reverse:
-                data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
-                data_compare = self.all(columns=cols_for_query, **kwargs)
+        cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
+
+        if reverse:
+            data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+            data_compare = self.all(columns=cols_for_query, **kwargs)
+        else:
+            data = self.all(columns=cols_for_query, **kwargs)
+            data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+        hashed_data = self.hash_data(data)
+        hashed_data_compare = self.hash_data(data_compare)
+        unmatched_items = list()
+        # since we turned the values into a hash, we can just compare the keys
+        for item in hashed_data.keys():
+            if item in hashed_data_compare.keys():
+                continue
             else:
-                data = self.all(columns=cols_for_query, **kwargs)
-                data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
-            hashed_data = self.hash_data(data)
-            hashed_data_compare = self.hash_data(data_compare)
-            unmatched_items = list()
-            # since we turned the values into a hash, we can just compare the keys
-            for item in hashed_data.keys():
-                if item in hashed_data_compare.keys():
-                    continue
-                else:
-                    unmatched_items.append(hashed_data[item])
-            return unmatched_items
+                unmatched_items.append(hashed_data[item])
+        return unmatched_items
 
 
 class Inventory(BaseModel):
