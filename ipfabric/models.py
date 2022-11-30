@@ -106,24 +106,10 @@ class Table(BaseModel):
         )
 
     def _compare_determine_columns(self, table_columns, columns, columns_ignore): #NOSONAR
+        # columns_ignore always has at-least one item in it ['id']
         cols_for_return = []
-        # user does not pass any columns
-        if columns is None and columns_ignore is None:
-            return None
-        # user passes only columns
-        if columns_ignore is None:
-            for col in columns:
-                if col not in table_columns:
-                    logger.warning(f"Column {col} not found in table {self.name}")
-                    raise ValueError(f"Column {col} not in table {self.name}")
-                cols_for_return.append(col)
-        # user passes columns_ignore but not columns
-        if columns_ignore is not None and columns is None:
-            for col in table_columns:
-                if col not in columns_ignore:
-                    cols_for_return.append(col)
-        # user passes both columns and columns_ignore
-        if columns is not None and columns_ignore is not None:
+        # user passes columns
+        if columns:
             for col in columns:
                 if col not in table_columns:
                     logger.warning(f"Column {col} not found in table {self.name}")
@@ -132,6 +118,11 @@ class Table(BaseModel):
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
+        # user does not pass columns
+        else:
+            for col in table_columns:
+                if col not in columns_ignore:
+                    cols_for_return.append(col)
         return cols_for_return
 
     @staticmethod
