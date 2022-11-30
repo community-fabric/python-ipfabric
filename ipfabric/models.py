@@ -1,5 +1,6 @@
 import logging
 from typing import Optional, Any, Dict, List
+import hashlib
 
 from pydantic import BaseModel
 
@@ -103,6 +104,94 @@ class Table(BaseModel):
             snapshot_id=snapshot_id,
             snapshot=self.snapshot,
         )
+
+    def _compare_determine_columns(self, table_columns, columns, columns_ignore): #NOSONAR
+        cols_for_return = []
+        # user does not pass any columns
+        if columns is None and columns_ignore is None:
+            return None
+        # user passes only columns
+        if columns_ignore is None:
+            for col in columns:
+                if col not in table_columns:
+                    logger.warning(f"Column {col} not found in table {self.name}")
+                    raise ValueError(f"Column {col} not in table {self.name}")
+                cols_for_return.append(col)
+        # user passes columns_ignore but not columns
+        if columns_ignore is not None and columns is None:
+            for col in table_columns:
+                if col not in columns_ignore:
+                    cols_for_return.append(col)
+        # user passes both columns and columns_ignore
+        if columns is not None and columns_ignore is not None:
+            for col in columns:
+                if col not in table_columns:
+                    logger.warning(f"Column {col} not found in table {self.name}")
+                    raise ValueError(f"Column {col} not in table {self.name}")
+                if col in columns_ignore:
+                    logger.debug(f"Column {col} in columns_ignore, ignoring")
+                    continue
+                cols_for_return.append(col)
+        return cols_for_return
+
+    @staticmethod
+    def hash_data(json_data):
+        # loop over each obj, turn the obj into a string, and hash it
+        return_json = dict()
+        for dict_obj in json_data:
+            all_values = str()
+            for value in dict_obj.values():
+                # if value is a comma separated string. split it, sort it and join it.
+                if type(value) == str and ',' in value:
+                    # leaving this commented out for now, haven't found where this needed.
+                    # value.replace('()"', '')
+                    str_list = value.split(',')
+                    value = "".join(sorted(str_list))
+                # if the value is a list, loop over it, turn each item in the list to a string, sort it, and join it.
+                if type(value) == list and value != []:
+                    value_for_sort = str()
+                    for list_item in value:
+                        value_for_sort += str(list_item)
+                    value = "".join(sorted(value_for_sort))
+                all_values += str(value)
+            # Adding item to return_json[hash_all_values]: json_object
+            return_json[hashlib.md5(all_values.encode()).hexdigest()] = dict_obj
+        return return_json
+
+    def compare(
+            self,
+            snapshot_id: str = None,
+            reverse: bool = False,
+            columns: list = None,
+            columns_ignore: list = None,
+            **kwargs
+            ):
+        if columns_ignore is None:
+            columns_ignore = ['id']
+        if 'id' not in columns_ignore:
+            columns_ignore.append('id')
+        # get all columns for the table
+        table_cols = self.client._get_columns(self.endpoint)
+
+        # determine which columns to use in query
+        if columns or columns_ignore:
+            cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
+            if reverse:
+                data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+                data_compare = self.all(columns=cols_for_query, **kwargs)
+            else:
+                data = self.all(columns=cols_for_query, **kwargs)
+                data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+            hashed_data = self.hash_data(data)
+            hashed_data_compare = self.hash_data(data_compare)
+            unmatched_items = list()
+            # since we turned the values into a hash, we can just compare the keys
+            for item in hashed_data.keys():
+                if item in hashed_data_compare.keys():
+                    continue
+                else:
+                    unmatched_items.append(hashed_data[item])
+            return unmatched_items
 
 
 class Inventory(BaseModel):
@@ -293,7 +382,7 @@ class Jobs(BaseModel):
             jobs = self._get_download_job_by_snapshot_id(snapshot_id)
             if len(jobs) > 1:
                 logger.warning(
-                    "multiple snapshots downloaded recently with the same snapshot_id," " using most recent job_id."
+                    "multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id."
                 )
                 job_ids = sorted([int(job["id"]) for job in jobs])
                 job_id = job_ids[-1]
