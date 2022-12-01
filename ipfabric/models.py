@@ -107,9 +107,7 @@ class Table(BaseModel):
 
     def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set): #NOSONAR
         # Must always ignore 'id' column
-        columns_ignore.discard(None)
         columns_ignore.add('id')
-        columns.discard(None)
 
         cols_for_return = list()
         # user passes columns
@@ -166,7 +164,9 @@ class Table(BaseModel):
         table_cols = set(self.client._get_columns(self.endpoint))
 
         # determine which columns to use in query
-        cols_for_query = self._compare_determine_columns(table_cols, set(columns), set(columns_ignore))
+        columns = set() if columns is None else set(columns)
+        columns_ignore = set() if columns_ignore is None else set(columns_ignore)
+        cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
 
         if reverse:
             data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
