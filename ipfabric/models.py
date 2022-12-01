@@ -129,11 +129,11 @@ class Inventory(BaseModel):
         return Table(client=self.client, endpoint="tables/management/osver-consistency")
 
     @property
-    def eof_summary(self):
+    def eol_summary(self):
         return Table(client=self.client, endpoint="tables/reports/eof/summary")
 
     @property
-    def eof_details(self):
+    def eol_details(self):
         return Table(client=self.client, endpoint="tables/reports/eof/detail")
 
     @property
