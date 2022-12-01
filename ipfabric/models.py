@@ -105,7 +105,18 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
+    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set) -> list[str]:
+        """
+        Determines which columns to use in the query.
+        Args:
+            table_columns: set : Set of columns in the table
+            columns: set : Set of columns to use
+            columns_ignore: set : Set of columns to ignore
+
+        Returns:
+            list[str]: List of columns to use
+        """
+
         # Must always ignore 'id' column
         columns_ignore.add('id')
 
@@ -129,7 +140,15 @@ class Table(BaseModel):
         return cols_for_return
 
     @staticmethod
-    def _hash_data(json_data):
+    def _hash_data(json_data) -> list[dict]:
+        """
+        Hashes data. Turns any data into a string and hashes it, then returns the hash as a key for the data
+        Args:
+            json_data: list[dict] : List of dictionaries to hash
+
+        Returns:
+            list[dict]: List of dictionaries with hash as key
+        """
         # loop over each obj, turn the obj into a string, and hash it
         return_json = dict()
         for dict_obj in json_data:
@@ -159,7 +178,20 @@ class Table(BaseModel):
             columns: Union[list, set] = None,
             columns_ignore: Union[list, set] = None,
             **kwargs
-            ):
+            ) -> list[dict]:
+        """
+        Compares a table from the current snapshot to the snapshot_id passed.
+        Args:
+            snapshot_id: str : The snapshot_id to compare to.
+            reverse: bool : If True, will compare the snapshot_id to the current snapshot.
+            columns: list : List of columns to compare. If None, will compare all columns.
+            columns_ignore: list : List of columns to ignore. If None, will always ignore 'id' column.
+            **kwargs: dict : Optional Table.all() arguments to apply to the table before comparing.
+
+        Returns:
+            list : List of dictionaries containing the differences between the two snapshots.
+        """
+
         # get all columns for the table
         table_cols = set(self.client._get_columns(self.endpoint))
 
@@ -177,7 +209,7 @@ class Table(BaseModel):
         hashed_data = self._hash_data(data)
         hashed_data_compare = self._hash_data(data_compare)
         # since we turned the values into a hash, we can just compare the keys
-        return [hashed_data[item] for item in hashed_data.keys() if item not in hashed_data_compare.keys()]
+        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()]
 
 
 class Inventory(BaseModel):
