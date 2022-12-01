@@ -37,3 +37,9 @@ class Models(unittest.TestCase):
         self.assertIsInstance(i.pn, models.Table)
         self.assertIsInstance(i.interfaces, models.Table)
         self.assertIsInstance(i.models, models.Table)
+
+    @patch("ipfabric.IPFClient")
+    def test_compare(self, MockClient):
+        c = models.Table(client=MockClient, endpoint="/network/ip")
+        MockClient.compare.return_value = list()
+        self.assertEqual(c.compare(), list())
