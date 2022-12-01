@@ -1,6 +1,6 @@
-import logging
-from typing import Optional, Any, Dict, List
 import hashlib
+import logging
+from typing import Optional, Any, Dict, List, Union
 
 from pydantic import BaseModel
 
@@ -105,28 +105,31 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns, columns, columns_ignore): #NOSONAR
-        # columns_ignore always has at-least one item in it ['id']
-        cols_for_return = []
+    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
+        # Must always ignore 'id' column
+        columns_ignore.add('id')
+
+        cols_for_return = list()
         # user passes columns
         if columns:
+            if not table_columns.issuperset(columns):
+                raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
             for col in columns:
-                if col not in table_columns:
-                    logger.warning(f"Column {col} not found in table {self.name}")
-                    raise ValueError(f"Column {col} not in table {self.name}")
-                if col in columns_ignore:
+                if col in columns_ignore and col != 'id':
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
         # user does not pass columns
         else:
             for col in table_columns:
-                if col not in columns_ignore:
-                    cols_for_return.append(col)
+                if col in columns_ignore and col != 'id':
+                    logger.debug(f"Column {col} in columns_ignore, ignoring")
+                    continue
+                cols_for_return.append(col)
         return cols_for_return
 
     @staticmethod
-    def hash_data(json_data):
+    def _hash_data(json_data):
         # loop over each obj, turn the obj into a string, and hash it
         return_json = dict()
         for dict_obj in json_data:
@@ -153,18 +156,16 @@ class Table(BaseModel):
             self,
             snapshot_id: str = None,
             reverse: bool = False,
-            columns: list = None,
-            columns_ignore: list = None,
+            columns: Union[list, set] = None,
+            columns_ignore: Union[list, set] = None,
             **kwargs
             ):
-        if columns_ignore is None:
-            columns_ignore = ['id']
-        if 'id' not in columns_ignore:
-            columns_ignore.append('id')
         # get all columns for the table
-        table_cols = self.client._get_columns(self.endpoint)
+        table_cols = set(self.client._get_columns(self.endpoint))
 
         # determine which columns to use in query
+        columns = set() if columns is None else set(columns)
+        columns_ignore = set() if columns_ignore is None else set(columns_ignore)
         cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
 
         if reverse:
@@ -173,16 +174,10 @@ class Table(BaseModel):
         else:
             data = self.all(columns=cols_for_query, **kwargs)
             data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
-        hashed_data = self.hash_data(data)
-        hashed_data_compare = self.hash_data(data_compare)
-        unmatched_items = list()
+        hashed_data = self._hash_data(data)
+        hashed_data_compare = self._hash_data(data_compare)
         # since we turned the values into a hash, we can just compare the keys
-        for item in hashed_data.keys():
-            if item in hashed_data_compare.keys():
-                continue
-            else:
-                unmatched_items.append(hashed_data[item])
-        return unmatched_items
+        return [hashed_data[item] for item in hashed_data.keys() if item not in hashed_data_compare.keys()]
 
 
 class Inventory(BaseModel):
