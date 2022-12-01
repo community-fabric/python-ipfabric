@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.3 (2022-12-01)
+
+### Fix
+
+* Added missing Inventory Tables: eol_summary, eol_details, and os_version_consistency 
+
 ## 6.0.2 (2022-11-17)
 
 ### Fix
