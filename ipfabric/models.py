@@ -125,6 +125,18 @@ class Inventory(BaseModel):
         return Table(client=self.client, endpoint="/tables/inventory/summary/models")
 
     @property
+    def os_version_consistency(self):
+        return Table(client=self.client, endpoint="tables/management/osver-consistency")
+
+    @property
+    def eof_summary(self):
+        return Table(client=self.client, endpoint="tables/reports/eof/summary")
+
+    @property
+    def eof_details(self):
+        return Table(client=self.client, endpoint="tables/reports/eof/detail")
+
+    @property
     def platforms(self):
         return Table(client=self.client, endpoint="/tables/inventory/summary/platforms")
 
