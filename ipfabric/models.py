@@ -105,7 +105,7 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set): #NOSONAR
+    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
         # Must always ignore 'id' column
         columns_ignore.add('id')
 
