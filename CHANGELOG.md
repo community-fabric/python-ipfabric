@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.5 (2022-12-02)
+
+### Fix
+
+* Updated dependencies
+
 ## 6.0.4 (2022-12-02)
 
 ### Feature
