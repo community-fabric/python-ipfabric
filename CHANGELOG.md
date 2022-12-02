@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.4 (2022-12-02)
+
+### Feature
+
+* Added table diff between snapshots.
+
 ## 6.0.3 (2022-12-01)
 
 ### Fix
