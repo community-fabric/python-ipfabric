@@ -105,7 +105,7 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set) -> Iterable[str]:
+    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
         """
         Determines which columns to use in the query.
         Args:
@@ -140,7 +140,7 @@ class Table(BaseModel):
         return cols_for_return
 
     @staticmethod
-    def _hash_data(json_data) -> dict[str, dict]:
+    def _hash_data(json_data):
         """
         Hashes data. Turns any data into a string and hashes it, then returns the hash as a key for the data
         Args:
@@ -178,7 +178,7 @@ class Table(BaseModel):
             columns: Union[list, set] = None,
             columns_ignore: Union[list, set] = None,
             **kwargs
-            ) -> Iterable[dict]:
+            ):
         """
         Compares a table from the current snapshot to the snapshot_id passed.
         Args:
