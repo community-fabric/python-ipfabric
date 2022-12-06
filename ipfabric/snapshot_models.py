@@ -156,7 +156,7 @@ class Snapshot(BaseModel):
             path = Path(f"{self.snapshot_id}.tar")
         elif not isinstance(path, Path):
             path = Path(f"{path}")
-        if path.name.endswith('.tar'):
+        if not path.name.endswith('.tar'):
             path = Path(f"{path.name}.tar")
 
         # start download job

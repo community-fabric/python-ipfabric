@@ -142,7 +142,7 @@ class IPFabricAPI(Client):
             api_version.lstrip("v").split(".")
             if api_version
             else importlib_metadata.version("ipfabric").lstrip("v").split(".")
-        )
+        )  #TODO need to fix for handling 'v#' instead of 'v#.#'
 
         resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
