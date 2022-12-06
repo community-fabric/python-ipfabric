@@ -3,13 +3,15 @@ import unittest
 
 from ipfabric import IPFClient
 
+os.environ["IPF_VERIFY"] = "false"
+
 condition = False if os.getenv("IPF_TOKEN", None) and os.getenv("IPF_URL", None) else True
 
 
 @unittest.skipIf(condition, "IPF_URL and IPF_TOKEN not set")
 class MyTestCase(unittest.TestCase):
     def test_intent(self):
-        ipf = IPFClient()
+        ipf = IPFClient(timeout=15)
         ipf.intent.load_intent()
         self.assertIsInstance(ipf.intent.intent_by_id, dict)
         self.assertIsInstance(ipf.intent.intent_by_name, dict)
@@ -19,7 +21,7 @@ class MyTestCase(unittest.TestCase):
         self.assertIsInstance(ipf.intent.builtin, list)
 
     def test_compare(self):
-        ipf = IPFClient()
+        ipf = IPFClient(timeout=15)
         ipf.intent.load_intent()
         self.assertIsInstance(ipf.intent.compare_snapshot("$prev"), list)
 

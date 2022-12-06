@@ -2,11 +2,15 @@ import logging
 from datetime import datetime, timezone
 from typing import Union
 
+import macaddress
 from dateutil import parser
-from macaddress import MAC
 from pytz import BaseTzInfo, utc
 
 logger = logging.getLogger("python-ipfabric")
+
+
+class MAC(macaddress.MAC):
+    formats = ("xxxx.xxxx.xxxx",) + macaddress.MAC.formats
 
 
 def convert_timestamp(ts: int, ts_format: str = "datetime", milliseconds: bool = True, tzinfo: BaseTzInfo = utc):
@@ -48,8 +52,7 @@ def parse_mac(mac_address):
 
     def mac_format(mac):
         try:
-            tmp = str(MAC(mac.strip())).lower().replace("-", "")
-            return ".".join([tmp[:4], tmp[4:8], tmp[8:]])
+            return str(MAC(mac.strip())).lower()
         except ValueError:
             logger.warning(f"{mac.strip()} is not a valid mac.")
             return None

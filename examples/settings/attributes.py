@@ -4,6 +4,7 @@ attributes.py
 from pprint import pprint
 
 import pandas as pd
+
 from ipfabric import IPFClient
 from ipfabric.settings import Attributes
 
@@ -21,9 +22,9 @@ if __name__ == '__main__':
 
     site_attributes = [{'value': row['Site'], 'sn': row['Unique serial number']} for index, row in df.iterrows()]
 
-    resp = ipf_attr.set_sites_by_sn(site_attributes)
+    sites = ipf_attr.set_sites_by_sn(site_attributes)
 
-    pprint(resp)
+    pprint(sites)
     """
     [{'id': '9786859055',
       'name': 'siteName',
@@ -31,3 +32,33 @@ if __name__ == '__main__':
       'value': '35HEADOFFICE'},
         ...]
     """
+
+    # Set Attributes from CSV
+    df = pd.read_csv(r'attributes.csv')
+
+    custom_attributes = list()
+    for index, row in df.iterrows():
+        custom_attributes.append({'value': row['REGION'], 'sn': row['SN'], 'name': 'REGION'})
+        if 'COUNTRY' in row and isinstance(row['COUNTRY'], str):
+            custom_attributes.append({'value': row['COUNTRY'], 'sn': row['SN'], 'name': 'REGION_COUNTRY'})
+
+    custom = ipf_attr.set_attributes_by_sn(custom_attributes)
+    pprint(custom[0])
+    """
+    {'id': '908636142', 'name': 'REGION', 'sn': 'Q2QN-Q6EY-NP7J', 'value': 'CLOUD'}
+    """
+
+    attributes = [
+        dict(serial_number='a23ffc0', name='FLOOR', value='1'),
+        dict(serial_number='a23ffbe', name='FLOOR', value='2')
+    ]
+    resp = ipf_attr.set_attribute_by_sn(**attributes[0])  # Set a single attribute, will fail if already set
+    resp = ipf_attr.set_attributes_by_sn(attributes)  # Set a list of attributes, will update if already set
+
+    """
+    Attribute names must match this regex: ^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$
+    """
+
+    resp = ipf_attr.delete_attribute(*sites)  # Delete a list of attributes
+    resp = ipf_attr.delete_attribute_by_id('9786859055')  # Delete attribute by ID
+    resp = ipf_attr.delete_attribute_by_sn('a23ffc0')  # Delete attribute by sn

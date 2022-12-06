@@ -2,8 +2,6 @@
 
 IPFabric is a Python module for connecting to and communicating against an IP Fabric instance.
 
-[![Requirements Status](https://requires.io/github/community-fabric/python-ipfabric/requirements.svg?branch=develop)](https://requires.io/github/community-fabric/python-ipfabric/requirements/?branch=develop)
-
 ## About
 
 Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructure visibility and analytics solution to
@@ -110,6 +108,4 @@ Prior to pushing changes run:
 ```
 poetry run black ipfabric
 poetry update
-poetry export -f requirements.txt -o requirements.txt --without-hashes
-git add requirements.txt
 ```

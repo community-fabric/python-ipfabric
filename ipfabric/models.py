@@ -1,96 +1,18 @@
+import hashlib
 import logging
-from datetime import datetime
-from typing import Optional, Any, List
+from typing import Optional, Any, Dict, List, Union, Iterable
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from ipfabric.technology import *
-# todo: update snapshot obj with download method once httpx bug is fixed
-# from ipfabric.tools.snapshot import download
 
 logger = logging.getLogger("python-ipfabric")
 
 
-class Site(BaseModel):
-    _sitename: str = Field(alias="siteName")
-    _name: str = Field(alias="name")
-    uid: str
-    site_id: Optional[str] = Field(None, alias="id")
-
-    @property
-    def site_name(self):
-        return self._name or self._sitename
-
-
-class Error(BaseModel):
-    error_type: str = Field(alias="errorType")
-    count: int
-
-
-class Snapshot(BaseModel):
-    snapshot_id: str = Field(alias="id")
-    name: Optional[str]
-    note: Optional[str]
-    count: int = Field(alias="totalDevCount")
-    licensed_count: int = Field(alias="licensedDevCount")
-    status: str
-    state: str
-    locked: bool
-    start: datetime = Field(alias="tsStart")
-    end: Optional[datetime] = Field(alias="tsEnd")
-    version: Optional[str] = None
-    sites: List[Site]
-    errors: Optional[List[Error]]
-
-    @property
-    def loaded(self):
-        return self.state == "loaded"
-
-    def unload(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if self.loaded:
-            res = ipf.post(
-                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
-        return True
-
-    def load(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if not self.loaded:
-            res = ipf.post(
-                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
-        return True
-
-    def attributes(self, ipf):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
-
-    # todo: uncomment once httpx supports form data file uploads
-    # def download(self, ipf, path):
-    #     return download(ipf,snapshot_id=self.snapshot_id, path=path)
-
 class Table(BaseModel):
     endpoint: str
     client: Any
+    snapshot: bool = True
 
     @property
     def name(self):
@@ -100,6 +22,7 @@ class Table(BaseModel):
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -110,6 +33,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -121,17 +45,20 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
             limit=limit,
             start=start,
+            snapshot=self.snapshot,
         )
 
     def all(
         self,
         columns: list = None,
         filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
@@ -140,6 +67,7 @@ class Table(BaseModel):
         Gets all data from corresponding endpoint
         :param columns: list: Optional columns to return, default is all
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :param reports: str: String of frontend URL where the reports are displayed
         :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
@@ -149,23 +77,139 @@ class Table(BaseModel):
             self.endpoint,
             columns=columns,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
             reports=reports,
             sort=sort,
+            snapshot=self.snapshot,
         )
 
-    def count(self, filters: Optional[dict] = None, snapshot_id: Optional[str] = None):
+    def count(
+        self,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
+    ):
         """
         Gets count of table
         :param filters: dict: Optional filters
+        :param attr_filters: dict: Optional dictionary of Attribute filters
         :param snapshot_id: str: Optional snapshot ID to override class
         :return: int: Count
         """
         return self.client.get_count(
             self.endpoint,
             filters=filters,
+            attr_filters=attr_filters,
             snapshot_id=snapshot_id,
+            snapshot=self.snapshot,
         )
+
+    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
+        """
+        Determines which columns to use in the query.
+        Args:
+            table_columns: set : Set of columns in the table
+            columns: set : Set of columns to use
+            columns_ignore: set : Set of columns to ignore
+
+        Returns:
+            list[str]: List of columns to use
+        """
+
+        # Must always ignore 'id' column
+        columns_ignore.add('id')
+
+        cols_for_return = list()
+        # user passes columns
+        if columns:
+            if not table_columns.issuperset(columns):
+                raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
+            for col in columns:
+                if col in columns_ignore and col != 'id':
+                    logger.debug(f"Column {col} in columns_ignore, ignoring")
+                    continue
+                cols_for_return.append(col)
+        # user does not pass columns
+        else:
+            for col in table_columns:
+                if col in columns_ignore and col != 'id':
+                    logger.debug(f"Column {col} in columns_ignore, ignoring")
+                    continue
+                cols_for_return.append(col)
+        return cols_for_return
+
+    @staticmethod
+    def _hash_data(json_data):
+        """
+        Hashes data. Turns any data into a string and hashes it, then returns the hash as a key for the data
+        Args:
+            json_data: list[dict] : List of dictionaries to hash
+
+        Returns:
+            list[dict]: List of dictionaries with hash as key
+        """
+        # loop over each obj, turn the obj into a string, and hash it
+        return_json = dict()
+        for dict_obj in json_data:
+            all_values = str()
+            for value in dict_obj.values():
+                # if value is a comma separated string. split it, sort it and join it.
+                if type(value) == str and ',' in value:
+                    # leaving this commented out for now, haven't found where this needed.
+                    # value.replace('()"', '')
+                    str_list = value.split(',')
+                    value = "".join(sorted(str_list))
+                # if the value is a list, loop over it, turn each item in the list to a string, sort it, and join it.
+                if type(value) == list and value != []:
+                    value_for_sort = str()
+                    for list_item in value:
+                        value_for_sort += str(list_item)
+                    value = "".join(sorted(value_for_sort))
+                all_values += str(value)
+            # Adding item to return_json[hash_all_values]: json_object
+            return_json[hashlib.md5(all_values.encode()).hexdigest()] = dict_obj
+        return return_json
+
+    def compare(
+            self,
+            snapshot_id: str = None,
+            reverse: bool = False,
+            columns: Union[list, set] = None,
+            columns_ignore: Union[list, set] = None,
+            **kwargs
+            ):
+        """
+        Compares a table from the current snapshot to the snapshot_id passed.
+        Args:
+            snapshot_id: str : The snapshot_id to compare to.
+            reverse: bool : If True, will compare the snapshot_id to the current snapshot.
+            columns: list : List of columns to compare. If None, will compare all columns.
+            columns_ignore: list : List of columns to ignore. If None, will always ignore 'id' column.
+            **kwargs: dict : Optional Table.all() arguments to apply to the table before comparing.
+
+        Returns:
+            list : List of dictionaries containing the differences between the two snapshots.
+        """
+
+        # get all columns for the table
+        table_cols = set(self.client._get_columns(self.endpoint))
+
+        # determine which columns to use in query
+        columns = set() if columns is None else set(columns)
+        columns_ignore = set() if columns_ignore is None else set(columns_ignore)
+        cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
+
+        if reverse:
+            data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+            data_compare = self.all(columns=cols_for_query, **kwargs)
+        else:
+            data = self.all(columns=cols_for_query, **kwargs)
+            data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+        hashed_data = self._hash_data(data)
+        hashed_data_compare = self._hash_data(data_compare)
+        # since we turned the values into a hash, we can just compare the keys
+        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()]
 
 
 class Inventory(BaseModel):
@@ -186,6 +230,18 @@ class Inventory(BaseModel):
     @property
     def models(self):
         return Table(client=self.client, endpoint="/tables/inventory/summary/models")
+
+    @property
+    def os_version_consistency(self):
+        return Table(client=self.client, endpoint="tables/management/osver-consistency")
+
+    @property
+    def eol_summary(self):
+        return Table(client=self.client, endpoint="tables/reports/eof/summary")
+
+    @property
+    def eol_details(self):
+        return Table(client=self.client, endpoint="tables/reports/eof/detail")
 
     @property
     def platforms(self):
@@ -330,3 +386,50 @@ class Technology(BaseModel):
     @property
     def wireless(self):
         return Wireless(client=self.client)
+
+
+class Jobs(BaseModel):
+    client: Any
+
+    @property
+    def all_jobs(self):
+        return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
+
+    def _get_download_job_by_snapshot_id(self, snapshot_id):
+        list_to_return = list()
+        job_filter = dict()
+        job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
+        job_filter["name"] = ["eq", "snapshotDownload"]
+        for snapshot in self.all_jobs.all(filters=job_filter):
+            list_to_return.append(snapshot)
+        logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
+        return list_to_return
+
+    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry):
+        retries = 0
+        job_id = None
+        while retries < retry:
+            jobs = self._get_download_job_by_snapshot_id(snapshot_id)
+            if len(jobs) > 1:
+                logger.warning(
+                    "multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id."
+                )
+                job_ids = sorted([int(job["id"]) for job in jobs])
+                job_id = job_ids[-1]
+            elif len(jobs) == 0:
+                logger.warning(f"No download job found for snapshot {snapshot_id}")
+            retries += retries + 1
+            logger.info(f"retry status: {retries}")
+        return job_id
+
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5):
+        """Returns a Job Id to use to in a download snapshot
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            job_id: str: id to use when downloading a snapshot
+        """
+        return self._confirm_snapshot_ready_for_download(snapshot_id, retry)

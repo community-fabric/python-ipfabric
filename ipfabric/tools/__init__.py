@@ -1,9 +1,9 @@
 from .configuration import DeviceConfigs
-from .discovery import DiscoveryHistory
+from .discovery_history import DiscoveryHistory
 from .restore_intents import RestoreIntents
+from .shared import parse_mac
 from .site_seperation_report import map_devices_to_rules
-from .snapshot import upload, download
 from .vulnerabilities import Vulnerabilities
 
-__all__ = ["DeviceConfigs", "Vulnerabilities", "RestoreIntents", "DiscoveryHistory", "map_devices_to_rules", "upload",
-           "download"]
+__all__ = ["DeviceConfigs", "Vulnerabilities", "RestoreIntents", "DiscoveryHistory", "map_devices_to_rules",
+           "parse_mac"]
