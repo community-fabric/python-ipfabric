@@ -6,10 +6,15 @@ if TYPE_CHECKING:
     from ipfabric import IPFClient
 
 import logging
+import httpx
 from datetime import datetime
 from typing import Optional, List
+from pathlib import Path
+from time import sleep
 
 from pydantic import BaseModel, Field
+from ipfabric.models import Jobs
+from urllib.parse import urljoin
 
 logger = logging.getLogger("python-ipfabric")
 
@@ -37,6 +42,14 @@ SNAPSHOT_COLUMNS = [
     "tsStart",
     "userCount",
 ]
+
+
+def snapshot_upload(ipf: IPFClient, file: str):
+    file = {'file': (Path(file).name, open(file, 'rb'), 'application/x-tar')}
+    resp = httpx.request('POST', urljoin(str(ipf.base_url), 'snapshots/upload'), files=file, auth=ipf.auth,
+                         verify=ipf.verify)
+    resp.raise_for_status()
+    return resp.json()
 
 
 class Error(BaseModel):
@@ -137,3 +150,24 @@ class Snapshot(BaseModel):
         :return: True
         """
         return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
+
+    def download(self, ipf: IPFClient, path: str = None, timeout: int = 60, retry: int = 5):
+        if not path:
+            path = Path(f"{self.snapshot_id}.tar")
+        elif not isinstance(path, Path):
+            path = Path(f"{path}")
+        if path.name.endswith('.tar'):
+            path = Path(f"{path.name}.tar")
+
+        # start download job
+        resp = ipf.get(f"/snapshots/{self.snapshot_id}/download")
+        resp.raise_for_status()
+        job = Jobs(client=ipf)
+
+        # waiting for download job to process
+        sleep(timeout)  # TODO How do we handle waiting and retry? Should we move timeout also to Job?
+        job_id = job.get_snapshot_download_job_id(self.snapshot_id, retry=retry)
+        file = ipf.get(f"jobs/{job_id}/download")
+        with open(path, "wb") as fp:
+            fp.write(file.read())
+        return path
