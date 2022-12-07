@@ -286,7 +286,6 @@ class IPFabricAPI(Client):
         self,
         url: str,
         payload: dict,
-        data: Optional[Union[list, None]] = None,
         limit: int = 1000,
         start: int = 0,
     ):
@@ -294,17 +293,22 @@ class IPFabricAPI(Client):
         Loops through and collects all the data from the tables
         :param url: str: Full URL to post to
         :param payload: dict: Data to submit to IP Fabric
-        :param data: list: List of data to append subsequent calls
         :param start: int: Where to start for the data
         :return: list: List of dictionaries
         """
-        data = data or list()
+        payload["pagination"] = dict(limit=limit)
+        data = list()
 
-        payload["pagination"] = dict(limit=limit, start=start)
-        r = self.post(url, json=payload)
-        r.raise_for_status()
-        r_data = r.json()["data"]
+        def page(s):
+            payload["pagination"]["start"] = s
+            r = self.post(url, json=payload)
+            r.raise_for_status()
+            return r.json()["data"]
+
+        r_data = page(start)
         data.extend(r_data)
-        if limit == len(r_data):
-            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
+        while limit == len(r_data):
+            start = start + limit
+            r_data = page(start)
+            data.extend(r_data)
         return data

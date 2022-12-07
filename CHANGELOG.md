@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.0.6 (2022-12-07)
+
+### Fix
+
+* Updated dependencies
+* Fix for RecursionError for large tables.
+
 ## 6.0.5 (2022-12-02)
 
 ### Fix
