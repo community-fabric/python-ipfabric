@@ -1,6 +1,7 @@
 import hashlib
 import logging
-from typing import Optional, Any, Dict, List, Union, Iterable
+from time import sleep
+from typing import Optional, Any, Dict, List, Union
 
 from pydantic import BaseModel
 
@@ -405,9 +406,8 @@ class Jobs(BaseModel):
         logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
         return list_to_return
 
-    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry):
+    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry, timeout=5):
         retries = 0
-        job_id = None
         while retries < retry:
             jobs = self._get_download_job_by_snapshot_id(snapshot_id)
             if len(jobs) > 1:
@@ -415,21 +415,23 @@ class Jobs(BaseModel):
                     "multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id."
                 )
                 job_ids = sorted([int(job["id"]) for job in jobs])
-                job_id = job_ids[-1]
+                return job_ids[-1]
             elif len(jobs) == 0:
                 logger.warning(f"No download job found for snapshot {snapshot_id}")
             retries += retries + 1
+            sleep(timeout)
             logger.info(f"retry status: {retries}")
-        return job_id
+        return None
 
-    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5):
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5, timeout=5):
         """Returns a Job Id to use to in a download snapshot
 
         Args:
             snapshot_id: UUID of a snapshot
+            timeout: How long in seconds to wait before retry
             retry: how many retries to use when looking for a job, increase for large downloads
 
         Returns:
             job_id: str: id to use when downloading a snapshot
         """
-        return self._confirm_snapshot_ready_for_download(snapshot_id, retry)
+        return self._confirm_snapshot_ready_for_download(snapshot_id, retry, timeout=timeout)
