@@ -1,4 +1,5 @@
 import hashlib
+import deepdiff
 import logging
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
@@ -153,23 +154,7 @@ class Table(BaseModel):
         # loop over each obj, turn the obj into a string, and hash it
         return_json = dict()
         for dict_obj in json_data:
-            all_values = str()
-            for value in dict_obj.values():
-                # if value is a comma separated string. split it, sort it and join it.
-                if type(value) == str and ',' in value:
-                    # leaving this commented out for now, haven't found where this needed.
-                    # value.replace('()"', '')
-                    str_list = value.split(',')
-                    value = "".join(sorted(str_list))
-                # if the value is a list, loop over it, turn each item in the list to a string, sort it, and join it.
-                if type(value) == list and value != []:
-                    value_for_sort = str()
-                    for list_item in value:
-                        value_for_sort += str(list_item)
-                    value = "".join(sorted(value_for_sort))
-                all_values += str(value)
-            # Adding item to return_json[hash_all_values]: json_object
-            return_json[hashlib.md5(all_values.encode()).hexdigest()] = dict_obj
+            return_json[deepdiff.DeepHash(dict_obj)[dict_obj]] = dict_obj
         return return_json
 
     def compare(
