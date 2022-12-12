@@ -46,9 +46,10 @@ SNAPSHOT_COLUMNS = [
 
 
 def snapshot_upload(ipf: IPFClient, file: str):
-    file = {'file': (Path(file).name, open(file, 'rb'), 'application/x-tar')}
-    resp = httpx.request('POST', urljoin(str(ipf.base_url), 'snapshots/upload'), files=file, auth=ipf.auth,
-                         verify=ipf.verify)
+    file = {"file": (Path(file).name, open(file, "rb"), "application/x-tar")}
+    resp = httpx.request(
+        "POST", urljoin(str(ipf.base_url), "snapshots/upload"), files=file, auth=ipf.auth, verify=ipf.verify
+    )
     resp.raise_for_status()
     return resp.json()
 
@@ -161,7 +162,7 @@ class Snapshot(BaseModel):
             path = Path(f"{self.snapshot_id}.tar")
         elif not isinstance(path, Path):
             path = Path(f"{path}")
-        if not path.name.endswith('.tar'):
+        if not path.name.endswith(".tar"):
             path = Path(f"{path.name}.tar")
 
         # start download job

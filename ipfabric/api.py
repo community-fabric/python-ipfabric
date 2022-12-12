@@ -144,7 +144,7 @@ class IPFabricAPI(Client):
             api_version.lstrip("v").split(".")
             if api_version
             else importlib_metadata.version("ipfabric").lstrip("v").split(".")
-        )  #TODO need to fix for handling 'v#' instead of 'v#.#'
+        )  # TODO need to fix for handling 'v#' instead of 'v#.#'
 
         resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
@@ -223,10 +223,7 @@ class IPFabricAPI(Client):
             initialVersion=get_results[s["id"]].get("initialVersion", None),
         )
 
-    def get_snapshot_id(
-            self,
-            snapshot: Union[snapshot_models.Snapshot, str]
-    ):
+    def get_snapshot_id(self, snapshot: Union[snapshot_models.Snapshot, str]):
         """
         Returns a Snapshot ID for a given input.
 
