@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     for snapshot in snapshots:
         logger.info(f"name: {snapshot.name}, id: {snapshot.snapshot_id}")
-        download_path = snapshot.download(ipf_download)
+        download_path = snapshot.download(ipf_download, retry=5, timeout=5)  # 5 x 5 = 25 seconds
         upload_snap_id = snapshot_upload(ipf_upload, download_path)
         logger.info(
             f"uploaded snapshot {snapshot.name} to {os.getenv('IPF_URL_UPLOAD')} new snap_id = {upload_snap_id}")
