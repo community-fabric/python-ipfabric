@@ -145,9 +145,10 @@ class Client(unittest.TestCase):
         with self.assertRaises(RuntimeError) as err:
             self.ipf.check_version('v1', 'TEST')
 
+    @patch('ipfabric.snapshot_models.Snapshot.get_assurance_engine_settings')
     @patch('ipfabric.api.IPFabricAPI._ipf_pager')
     @patch("httpx.Client.get")
-    def test_snapshots(self, get, pager):
+    def test_snapshots(self, get, pager, ae_settings):
         pager.return_value = [
             {
                 "name": "Test",

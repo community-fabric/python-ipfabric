@@ -1,6 +1,8 @@
 import logging
 from collections import OrderedDict
 
+import httpx
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
@@ -180,6 +182,10 @@ class IPFabricAPI(Client):
     def snapshot_id(self):
         return self._snapshot_id
 
+    @property
+    def snapshot(self):
+        return self.snapshots[self.snapshot_id]
+
     @snapshot_id.setter
     def snapshot_id(self, snapshot_id):
         snapshot_id = snapshot_id or LAST_ID
@@ -188,7 +194,6 @@ class IPFabricAPI(Client):
             self._snapshot_id = None
         elif snapshot_id not in self.snapshots:
             # Verify snapshot ID is valid
-            logger.exception(f"Incorrect Snapshot ID: '{snapshot_id}'")
             raise ValueError(f"Incorrect Snapshot ID: '{snapshot_id}'")
         else:
             self._snapshot_id = self.snapshots[snapshot_id].snapshot_id
@@ -203,14 +208,20 @@ class IPFabricAPI(Client):
                 logger.error(f"Snapshot {snapshot_id} not found.")
                 return None
             get_results = self._get_snapshots()
-            s = results[0]
-            return snapshot_models.Snapshot(
-                **s,
-                licensedDevCount=get_results[s["id"]].get("licensedDevCount", None),
-                errors=get_results[s["id"]].get("errors", None),
-                version=get_results[s["id"]]["version"],
-                initialVersion=get_results[s["id"]].get("initialVersion", None),
-            )
+            snapshot = self._create_snapshot_model(results[0], get_results)
+            if snapshot.loaded:
+                snapshot.get_assurance_engine_settings(self)
+            return snapshot
+
+    @staticmethod
+    def _create_snapshot_model(s, get_results):
+        return snapshot_models.Snapshot(
+            **s,
+            licensedDevCount=get_results[s["id"]].get("licensedDevCount", None),
+            errors=get_results[s["id"]].get("errors", None),
+            version=get_results[s["id"]]["version"],
+            initialVersion=get_results[s["id"]].get("initialVersion", None),
+        )
 
     def get_snapshot_id(self, snapshot: Union[snapshot_models.Snapshot, str]):
         """
@@ -248,6 +259,18 @@ class IPFabricAPI(Client):
         res.raise_for_status()
         return {s["id"]: s for s in res.json()}
 
+    def _get_snapshot_settings(self, snapshot_id):
+        ae_tasks = dict(graphCache=None, historicalData=None, intentVerification=None)
+        res = self.get(f"/snapshots/{snapshot_id}/settings")
+        try:
+            res.raise_for_status()
+            disabled = res.json().get('disabledPostDiscoveryActions', list())
+            [ae_tasks.update({t: True if t in disabled else False}) for t in ae_tasks]
+        except httpx.HTTPError:
+            logger.warning("User/Token does not have access to `snapshots/:key/settings`; "
+                           "cannot get status of Assurance Engine tasks.")
+        return ae_tasks
+
     def get_snapshots(self):
         """
         Gets all snapshots from IP Fabric and returns a dictionary of {ID: Snapshot_info}
@@ -262,15 +285,10 @@ class IPFabricAPI(Client):
 
         snap_dict = OrderedDict()
         for s in results:
-            snap = snapshot_models.Snapshot(
-                **s,
-                licensedDevCount=get_results[s["id"]].get("licensedDevCount", None),
-                errors=get_results[s["id"]].get("errors", None),
-                version=get_results[s["id"]]["version"],
-                initialVersion=get_results[s["id"]].get("initialVersion", None),
-            )
+            snap = self._create_snapshot_model(s, get_results)
             snap_dict[snap.snapshot_id] = snap
             if snap.loaded:
+                snap.get_assurance_engine_settings(self)
                 if LASTLOCKED_ID not in snap_dict and snap.locked:
                     snap_dict[LASTLOCKED_ID] = snap
                 if LAST_ID not in snap_dict:

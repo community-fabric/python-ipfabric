@@ -50,6 +50,7 @@ if __name__ == '__main__':
 
     print("Print a snapshot object: ")
     pprint(ipf.snapshots[ipf.snapshot_id])
+    # Or: pprint(ipf.snapshot) to print the initialized snapshot
     """
     Print a snapshot object: 
     {
