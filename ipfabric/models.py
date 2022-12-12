@@ -1,4 +1,5 @@
 import hashlib
+import deepdiff
 import logging
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
@@ -119,7 +120,7 @@ class Table(BaseModel):
         """
 
         # Must always ignore 'id' column
-        columns_ignore.add('id')
+        columns_ignore.add("id")
 
         cols_for_return = list()
         # user passes columns
@@ -127,14 +128,14 @@ class Table(BaseModel):
             if not table_columns.issuperset(columns):
                 raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
             for col in columns:
-                if col in columns_ignore and col != 'id':
+                if col in columns_ignore and col != "id":
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
         # user does not pass columns
         else:
             for col in table_columns:
-                if col in columns_ignore and col != 'id':
+                if col in columns_ignore and col != "id":
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
@@ -153,32 +154,16 @@ class Table(BaseModel):
         # loop over each obj, turn the obj into a string, and hash it
         return_json = dict()
         for dict_obj in json_data:
-            all_values = str()
-            for value in dict_obj.values():
-                # if value is a comma separated string. split it, sort it and join it.
-                if type(value) == str and ',' in value:
-                    # leaving this commented out for now, haven't found where this needed.
-                    # value.replace('()"', '')
-                    str_list = value.split(',')
-                    value = "".join(sorted(str_list))
-                # if the value is a list, loop over it, turn each item in the list to a string, sort it, and join it.
-                if type(value) == list and value != []:
-                    value_for_sort = str()
-                    for list_item in value:
-                        value_for_sort += str(list_item)
-                    value = "".join(sorted(value_for_sort))
-                all_values += str(value)
-            # Adding item to return_json[hash_all_values]: json_object
-            return_json[hashlib.md5(all_values.encode()).hexdigest()] = dict_obj
+            return_json[deepdiff.DeepHash(dict_obj)[dict_obj]] = dict_obj
         return return_json
 
     def compare(
-            self,
-            snapshot_id: str = None,
-            reverse: bool = False,
-            columns: Union[list, set] = None,
-            columns_ignore: Union[list, set] = None,
-            **kwargs
+        self,
+        snapshot_id: str = None,
+        reverse: bool = False,
+        columns: Union[list, set] = None,
+        columns_ignore: Union[list, set] = None,
+        **kwargs,
     ):
         """
         Compares a table from the current snapshot to the snapshot_id passed.
@@ -210,8 +195,9 @@ class Table(BaseModel):
         hashed_data = self._hash_data(data)
         hashed_data_compare = self._hash_data(data_compare)
         # since we turned the values into a hash, we can just compare the keys
-        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if
-                hashed_str not in hashed_data_compare.keys()]
+        return [
+            hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()
+        ]
 
 
 class Inventory(BaseModel):
