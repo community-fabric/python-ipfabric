@@ -120,7 +120,7 @@ class Table(BaseModel):
         """
 
         # Must always ignore 'id' column
-        columns_ignore.add('id')
+        columns_ignore.add("id")
 
         cols_for_return = list()
         # user passes columns
@@ -128,14 +128,14 @@ class Table(BaseModel):
             if not table_columns.issuperset(columns):
                 raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
             for col in columns:
-                if col in columns_ignore and col != 'id':
+                if col in columns_ignore and col != "id":
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
         # user does not pass columns
         else:
             for col in table_columns:
-                if col in columns_ignore and col != 'id':
+                if col in columns_ignore and col != "id":
                     logger.debug(f"Column {col} in columns_ignore, ignoring")
                     continue
                 cols_for_return.append(col)
@@ -158,13 +158,13 @@ class Table(BaseModel):
         return return_json
 
     def compare(
-            self,
-            snapshot_id: str = None,
-            reverse: bool = False,
-            columns: Union[list, set] = None,
-            columns_ignore: Union[list, set] = None,
-            **kwargs
-            ):
+        self,
+        snapshot_id: str = None,
+        reverse: bool = False,
+        columns: Union[list, set] = None,
+        columns_ignore: Union[list, set] = None,
+        **kwargs,
+    ):
         """
         Compares a table from the current snapshot to the snapshot_id passed.
         Args:
@@ -195,7 +195,9 @@ class Table(BaseModel):
         hashed_data = self._hash_data(data)
         hashed_data_compare = self._hash_data(data_compare)
         # since we turned the values into a hash, we can just compare the keys
-        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()]
+        return [
+            hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()
+        ]
 
 
 class Inventory(BaseModel):

@@ -5,5 +5,11 @@ from .shared import parse_mac
 from .site_seperation_report import map_devices_to_rules
 from .vulnerabilities import Vulnerabilities
 
-__all__ = ["DeviceConfigs", "Vulnerabilities", "RestoreIntents", "DiscoveryHistory", "map_devices_to_rules",
-           "parse_mac"]
+__all__ = [
+    "DeviceConfigs",
+    "Vulnerabilities",
+    "RestoreIntents",
+    "DiscoveryHistory",
+    "map_devices_to_rules",
+    "parse_mac",
+]
