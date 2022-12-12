@@ -27,8 +27,10 @@ class Intent:
         if not snapshot.loaded:
             raise ValueError(f"Snapshot {snapshot.snapshot_id} is not loaded; cannot pull Intent Rules.")
         if snapshot.disabled_intent_verification is True:
-            raise ValueError(f"Snapshot {snapshot.snapshot_id} has Intent Verification computation disabled; "
-                             f"cannot pull Intent Rules.")
+            raise ValueError(
+                f"Snapshot {snapshot.snapshot_id} has Intent Verification computation disabled; "
+                f"cannot pull Intent Rules."
+            )
         res = self.client.get("reports", params=dict(snapshot=snapshot.snapshot_id))
         res.raise_for_status()
         return [IntentCheck(**check) for check in res.json()]

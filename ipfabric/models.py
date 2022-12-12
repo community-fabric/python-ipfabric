@@ -1,9 +1,8 @@
-import hashlib
-import deepdiff
 import logging
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
 
+import deepdiff
 from pydantic import BaseModel
 
 from ipfabric.technology import *
@@ -21,15 +20,15 @@ class Table(BaseModel):
         return self.endpoint.split("/")[-1]
 
     def fetch(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            attr_filters: Optional[Dict[str, List[str]]] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None,
-            limit: Optional[int] = 1000,
-            start: Optional[int] = 0,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
+        limit: Optional[int] = 1000,
+        start: Optional[int] = 0,
     ):
         """
         Gets all data from corresponding endpoint
@@ -57,13 +56,13 @@ class Table(BaseModel):
         )
 
     def all(
-            self,
-            columns: list = None,
-            filters: Optional[dict] = None,
-            attr_filters: Optional[Dict[str, List[str]]] = None,
-            snapshot_id: Optional[str] = None,
-            reports: Optional[str] = None,
-            sort: Optional[dict] = None,
+        self,
+        columns: list = None,
+        filters: Optional[dict] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
+        snapshot_id: Optional[str] = None,
+        reports: Optional[str] = None,
+        sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -87,10 +86,10 @@ class Table(BaseModel):
         )
 
     def count(
-            self,
-            filters: Optional[dict] = None,
-            snapshot_id: Optional[str] = None,
-            attr_filters: Optional[Dict[str, List[str]]] = None,
+        self,
+        filters: Optional[dict] = None,
+        snapshot_id: Optional[str] = None,
+        attr_filters: Optional[Dict[str, List[str]]] = None,
     ):
         """
         Gets count of table
@@ -383,28 +382,24 @@ class Jobs(BaseModel):
     def all_jobs(self):
         return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
 
-    def _get_job_by_snapshot_id(self, snapshot_id: str, job_name: str):
-        list_to_return = list()
-        job_filter = dict(snapshot=["eq", snapshot_id], name=["eq", job_name])
-        for snapshot in self.all_jobs.all(filters=job_filter, sort={"order": "desc", "column": "startedAt"}):
-            list_to_return.append(snapshot)
-        logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
-        return list_to_return
-
-    def _return_job_id_when_done(self, snapshot_id: str, job_name: str, retry: int = 5, timeout: int = 5):
+    def _return_job_when_done(self, job_filter: dict, retry: int = 5, timeout: int = 5):
+        if "name" not in job_filter and "snapshot" not in job_filter:
+            raise SyntaxError("Must provide a Snapshot ID and name for a filter.")
         retries = 0
         while retries < retry:
-            jobs = self._get_job_by_snapshot_id(snapshot_id, job_name)
+            if retries == 0:
+                sleep(5)  # Sleep as 1st request could be wrong
+            jobs = self.all_jobs.all(filters=job_filter, sort={"order": "desc", "column": "startedAt"})
             if jobs and jobs[0]["isDone"]:
-                return jobs[0]["id"]
+                return jobs[0]
             else:
-                logger.warning(f"{job_name} job is not ready for snapshot {snapshot_id}")
+                logger.warning(f"{job_filter['name'][1]} job is not ready for snapshot {job_filter['snapshot'][1]}")
             retries += 1
             sleep(timeout)
             logger.info(f"retry status: {retries}")
         return None
 
-    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5, timeout: int = 5):
+    def get_snapshot_download_job(self, snapshot_id: str, retry: int = 5, timeout: int = 5):
         """Returns a Job Id to use to in a download snapshot
 
         Args:
@@ -415,7 +410,8 @@ class Jobs(BaseModel):
         Returns:
             job_id: str: id to use when downloading a snapshot
         """
-        return self._return_job_id_when_done(snapshot_id, "snapshotDownload", retry, timeout=timeout)
+        job_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "snapshotDownload"])
+        return self._return_job_when_done(job_filter, retry=retry, timeout=timeout)
 
     def check_snapshot_load_job(self, snapshot_id: str, retry: int = 5, timeout: int = 5):
         """Checks to see if a snapshot load job is completed.
@@ -426,13 +422,14 @@ class Jobs(BaseModel):
             retry: how many retries to use when looking for a job, increase for large downloads
 
         Returns:
-            True if load is completed, False if still loading
+            Job dictionary if load is completed, None if still loading
         """
-        job_id = self._return_job_id_when_done(snapshot_id, "snapshotLoad", retry, timeout=timeout)
-        return False if job_id is None else True
+        job_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "snapshotLoad"])
+        return self._return_job_when_done(job_filter, retry=retry, timeout=timeout)
 
-    def check_snapshot_assurance_jobs(self, snapshot_id: str, assurance_settings: dict, retry: int = 5,
-                                      timeout: int = 5):
+    def check_snapshot_assurance_jobs(
+        self, snapshot_id: str, assurance_settings: dict, started: int, retry: int = 5, timeout: int = 5
+    ):
         """Checks to see if a snapshot Assurance Engine calculation jobs are completed.
 
         Args:
@@ -444,16 +441,25 @@ class Jobs(BaseModel):
         Returns:
             True if load is completed, False if still loading
         """
-        if assurance_settings["disabled_graph_cache"] is False and \
-                self._return_job_id_when_done(snapshot_id, "loadGraphCache", retry, timeout=timeout) is None:
+        job_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "loadGraphCache"], startedAt=["gte", started])
+        if (
+            assurance_settings["disabled_graph_cache"] is False
+            and self._return_job_when_done(job_filter, retry=retry, timeout=timeout) is None
+        ):
             logger.error("Graph Cache did not finish loading; Snapshot is not fully loaded yet.")
             return False
-        if assurance_settings["disabled_historical_data"] is False and \
-                self._return_job_id_when_done(snapshot_id, "saveHistoricalData", retry, timeout=timeout) is None:
+        job_filter["name"] = ["eq", "saveHistoricalData"]
+        if (
+            assurance_settings["disabled_historical_data"] is False
+            and self._return_job_when_done(job_filter, retry=retry, timeout=timeout) is None
+        ):
             logger.error("Historical Data did not finish loading; Snapshot is not fully loaded yet.")
             return False
-        if assurance_settings["disabled_intent_verification"] is False and \
-                self._return_job_id_when_done(snapshot_id, "report", retry, timeout=timeout) is None:
+        job_filter["name"] = ["eq", "report"]
+        if (
+            assurance_settings["disabled_intent_verification"] is False
+            and self._return_job_when_done(job_filter, retry=retry, timeout=timeout) is None
+        ):
             logger.error("Intent Calculations did not finish loading; Snapshot is not fully loaded yet.")
             return False
         return True

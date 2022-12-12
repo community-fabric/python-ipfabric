@@ -132,21 +132,39 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
         return True
 
-    def load(self, ipf: IPFClient, wait_for_load: bool = True, wait_for_assurance: bool = True, timeout: int = 60, retry: int = 5):
+    def load(
+        self,
+        ipf: IPFClient,
+        wait_for_load: bool = True,
+        wait_for_assurance: bool = True,
+        timeout: int = 60,
+        retry: int = 5,
+    ):
 
         if not self.loaded:
             res = ipf.post(
                 "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
             )
             res.raise_for_status()
-            ae_settings = self.get_assurance_engine_settings(ipf)
             job = Jobs(client=ipf)
             if wait_for_load or wait_for_assurance:
-                load_status = job.check_snapshot_load_job(self.snapshot_id, timeout=timeout, retry=retry)
-                if load_status and wait_for_assurance and ae_settings:
-                    job.check_snapshot_assurance_jobs(self.snapshot_id, ae_settings, timeout=timeout, retry=retry)
-            results = ipf.fetch("tables/management/snapshots", columns=['status', 'finishStatus', 'loading'], filters={"id": ["eq", self.snapshot_id]}, snapshot=False)[0]
-            self.status, self.finish_status, self.loading = results['status'], results['finishStatus'], results['loading']
+                load_job = job.check_snapshot_load_job(self.snapshot_id, timeout=timeout, retry=retry)
+                ae_settings = self.get_assurance_engine_settings(ipf)
+                if load_job and wait_for_assurance and ae_settings:
+                    job.check_snapshot_assurance_jobs(
+                        self.snapshot_id, ae_settings, started=load_job["startedAt"], timeout=timeout, retry=retry
+                    )
+            results = ipf.fetch(
+                "tables/management/snapshots",
+                columns=["status", "finishStatus", "loading"],
+                filters={"id": ["eq", self.snapshot_id]},
+                snapshot=False,
+            )[0]
+            self.status, self.finish_status, self.loading = (
+                results["status"],
+                results["finishStatus"],
+                results["loading"],
+            )
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True
@@ -170,14 +188,17 @@ class Snapshot(BaseModel):
         # start download job
         resp = ipf.get(f"/snapshots/{self.snapshot_id}/download")
         resp.raise_for_status()
-        job = Jobs(client=ipf)
+        jobs = Jobs(client=ipf)
 
         # waiting for download job to process
-        job_id = job.get_snapshot_download_job_id(self.snapshot_id, retry=retry, timeout=timeout)
-        file = ipf.get(f"jobs/{job_id}/download")
-        with open(path, "wb") as fp:
-            fp.write(file.read())
-        return path
+        job = jobs.get_snapshot_download_job(self.snapshot_id, retry=retry, timeout=timeout)
+        if job:
+            file = ipf.get(f"jobs/{job['id']}/download")
+            with open(path, "wb") as fp:
+                fp.write(file.read())
+            return path
+        else:
+            pass  # TODO
 
     def get_snapshot_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
         res = ipf.get(f"/snapshots/{self.snapshot_id}/settings")
@@ -185,8 +206,10 @@ class Snapshot(BaseModel):
             res.raise_for_status()
             return res.json()
         except HTTPError:
-            logger.warning("User/Token does not have access to `snapshots/:key/settings`; "
-                           "cannot get status of Assurance Engine tasks.")
+            logger.warning(
+                "User/Token does not have access to `snapshots/:key/settings`; "
+                "cannot get status of Assurance Engine tasks."
+            )
         return None
 
     def get_assurance_engine_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
@@ -194,25 +217,28 @@ class Snapshot(BaseModel):
         if settings is None:
             logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings to verify Assurance Engine tasks.")
             return None
-        disabled = settings.get('disabledPostDiscoveryActions', list())
+        disabled = settings.get("disabledPostDiscoveryActions", list())
         self.disabled_graph_cache = True if "graphCache" in disabled else False
         self.disabled_historical_data = True if "historicalData" in disabled else False
         self.disabled_intent_verification = True if "intentVerification" in disabled else False
-        return dict(disabled_graph_cache=self.disabled_graph_cache,
-                    disabled_historical_data=self.disabled_historical_data,
-                    disabled_intent_verification=self.disabled_intent_verification)
+        return dict(
+            disabled_graph_cache=self.disabled_graph_cache,
+            disabled_historical_data=self.disabled_historical_data,
+            disabled_intent_verification=self.disabled_intent_verification,
+        )
 
     def update_assurance_engine_settings(
-            self,
-            ipf: Union[IPFClient, IPFabricAPI],
-            disable_graph_cache: bool = False,
-            disable_historical_data: bool = False,
-            disable_intent_verification: bool = False
+        self,
+        ipf: Union[IPFClient, IPFabricAPI],
+        disable_graph_cache: bool = False,
+        disable_historical_data: bool = False,
+        disable_intent_verification: bool = False,
     ):
         settings = self.get_snapshot_settings(ipf)
         if settings is None:
-            logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings and "
-                           f"cannot update Assurance Engine tasks.")
+            logger.warning(
+                f"Could not get Snapshot {self.snapshot_id} Settings and " f"cannot update Assurance Engine tasks."
+            )
             return False
         disabled = list()
         if disable_graph_cache:
@@ -221,7 +247,7 @@ class Snapshot(BaseModel):
             disabled.append("historicalData")
         if disable_intent_verification:
             disabled.append("intentVerification")
-        if set(disabled) == set(settings.get('disabledPostDiscoveryActions', list())):
+        if set(disabled) == set(settings.get("disabledPostDiscoveryActions", list())):
             logger.info("No changes to Assurance Engine Settings required.")
             return True
         res = ipf.patch(f"/snapshots/{self.snapshot_id}/settings", json=dict(disabledPostDiscoveryActions=disabled))

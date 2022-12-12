@@ -264,11 +264,13 @@ class IPFabricAPI(Client):
         res = self.get(f"/snapshots/{snapshot_id}/settings")
         try:
             res.raise_for_status()
-            disabled = res.json().get('disabledPostDiscoveryActions', list())
+            disabled = res.json().get("disabledPostDiscoveryActions", list())
             [ae_tasks.update({t: True if t in disabled else False}) for t in ae_tasks]
         except httpx.HTTPError:
-            logger.warning("User/Token does not have access to `snapshots/:key/settings`; "
-                           "cannot get status of Assurance Engine tasks.")
+            logger.warning(
+                "User/Token does not have access to `snapshots/:key/settings`; "
+                "cannot get status of Assurance Engine tasks."
+            )
         return ae_tasks
 
     def get_snapshots(self):
