@@ -1,6 +1,5 @@
 import argparse
 import logging
-import os
 import sys
 
 import yaml
@@ -91,9 +90,6 @@ def main() -> int:
                         default='policies.yaml', help='Path to policies YAML file.')
     parser.add_argument('--delete-all', action='store_true',
                         help='Delete all RBAC none default roles and policies.')
-    parser.add_argument('--verify', action='store_false',
-                        help='This will disable SSL certificate verification.')
-    parser.add_argument('--version', help='Specify API Version.')
     parser.add_argument('--verbose', action='store_true',
                         help='Enable stdout console logging.')
     args = parser.parse_args()
@@ -106,7 +102,7 @@ def main() -> int:
         logger.addHandler(handler)
         logger.setLevel(logging.DEBUG)
 
-    ipf = IPFClient(api_version=args.version, verify=args.verify)
+    ipf = IPFClient()
 
     if args.delete_all:
         delete_rbac(ipf)

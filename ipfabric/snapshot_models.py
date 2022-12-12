@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ipfabric import IPFClient
+    from ipfabric.api import IPFabricAPI
 
 import logging
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
+from httpx import HTTPError
 
 from pydantic import BaseModel, Field
 
@@ -70,6 +72,9 @@ class Snapshot(BaseModel):
     errors: Optional[List[Error]]
     loaded_size: int = Field(alias="loadedSize")
     unloaded_size: int = Field(alias="unloadedSize")
+    disabled_graph_cache: Optional[bool]
+    disabled_historical_data: Optional[bool]
+    disabled_intent_verification: Optional[bool]
 
     def lock(self, ipf: IPFClient):
         if not self.locked and self.loaded:
@@ -125,7 +130,8 @@ class Snapshot(BaseModel):
                 "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
             )
             res.raise_for_status()
-            self.status = "done"
+            self.get_assurance_engine_settings(ipf)
+            self.status = "done"  # TODO: Implement check to know when snapshot is done loading
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True
@@ -137,3 +143,52 @@ class Snapshot(BaseModel):
         :return: True
         """
         return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
+
+    def get_snapshot_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
+        res = ipf.get(f"/snapshots/{self.snapshot_id}/settings")
+        try:
+            res.raise_for_status()
+            return res.json()
+        except HTTPError:
+            logger.warning("User/Token does not have access to `snapshots/:key/settings`; "
+                           "cannot get status of Assurance Engine tasks.")
+        return None
+
+    def get_assurance_engine_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
+        settings = self.get_snapshot_settings(ipf)
+        if settings is None:
+            logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings to verify Assurance Engine tasks.")
+            return None
+        disabled = settings.get('disabledPostDiscoveryActions', list())
+        self.disabled_graph_cache = True if "graphCache" in disabled else False
+        self.disabled_historical_data = True if "historicalData" in disabled else False
+        self.disabled_intent_verification = True if "intentVerification" in disabled else False
+        return dict(disabled_graph_cache=self.disabled_graph_cache,
+                    disabled_historical_data=self.disabled_historical_data,
+                    disabled_intent_verification=self.disabled_intent_verification)
+
+    def update_assurance_engine_settings(
+            self,
+            ipf: Union[IPFClient, IPFabricAPI],
+            disable_graph_cache: bool = False,
+            disable_historical_data: bool = False,
+            disable_intent_verification: bool = False
+    ):
+        settings = self.get_snapshot_settings(ipf)
+        if settings is None:
+            logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings and "
+                           f"cannot update Assurance Engine tasks.")
+            return False
+        disabled = list()
+        if disable_graph_cache:
+            disabled.append("graphCache")
+        if disable_historical_data:
+            disabled.append("historicalData")
+        if disable_intent_verification:
+            disabled.append("intentVerification")
+        if set(disabled) == set(settings.get('disabledPostDiscoveryActions', list())):
+            logger.info("No changes to Assurance Engine Settings required.")
+            return True
+        res = ipf.patch(f"/snapshots/{self.snapshot_id}/settings", json=dict(disabledPostDiscoveryActions=disabled))
+        res.raise_for_status()  # TODO: Implement check to know when snapshot is done calculations
+        return True
