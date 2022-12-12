@@ -10,7 +10,6 @@ import httpx
 from datetime import datetime
 from typing import Optional, List
 from pathlib import Path
-from time import sleep
 
 from pydantic import BaseModel, Field
 from ipfabric.models import Jobs
@@ -165,8 +164,7 @@ class Snapshot(BaseModel):
         job = Jobs(client=ipf)
 
         # waiting for download job to process
-        sleep(timeout)  # TODO How do we handle waiting and retry? Should we move timeout also to Job?
-        job_id = job.get_snapshot_download_job_id(self.snapshot_id, retry=retry)
+        job_id = job.get_snapshot_download_job_id(self.snapshot_id, retry=retry, timeout=timeout)
         file = ipf.get(f"jobs/{job_id}/download")
         with open(path, "wb") as fp:
             fp.write(file.read())
