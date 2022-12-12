@@ -131,19 +131,21 @@ class Snapshot(BaseModel):
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
         return True
 
-    def load(self, ipf: IPFClient):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
+    def load(self, ipf: IPFClient, wait_for_load: bool = True, wait_for_assurance: bool = True, timeout: int = 60, retry: int = 5):
+
         if not self.loaded:
             res = ipf.post(
                 "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
             )
             res.raise_for_status()
-            self.get_assurance_engine_settings(ipf)
-            self.status = "done"  # TODO: Implement check to know when snapshot is done loading
+            ae_settings = self.get_assurance_engine_settings(ipf)
+            job = Jobs(client=ipf)
+            if wait_for_load or wait_for_assurance:
+                load_status = job.check_snapshot_load_job(self.snapshot_id, timeout=timeout, retry=retry)
+                if load_status and wait_for_assurance and ae_settings:
+                    job.check_snapshot_assurance_jobs(self.snapshot_id, ae_settings, timeout=timeout, retry=retry)
+            results = ipf.fetch("tables/management/snapshots", columns=['status', 'finishStatus', 'loading'], filters={"id": ["eq", self.snapshot_id]}, snapshot=False)[0]
+            self.status, self.finish_status, self.loading = results['status'], results['finishStatus'], results['loading']
         else:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
         return True

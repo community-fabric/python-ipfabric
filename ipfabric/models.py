@@ -20,15 +20,15 @@ class Table(BaseModel):
         return self.endpoint.split("/")[-1]
 
     def fetch(
-        self,
-        columns: list = None,
-        filters: Optional[dict] = None,
-        attr_filters: Optional[Dict[str, List[str]]] = None,
-        snapshot_id: Optional[str] = None,
-        reports: Optional[str] = None,
-        sort: Optional[dict] = None,
-        limit: Optional[int] = 1000,
-        start: Optional[int] = 0,
+            self,
+            columns: list = None,
+            filters: Optional[dict] = None,
+            attr_filters: Optional[Dict[str, List[str]]] = None,
+            snapshot_id: Optional[str] = None,
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None,
+            limit: Optional[int] = 1000,
+            start: Optional[int] = 0,
     ):
         """
         Gets all data from corresponding endpoint
@@ -56,13 +56,13 @@ class Table(BaseModel):
         )
 
     def all(
-        self,
-        columns: list = None,
-        filters: Optional[dict] = None,
-        attr_filters: Optional[Dict[str, List[str]]] = None,
-        snapshot_id: Optional[str] = None,
-        reports: Optional[str] = None,
-        sort: Optional[dict] = None,
+            self,
+            columns: list = None,
+            filters: Optional[dict] = None,
+            attr_filters: Optional[Dict[str, List[str]]] = None,
+            snapshot_id: Optional[str] = None,
+            reports: Optional[str] = None,
+            sort: Optional[dict] = None,
     ):
         """
         Gets all data from corresponding endpoint
@@ -86,10 +86,10 @@ class Table(BaseModel):
         )
 
     def count(
-        self,
-        filters: Optional[dict] = None,
-        snapshot_id: Optional[str] = None,
-        attr_filters: Optional[Dict[str, List[str]]] = None,
+            self,
+            filters: Optional[dict] = None,
+            snapshot_id: Optional[str] = None,
+            attr_filters: Optional[Dict[str, List[str]]] = None,
     ):
         """
         Gets count of table
@@ -179,7 +179,7 @@ class Table(BaseModel):
             columns: Union[list, set] = None,
             columns_ignore: Union[list, set] = None,
             **kwargs
-            ):
+    ):
         """
         Compares a table from the current snapshot to the snapshot_id passed.
         Args:
@@ -210,7 +210,8 @@ class Table(BaseModel):
         hashed_data = self._hash_data(data)
         hashed_data_compare = self._hash_data(data_compare)
         # since we turned the values into a hash, we can just compare the keys
-        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()]
+        return [hashed_data[hashed_str] for hashed_str in hashed_data.keys() if
+                hashed_str not in hashed_data_compare.keys()]
 
 
 class Inventory(BaseModel):
@@ -396,34 +397,28 @@ class Jobs(BaseModel):
     def all_jobs(self):
         return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
 
-    def _get_download_job_by_snapshot_id(self, snapshot_id):
+    def _get_job_by_snapshot_id(self, snapshot_id: str, job_name: str):
         list_to_return = list()
-        job_filter = dict()
-        job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
-        job_filter["name"] = ["eq", "snapshotDownload"]
-        for snapshot in self.all_jobs.all(filters=job_filter):
+        job_filter = dict(snapshot=["eq", snapshot_id], name=["eq", job_name])
+        for snapshot in self.all_jobs.all(filters=job_filter, sort={"order": "desc", "column": "startedAt"}):
             list_to_return.append(snapshot)
         logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
         return list_to_return
 
-    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry, timeout=5):
+    def _return_job_id_when_done(self, snapshot_id: str, job_name: str, retry: int = 5, timeout: int = 5):
         retries = 0
         while retries < retry:
-            jobs = self._get_download_job_by_snapshot_id(snapshot_id)
-            if len(jobs) > 1:
-                logger.warning(
-                    "multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id."
-                )
-                job_ids = sorted([int(job["id"]) for job in jobs])
-                return job_ids[-1]
-            elif len(jobs) == 0:
-                logger.warning(f"No download job found for snapshot {snapshot_id}")
-            retries += retries + 1
+            jobs = self._get_job_by_snapshot_id(snapshot_id, job_name)
+            if jobs and jobs[0]["isDone"]:
+                return jobs[0]["id"]
+            else:
+                logger.warning(f"{job_name} job is not ready for snapshot {snapshot_id}")
+            retries += 1
             sleep(timeout)
             logger.info(f"retry status: {retries}")
         return None
 
-    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5, timeout=5):
+    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5, timeout: int = 5):
         """Returns a Job Id to use to in a download snapshot
 
         Args:
@@ -434,4 +429,45 @@ class Jobs(BaseModel):
         Returns:
             job_id: str: id to use when downloading a snapshot
         """
-        return self._confirm_snapshot_ready_for_download(snapshot_id, retry, timeout=timeout)
+        return self._return_job_id_when_done(snapshot_id, "snapshotDownload", retry, timeout=timeout)
+
+    def check_snapshot_load_job(self, snapshot_id: str, retry: int = 5, timeout: int = 5):
+        """Checks to see if a snapshot load job is completed.
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            timeout: How long in seconds to wait before retry
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            True if load is completed, False if still loading
+        """
+        job_id = self._return_job_id_when_done(snapshot_id, "snapshotLoad", retry, timeout=timeout)
+        return False if job_id is None else True
+
+    def check_snapshot_assurance_jobs(self, snapshot_id: str, assurance_settings: dict, retry: int = 5,
+                                      timeout: int = 5):
+        """Checks to see if a snapshot Assurance Engine calculation jobs are completed.
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            assurance_settings: Dictionary from Snapshot.get_assurance_engine_settings
+            timeout: How long in seconds to wait before retry
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            True if load is completed, False if still loading
+        """
+        if assurance_settings["disabled_graph_cache"] is False and \
+                self._return_job_id_when_done(snapshot_id, "loadGraphCache", retry, timeout=timeout) is None:
+            logger.error("Graph Cache did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        if assurance_settings["disabled_historical_data"] is False and \
+                self._return_job_id_when_done(snapshot_id, "saveHistoricalData", retry, timeout=timeout) is None:
+            logger.error("Historical Data did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        if assurance_settings["disabled_intent_verification"] is False and \
+                self._return_job_id_when_done(snapshot_id, "report", retry, timeout=timeout) is None:
+            logger.error("Intent Calculations did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        return True
