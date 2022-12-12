@@ -68,10 +68,11 @@ class IPFabricAPI(Client):
         # find env file
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
+            self.verify = kwargs.get("verify", settings.ipf_verify)
             super().__init__(
                 timeout=kwargs.get("timeout", True),
                 headers={"Content-Type": "application/json"},
-                verify=kwargs.get("verify", settings.ipf_verify),
+                verify=self.verify,
             )
             base_url = base_url or settings.ipf_url
             if not base_url:
@@ -143,7 +144,7 @@ class IPFabricAPI(Client):
             api_version.lstrip("v").split(".")
             if api_version
             else importlib_metadata.version("ipfabric").lstrip("v").split(".")
-        )
+        )  #TODO need to fix for handling 'v#' instead of 'v#.#'
 
         resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
