@@ -144,24 +144,31 @@ class IPFabricAPI(Client):
             api_version.lstrip("v").split(".")
             if api_version
             else importlib_metadata.version("ipfabric").lstrip("v").split(".")
-        )  # TODO need to fix for handling 'v#' instead of 'v#.#'
+        )
 
         resp = self.get(urljoin(base_url, "api/version" if not dev else "version"))
         resp.raise_for_status()
         os_api_version = resp.json()["apiVersion"].lstrip("v").split(".")
-        if api_version[0:2] > os_api_version[0:2]:
+        return_version = f"v{api_version[0]}.{api_version[1]}" if len(api_version) > 1 else f"v{api_version[0]}"
+        if len(api_version) == 1 and api_version[0] > os_api_version[0]:
             logger.warning(
-                f"Specified API or SDK Version ({'.'.join(api_version)}) is greater then "
-                f"OS API Version. Using OS Version:  ({'.'.join(os_api_version)})"
+                f"Specified API or SDK Version (v{api_version[0]}) is greater then "
+                f"OS API Version. Using OS Version:  (v{os_api_version[0]})"
             )
-            api_version = os_api_version
+            return_version = f"v{os_api_version[0]}"
+        elif api_version[0:2] > os_api_version[0:2]:
+            logger.warning(
+                f"Specified API or SDK Version (v{'.'.join(api_version)}) is greater then "
+                f"OS API Version. Using OS Version:  (v{'.'.join(os_api_version)})"
+            )
+            return_version = f"v{os_api_version[0]}.{os_api_version[1]}"
         elif os_api_version[0] > api_version[0]:
             raise RuntimeError(
-                f"OS Major Version {os_api_version[0]} is greater then SDK Version "
-                f"{api_version[0]}.  Please upgrade the Python SDK to the new major version."
+                f"OS Major Version v{os_api_version[0]} is greater then SDK Version "
+                f"v{api_version[0]}.  Please upgrade the Python SDK to the new major version."
             )
 
-        return f"v{api_version[0]}.{api_version[1]}", resp.json()["releaseVersion"]
+        return return_version, resp.json()["releaseVersion"]
 
     def update(self):
         self.snapshots = self.get_snapshots()
