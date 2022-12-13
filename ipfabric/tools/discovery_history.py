@@ -5,7 +5,7 @@ from pydantic.dataclasses import dataclass
 
 from ipfabric.tools.shared import convert_timestamp, date_parser
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 COLUMNS = ["id", "sn", "hostname", "loginIp", "loginType", "ts", "username", "usernameNotes"]
 

@@ -4,7 +4,7 @@ from typing import Any, Union, List
 from ipfabric.intent_models import Group
 from .intent_models import IntentCheck
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 COLOR_DICT = dict(green=0, blue=10, amber=20, red=30)
 
 

@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 
 from ipfabric.settings import Attributes, SiteSeparation
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 @dataclass

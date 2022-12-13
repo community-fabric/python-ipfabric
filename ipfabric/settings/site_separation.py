@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 @dataclass

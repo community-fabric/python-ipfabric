@@ -8,7 +8,7 @@ from typing import Any, Union
 
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 INTENTS = "intents.json"
 GROUPS = "groups.json"

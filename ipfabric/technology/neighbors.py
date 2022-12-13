@@ -1,9 +1,11 @@
 import logging
-from pydantic import BaseModel
 from typing import Any
+
+from pydantic import BaseModel
+
 from ipfabric import models
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Neighbors(BaseModel):

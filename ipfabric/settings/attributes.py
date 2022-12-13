@@ -5,7 +5,7 @@ from typing import Optional, List, Any
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 ATTR_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]+$")
 

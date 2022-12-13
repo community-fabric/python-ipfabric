@@ -6,7 +6,7 @@ import macaddress
 from dateutil import parser
 from pytz import BaseTzInfo, utc
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class MAC(macaddress.MAC):
