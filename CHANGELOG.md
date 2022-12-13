@@ -1,5 +1,21 @@
 # Changelog
 
+## 6.0.7 (2022-12-13)
+
+### Fix
+
+* Updated dependencies
+* Fix for specifying version like `v#` instead of `v#.#`
+* Standardize logger name from `python-ipfabric` to `ipfabric`
+
+### Feature
+
+* More support for Jobs
+* Loading a snapshot will wait till complete before returning
+* Ability to check and change Assurance Engine Settings on Loaded Snapshots
+* Table diff between snapshots
+* Intent Checks will ensure specified snapshot is loaded or will error
+
 ## 6.0.6 (2022-12-07)
 
 ### Fix
