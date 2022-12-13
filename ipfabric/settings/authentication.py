@@ -7,7 +7,7 @@ from dateutil import parser
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Expiration(BaseModel):

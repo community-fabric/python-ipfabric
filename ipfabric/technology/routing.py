@@ -1,11 +1,11 @@
 import logging
-from datetime import datetime
-from typing import Optional, Any, List
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
 from ipfabric import models
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Routing(BaseModel):

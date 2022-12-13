@@ -4,7 +4,7 @@ from typing import Any, Union, List
 from ipfabric.intent_models import Group
 from .intent_models import IntentCheck
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 COLOR_DICT = dict(green=0, blue=10, amber=20, red=30)
 
 
@@ -27,8 +27,10 @@ class Intent:
         if not snapshot.loaded:
             raise ValueError(f"Snapshot {snapshot.snapshot_id} is not loaded; cannot pull Intent Rules.")
         if snapshot.disabled_intent_verification is True:
-            raise ValueError(f"Snapshot {snapshot.snapshot_id} has Intent Verification computation disabled; "
-                             f"cannot pull Intent Rules.")
+            raise ValueError(
+                f"Snapshot {snapshot.snapshot_id} has Intent Verification computation disabled; "
+                f"cannot pull Intent Rules."
+            )
         res = self.client.get("reports", params=dict(snapshot=snapshot.snapshot_id))
         res.raise_for_status()
         return [IntentCheck(**check) for check in res.json()]

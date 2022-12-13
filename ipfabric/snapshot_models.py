@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from ipfabric.models import Jobs
 from urllib.parse import urljoin
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 SNAPSHOT_COLUMNS = [
     "id",
@@ -45,10 +45,10 @@ SNAPSHOT_COLUMNS = [
 ]
 
 
-def snapshot_upload(ipf: IPFClient, file: str):
-    file = {"file": (Path(file).name, open(file, "rb"), "application/x-tar")}
+def snapshot_upload(ipf: IPFClient, filename: str):
+    data = {"file": (Path(filename).name, open(filename, "rb"), "application/x-tar")}
     resp = httpx.request(
-        "POST", urljoin(str(ipf.base_url), "snapshots/upload"), files=file, auth=ipf.auth, verify=ipf.verify
+        "POST", urljoin(str(ipf.base_url), "snapshots/upload"), files=data, auth=ipf.auth, verify=ipf.verify
     )
     resp.raise_for_status()
     return resp.json()
@@ -116,37 +116,79 @@ class Snapshot(BaseModel):
     def loaded(self):
         return self.status == "done" and self.finish_status == "done"
 
-    def unload(self, ipf: IPFClient):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if self.loaded:
-            res = ipf.post(
-                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-            self.status = "unloaded"
-        else:
+    def unload(self, ipf: IPFClient, wait_for_unload: bool = False, timeout: int = 60, retry: int = 5):
+        if not self.loaded:
             logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
+        ts = int(datetime.now().timestamp() * 1000)
+        res = ipf.post("snapshots/unload", json=[dict(jobDetail=ts, id=self.snapshot_id)])
+        res.raise_for_status()
+        if wait_for_unload:
+            job = Jobs(client=ipf)
+            if not job.check_snapshot_unload_job(self.snapshot_id, ts, retry, timeout):
+                logger.error("Snapshot Unload did not finish.")
+                return False
+        self._refresh_status(ipf)
         return True
 
-    def load(self, ipf: IPFClient):
-        """
-        Load Snapshot
-        :param ipf: IPFClient
-        :return: True
-        """
-        if not self.loaded:
-            res = ipf.post(
-                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-            self.get_assurance_engine_settings(ipf)
-            self.status = "done"  # TODO: Implement check to know when snapshot is done loading
-        else:
+    def load(
+        self,
+        ipf: IPFClient,
+        wait_for_load: bool = True,
+        wait_for_assurance: bool = True,
+        timeout: int = 60,
+        retry: int = 5,
+    ):
+
+        if self.loaded:
             logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
+            return True
+        ts = int(datetime.now().timestamp() * 1000)
+        res = ipf.post("snapshots/load", json=[dict(jobDetail=ts, id=self.snapshot_id)])
+        res.raise_for_status()
+        if wait_for_load or wait_for_assurance:
+            if not self._check_load_status(ipf, ts, wait_for_assurance, timeout, retry):
+                return False
+        self._refresh_status(ipf)
+        return True
+
+    def _refresh_status(self, ipf: IPFClient):
+        results = ipf.fetch(
+            "tables/management/snapshots",
+            columns=["status", "finishStatus", "loading"],
+            filters={"id": ["eq", self.snapshot_id]},
+            snapshot=False,
+        )[0]
+        self.status, self.finish_status, self.loading = (
+            results["status"],
+            results["finishStatus"],
+            results["loading"],
+        )
+
+    def _check_load_status(
+        self,
+        ipf: IPFClient,
+        ts: int,
+        wait_for_assurance: bool = True,
+        timeout: int = 60,
+        retry: int = 5,
+    ):
+        job = Jobs(client=ipf)
+        load_job = job.check_snapshot_load_job(self.snapshot_id, started=ts, timeout=timeout, retry=retry)
+        if load_job:
+            ae_settings = self.get_assurance_engine_settings(ipf)
+            if wait_for_assurance and ae_settings:
+                ae_status = job.check_snapshot_assurance_jobs(
+                    self.snapshot_id, ae_settings, started=load_job["startedAt"], timeout=timeout, retry=retry
+                )
+                if not ae_status:
+                    logger.error("Assurance Engine tasks did not complete")
+                    return False
+            elif wait_for_assurance and not ae_settings:
+                logger.error("Could not get Assurance Engine tasks please check permissions.")
+                return False
+        else:
+            logger.error("Snapshot Load did not complete.")
+            return False
         return True
 
     def attributes(self, ipf: IPFClient):
@@ -166,16 +208,20 @@ class Snapshot(BaseModel):
             path = Path(f"{path.name}.tar")
 
         # start download job
+        ts = int(datetime.now().timestamp() * 1000)
         resp = ipf.get(f"/snapshots/{self.snapshot_id}/download")
         resp.raise_for_status()
-        job = Jobs(client=ipf)
+        jobs = Jobs(client=ipf)
 
         # waiting for download job to process
-        job_id = job.get_snapshot_download_job_id(self.snapshot_id, retry=retry, timeout=timeout)
-        file = ipf.get(f"jobs/{job_id}/download")
-        with open(path, "wb") as fp:
-            fp.write(file.read())
-        return path
+        job = jobs.get_snapshot_download_job(self.snapshot_id, started=ts, retry=retry, timeout=timeout)
+        if job:
+            filename = ipf.get(f"jobs/{job['id']}/download")
+            with open(path, "wb") as fp:
+                fp.write(filename.read())
+            return path
+        logger.error(f"Download job did not finish within {retry * timeout} seconds, could not get file.")
+        return None
 
     def get_snapshot_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
         res = ipf.get(f"/snapshots/{self.snapshot_id}/settings")
@@ -183,45 +229,85 @@ class Snapshot(BaseModel):
             res.raise_for_status()
             return res.json()
         except HTTPError:
-            logger.warning("User/Token does not have access to `snapshots/:key/settings`; "
-                           "cannot get status of Assurance Engine tasks.")
+            logger.warning(
+                "User/Token does not have access to `snapshots/:key/settings`; "
+                "cannot get status of Assurance Engine tasks."
+            )
         return None
 
     def get_assurance_engine_settings(self, ipf: Union[IPFClient, IPFabricAPI]):
         settings = self.get_snapshot_settings(ipf)
         if settings is None:
-            logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings to verify Assurance Engine tasks.")
+            logger.error(f"Could not get Snapshot {self.snapshot_id} Settings to verify Assurance Engine tasks.")
             return None
-        disabled = settings.get('disabledPostDiscoveryActions', list())
+        disabled = settings.get("disabledPostDiscoveryActions", list())
         self.disabled_graph_cache = True if "graphCache" in disabled else False
         self.disabled_historical_data = True if "historicalData" in disabled else False
         self.disabled_intent_verification = True if "intentVerification" in disabled else False
-        return dict(disabled_graph_cache=self.disabled_graph_cache,
-                    disabled_historical_data=self.disabled_historical_data,
-                    disabled_intent_verification=self.disabled_intent_verification)
+        return dict(
+            disabled_graph_cache=self.disabled_graph_cache,
+            disabled_historical_data=self.disabled_historical_data,
+            disabled_intent_verification=self.disabled_intent_verification,
+        )
 
     def update_assurance_engine_settings(
-            self,
-            ipf: Union[IPFClient, IPFabricAPI],
-            disable_graph_cache: bool = False,
-            disable_historical_data: bool = False,
-            disable_intent_verification: bool = False
+        self,
+        ipf: Union[IPFClient, IPFabricAPI],
+        disabled_graph_cache: bool = False,
+        disabled_historical_data: bool = False,
+        disabled_intent_verification: bool = False,
+        wait_for_assurance: bool = True,
+        timeout: int = 60,
+        retry: int = 5,
     ):
         settings = self.get_snapshot_settings(ipf)
         if settings is None:
-            logger.warning(f"Could not get Snapshot {self.snapshot_id} Settings and "
-                           f"cannot update Assurance Engine tasks.")
+            logger.error(
+                f"Could not get Snapshot {self.snapshot_id} Settings and cannot update Assurance Engine tasks."
+            )
             return False
-        disabled = list()
-        if disable_graph_cache:
-            disabled.append("graphCache")
-        if disable_historical_data:
-            disabled.append("historicalData")
-        if disable_intent_verification:
-            disabled.append("intentVerification")
-        if set(disabled) == set(settings.get('disabledPostDiscoveryActions', list())):
+        current = set(settings.get("disabledPostDiscoveryActions", list()))
+        disabled, ae_settings = self._calculate_new_ae_settings(
+            current, disabled_graph_cache, disabled_historical_data, disabled_intent_verification
+        )
+        if disabled == current:
             logger.info("No changes to Assurance Engine Settings required.")
             return True
-        res = ipf.patch(f"/snapshots/{self.snapshot_id}/settings", json=dict(disabledPostDiscoveryActions=disabled))
-        res.raise_for_status()  # TODO: Implement check to know when snapshot is done calculations
+        ts = int(datetime.now().timestamp() * 1000)
+        res = ipf.patch(
+            f"/snapshots/{self.snapshot_id}/settings", json=dict(disabledPostDiscoveryActions=list(disabled))
+        )
+        res.raise_for_status()
+        if wait_for_assurance and current - disabled:
+            job = Jobs(client=ipf)
+            ae_status = job.check_snapshot_assurance_jobs(
+                self.snapshot_id, ae_settings, started=ts, timeout=timeout, retry=retry
+            )
+            if not ae_status:
+                logger.error("Assurance Engine tasks did not complete")
+                return False
         return True
+
+    @staticmethod
+    def _calculate_new_ae_settings(
+        current: set,
+        disabled_graph_cache: bool = False,
+        disabled_historical_data: bool = False,
+        disabled_intent_verification: bool = False,
+    ):
+        disabled = set()
+        if disabled_graph_cache:
+            disabled.add("graphCache")
+        if disabled_historical_data:
+            disabled.add("historicalData")
+        if disabled_intent_verification:
+            disabled.add("intentVerification")
+        enabled = current - disabled
+
+        ae_settings = dict(
+            disabled_graph_cache=False if "graphCache" in enabled else True,
+            disabled_historical_data=False if "historicalData" in enabled else True,
+            disabled_intent_verification=False if "intentVerification" in enabled else True,
+        )
+
+        return disabled, ae_settings

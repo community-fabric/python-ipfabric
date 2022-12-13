@@ -64,9 +64,9 @@ class SnapshotModels(unittest.TestCase):
         self.assertTrue(self.snap.unload(MagicMock()))
 
     def test_load(self):
-        self.assertTrue(self.snap.load(MagicMock()))
+        self.assertTrue(self.snap.load(MagicMock(), wait_for_load=False, wait_for_assurance=False))
         self.snap.status = 'unloaded'
-        self.assertTrue(self.snap.load(MagicMock()))
+        self.assertTrue(self.snap.load(MagicMock(), wait_for_load=False, wait_for_assurance=False))
 
     def test_attributes(self):
         ipf = MagicMock()

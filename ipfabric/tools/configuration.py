@@ -9,7 +9,7 @@ from pydantic.dataclasses import dataclass
 
 from ipfabric.tools.shared import date_parser
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Config(BaseModel):

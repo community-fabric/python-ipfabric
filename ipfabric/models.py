@@ -1,14 +1,13 @@
-import hashlib
-import deepdiff
 import logging
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
 
+import deepdiff
 from pydantic import BaseModel
 
 from ipfabric.technology import *
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Table(BaseModel):
@@ -263,22 +262,6 @@ class Inventory(BaseModel):
     def modules(self):
         return Table(client=self.client, endpoint="tables/inventory/modules")
 
-    @property
-    def powerSupplies(self):
-        logger.warning(
-            """Use of client.inventory.PowerSupplies will be deprecated in a future release, please 
-                        use client.technology.platform_environment_power_supplies"""
-        )
-        return Table(client=self.client, endpoint="tables/inventory/power-supplies")
-
-    @property
-    def powerSuppliesFans(self):
-        logger.warning(
-            """Use of client.inventory.PowerSuppliesFans will be deprecated in a future release, please 
-                        use client.technology.platform_environment_power_supplies_fans"""
-        )
-        return Table(client=self.client, endpoint="tables/inventory/power-supplies-fans")
-
 
 class Technology(BaseModel):
     client: Any
@@ -383,42 +366,118 @@ class Jobs(BaseModel):
     def all_jobs(self):
         return Table(client=self.client, endpoint="tables/jobs", snapshot=False)
 
-    def _get_download_job_by_snapshot_id(self, snapshot_id):
-        list_to_return = list()
-        job_filter = dict()
-        job_filter["snapshot"] = ["eq", f"{snapshot_id}"]
-        job_filter["name"] = ["eq", "snapshotDownload"]
-        for snapshot in self.all_jobs.all(filters=job_filter):
-            list_to_return.append(snapshot)
-        logger.debug(f"snapshot_id:{snapshot_id}\nfilter:{job_filter}\njobs: {list_to_return}")
-        return list_to_return
+    @property
+    def columns(self):
+        return [
+            "id",
+            "downloadFile",
+            "finishedAt",
+            "isDone",
+            "name",
+            "scheduledAt",
+            "snapshot",
+            "startedAt",
+            "status",
+            "username",
+        ]
 
-    def _confirm_snapshot_ready_for_download(self, snapshot_id, retry, timeout=5):
+    def _return_job_when_done(self, job_filter: dict, retry: int = 5, timeout: int = 5):
+        if "name" not in job_filter and "snapshot" not in job_filter:
+            raise SyntaxError("Must provide a Snapshot ID and name for a filter.")
         retries = 0
+        sleep(2)  # Sleep as 1st request could be wrong
         while retries < retry:
-            jobs = self._get_download_job_by_snapshot_id(snapshot_id)
-            if len(jobs) > 1:
-                logger.warning(
-                    "multiple snapshots downloaded recently with the same snapshot_id, using most recent job_id."
-                )
-                job_ids = sorted([int(job["id"]) for job in jobs])
-                return job_ids[-1]
-            elif len(jobs) == 0:
-                logger.warning(f"No download job found for snapshot {snapshot_id}")
-            retries += retries + 1
+            jobs = self.all_jobs.fetch(
+                filters=job_filter, sort={"order": "desc", "column": "startedAt"}, columns=self.columns
+            )
+            if jobs and jobs[0]["isDone"]:
+                return jobs[0]
+            logger.info(
+                f"{job_filter['name'][1]} job is not ready for snapshot {job_filter['snapshot'][1]} ({retries}/{retry})"
+            )
+            retries += 1
             sleep(timeout)
-            logger.info(f"retry status: {retries}")
         return None
 
-    def get_snapshot_download_job_id(self, snapshot_id: str, retry: int = 5, timeout=5):
+    def get_snapshot_download_job(self, snapshot_id: str, started: int, retry: int = 5, timeout: int = 5):
         """Returns a Job Id to use to in a download snapshot
 
         Args:
             snapshot_id: UUID of a snapshot
+            started: Integer time since epoch in milliseconds
             timeout: How long in seconds to wait before retry
             retry: how many retries to use when looking for a job, increase for large downloads
 
         Returns:
             job_id: str: id to use when downloading a snapshot
         """
-        return self._confirm_snapshot_ready_for_download(snapshot_id, retry, timeout=timeout)
+        j_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "snapshotDownload"], startedAt=["gte", started - 100])
+        return self._return_job_when_done(j_filter, retry=retry, timeout=timeout)
+
+    def check_snapshot_load_job(self, snapshot_id: str, started: int, retry: int = 5, timeout: int = 5):
+        """Checks to see if a snapshot load job is completed.
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            started: Integer time since epoch in milliseconds
+            timeout: How long in seconds to wait before retry
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            Job dictionary if load is completed, None if still loading
+        """
+        j_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "snapshotLoad"], startedAt=["gte", started - 100])
+        return self._return_job_when_done(j_filter, retry=retry, timeout=timeout)
+
+    def check_snapshot_unload_job(self, snapshot_id: str, started: int, retry: int = 5, timeout: int = 5):
+        """Checks to see if a snapshot load job is completed.
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            started: Integer time since epoch in milliseconds
+            timeout: How long in seconds to wait before retry
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            Job dictionary if load is completed, None if still loading
+        """
+        j_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "snapshotUnload"], startedAt=["gte", started - 100])
+        return self._return_job_when_done(j_filter, retry=retry, timeout=timeout)
+
+    def check_snapshot_assurance_jobs(
+        self, snapshot_id: str, assurance_settings: dict, started: int, retry: int = 5, timeout: int = 5
+    ):
+        """Checks to see if a snapshot Assurance Engine calculation jobs are completed.
+
+        Args:
+            snapshot_id: UUID of a snapshot
+            assurance_settings: Dictionary from Snapshot.get_assurance_engine_settings
+            started: Integer time since epoch in milliseconds
+            timeout: How long in seconds to wait before retry
+            retry: how many retries to use when looking for a job, increase for large downloads
+
+        Returns:
+            True if load is completed, False if still loading
+        """
+        j_filter = dict(snapshot=["eq", snapshot_id], name=["eq", "loadGraphCache"], startedAt=["gte", started - 100])
+        if (
+            assurance_settings["disabled_graph_cache"] is False
+            and self._return_job_when_done(j_filter, retry=retry, timeout=timeout) is None
+        ):
+            logger.error("Graph Cache did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        j_filter["name"] = ["eq", "saveHistoricalData"]
+        if (
+            assurance_settings["disabled_historical_data"] is False
+            and self._return_job_when_done(j_filter, retry=retry, timeout=timeout) is None
+        ):
+            logger.error("Historical Data did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        j_filter["name"] = ["eq", "report"]
+        if (
+            assurance_settings["disabled_intent_verification"] is False
+            and self._return_job_when_done(j_filter, retry=retry, timeout=timeout) is None
+        ):
+            logger.error("Intent Calculations did not finish loading; Snapshot is not fully loaded yet.")
+            return False
+        return True

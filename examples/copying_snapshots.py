@@ -8,7 +8,7 @@ from pythonjsonlogger import jsonlogger
 from ipfabric import IPFClient
 from ipfabric.snapshot_models import snapshot_upload
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 formatter = jsonlogger.JsonFormatter('%(levelname)s %(asctime)s %(name)s %(module)s %(message)s')
 
 streamHandler = logging.StreamHandler()

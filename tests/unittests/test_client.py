@@ -145,6 +145,14 @@ class Client(unittest.TestCase):
         with self.assertRaises(RuntimeError) as err:
             self.ipf.check_version('v1', 'TEST')
 
+    @patch("httpx.Client.get")
+    def test_check_short_version(self, get):
+        get().is_error = None
+        get().json.return_value = {"apiVersion": "v5.1", "releaseVersion": "5.0.1+10"}
+        api_version, os_version = self.ipf.check_version('v6', 'TEST')
+        self.assertEqual(api_version, 'v5')
+        self.assertEqual(str(os_version), "5.0.1+10")
+
     @patch('ipfabric.snapshot_models.Snapshot.get_assurance_engine_settings')
     @patch('ipfabric.api.IPFabricAPI._ipf_pager')
     @patch("httpx.Client.get")

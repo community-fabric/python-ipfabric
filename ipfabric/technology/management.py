@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from ipfabric import models
 
-logger = logging.getLogger("python-ipfabric")
+logger = logging.getLogger("ipfabric")
 
 
 class Management(BaseModel):
