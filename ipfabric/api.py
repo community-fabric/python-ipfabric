@@ -7,11 +7,11 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Generator
 from urllib.parse import urljoin
 
 from httpx import Client
-from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
+from http.cookiejar import CookieJar
 from pydantic import BaseSettings
 import dotenv
 
@@ -22,6 +22,23 @@ from uuid import UUID
 logger = logging.getLogger("ipfabric")
 
 LAST_ID, PREV_ID, LASTLOCKED_ID = "$last", "$prev", "$lastLocked"
+
+
+class AccessToken(httpx.Auth):
+    def __init__(self, client: httpx.Client):
+        self.client = client
+
+    def auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:
+        response = yield request
+
+        if response.status_code != 401 or response.json()['code'] != 'API_EXPIRED_ACCESS_TOKEN':
+            return  # If the response is not a 401 or 401 and not API_EXPIRED_ACCESS_TOKEN
+
+        resp = self.client.post("/api/auth/token")  # Use refreshToken in Cookies to get new accessToken
+        resp.raise_for_status()  # Response updates accessToken in shared CookieJar
+        request.headers['Cookie'] = 'accessToken=' + self.client.cookies['accessToken']  # Update request accessToken
+
+        yield request
 
 
 class Settings(BaseSettings):
@@ -69,10 +86,12 @@ class IPFabricAPI(Client):
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
             self.verify = kwargs.get("verify", settings.ipf_verify)
+            cookie_jar = CookieJar()
             super().__init__(
                 timeout=kwargs.get("timeout", True),
                 headers={"Content-Type": "application/json"},
                 verify=self.verify,
+                cookies=cookie_jar
             )
             base_url = base_url or settings.ipf_url
             if not base_url:
@@ -90,13 +109,14 @@ class IPFabricAPI(Client):
             username = username or settings.ipf_username
             password = password or settings.ipf_password
 
-        if not token and not (username and password):
-            logger.error("IP Fabric Token or Username/Password not provided.")
+        if token:
+            self.headers.update({'X-API-Token': token})
+        elif username and password:
+            self.login(username, password)
+            self.auth = AccessToken(httpx.Client(base_url=base_url, cookies=cookie_jar))
+        else:
             raise RuntimeError("IP Fabric Token or Username/Password not provided.")
 
-        self.auth = (
-            HeaderApiKey(token) if token else PasswordCredentials(base_url, username, password, self.api_version)
-        )
         # Get Current User, by doing that we are also ensuring the token is valid
         self.user = self.get_user()
         self.snapshots = self.get_snapshots()
@@ -106,6 +126,10 @@ class IPFabricAPI(Client):
             f"Successfully connected to '{self.base_url.host}' IPF version '{self.os_version}' "
             f"as user '{self.user.username}'"
         )
+
+    def login(self, username, password):
+        resp = self.post('auth/login', json=dict(username=username, password=password))
+        resp.raise_for_status()
 
     @property
     def attribute_filters(self):
