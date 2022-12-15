@@ -30,14 +30,14 @@ class AccessToken(httpx.Auth):
 
     def auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:
         response = yield request
-        response.read()
 
-        if response.status_code == 401 and 'API_EXPIRED_ACCESS_TOKEN' in response.text:
-            resp = self.client.post("/api/auth/token")  # Use refreshToken in Cookies to get new accessToken
-            resp.raise_for_status()  # Response updates accessToken in shared CookieJar
-            request.headers['Cookie'] = 'accessToken=' + self.client.cookies['accessToken']  # Update request
-            yield request
-
+        if response.status_code == 401:
+            response.read()
+            if 'API_EXPIRED_ACCESS_TOKEN' in response.text:
+                resp = self.client.post("/api/auth/token")  # Use refreshToken in Cookies to get new accessToken
+                resp.raise_for_status()  # Response updates accessToken in shared CookieJar
+                request.headers['Cookie'] = 'accessToken=' + self.client.cookies['accessToken']  # Update request
+                yield request
         return response
 
 
