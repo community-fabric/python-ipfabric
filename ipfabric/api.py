@@ -7,7 +7,7 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional, Union, Dict, List, Generator
+from typing import Optional, Union, Dict, List, Generator, Any
 from urllib.parse import urljoin
 
 from httpx import Client
@@ -67,31 +67,36 @@ class IPFabricAPI(Client):
         self,
         base_url: Optional[str] = None,
         api_version: Optional[str] = None,
-        token: Optional[str] = None,
+        auth: Any = None,
         snapshot_id: Optional[str] = LAST_ID,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
         unloaded: bool = False,
+        verify: bool = True,
         **kwargs,
     ):
         """
         Initializes the IP Fabric Client
         :param base_url: str: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
-        :param token: str: API token or 'IPF_TOKEN' environment variable
+        :param auth: Union[str, tuple, Auth]: API token, tuple (username, password), or custom Auth to pass to httpx
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
+        if kwargs.get("token", None) or kwargs.get("username", None) or kwargs.get("password", None):
+            logger.warning(
+                "Use of `token='<TOKEN>'` or `username='<USER>', password='<PASS>'` authentication will be deprecated "
+                "in v7.0.X, please use `auth='<TOKEN>'` or `auth=('<USER>','<PASS>')` instead.\n"
+                "This does not apply to .env file or environment variables (IPF_TOKEN, IPF_USERNAME, IPF_PASSWORD).\n"
+                "This is to support custom authentication methods that will be passed directly to HTTPX."
+            )
         self.unloaded = unloaded
         # find env file
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
-            self.verify = kwargs.get("verify", settings.ipf_verify)
+            self.verify = verify or settings.ipf_verify  # TODO: To be removed when httpx adds streaming support
             cookie_jar = CookieJar()
             super().__init__(
-                timeout=kwargs.get("timeout", True),
                 headers={"Content-Type": "application/json"},
-                verify=self.verify,
-                cookies=cookie_jar
+                cookies=cookie_jar,
+                **self._httpx_kwargs(kwargs, self.verify)
             )
             base_url = base_url or settings.ipf_url
             if not base_url:
@@ -105,17 +110,16 @@ class IPFabricAPI(Client):
                 if not settings.ipf_dev
                 else urljoin(base_url, f"{self.api_version}/")
             )
-            token = token or settings.ipf_token
-            username = username or settings.ipf_username
-            password = password or settings.ipf_password
+            token = kwargs.get("token", settings.ipf_token)  # TODO: Update this in v7.0
+            username = kwargs.get("username", settings.ipf_username)
+            password = kwargs.get("password", settings.ipf_password)
 
         if token:
-            self.headers.update({'X-API-Token': token})
+            self._login(token)
         elif username and password:
-            self.login(username, password)
-            self.auth = AccessToken(httpx.Client(base_url=base_url, cookies=cookie_jar))
+            self._login((username, password), base_url=base_url, cookie_jar=cookie_jar)
         else:
-            raise RuntimeError("IP Fabric Token or Username/Password not provided.")
+            self._login(auth, base_url=base_url, cookie_jar=cookie_jar)  # TODO: Keep only this in v7.0
 
         # Get Current User, by doing that we are also ensuring the token is valid
         self.user = self.get_user()
@@ -127,9 +131,26 @@ class IPFabricAPI(Client):
             f"as user '{self.user.username}'"
         )
 
-    def login(self, username, password):
-        resp = self.post('auth/login', json=dict(username=username, password=password))
-        resp.raise_for_status()
+    @staticmethod
+    def _httpx_kwargs(kwargs: dict, verify: bool):
+        httpx_kwargs = kwargs.copy()
+        remove = ['base_url', 'api_version', 'snapshot_id', 'auth', 'unloaded', 'cookies',
+                  'token', 'username', 'password']  # TODO: Remove this in v7.0
+        [httpx_kwargs.pop(h, None) for h in remove]
+        httpx_kwargs['verify'] = verify
+        return httpx_kwargs
+
+    def _login(self, auth: Any, base_url: str = None, cookie_jar: CookieJar = None):
+        if not auth:
+            raise RuntimeError("IP Fabric Authentication not provided.")
+        elif isinstance(auth, str):
+            self.headers.update({'X-API-Token': auth})
+        elif isinstance(auth, tuple):
+            resp = self.post('auth/login', json=dict(username=auth[0], password=auth[1]))
+            resp.raise_for_status()
+            self.auth = AccessToken(httpx.Client(base_url=base_url, cookies=cookie_jar))
+        else:
+            self.auth = auth
 
     @property
     def attribute_filters(self):
