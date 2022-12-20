@@ -115,8 +115,10 @@ class Client(unittest.TestCase):
         self.assertEqual(api_version, 'v5.0')
         self.assertEqual(str(os_version), "5.0.1+10")
 
+    @patch('ipfabric.api.importlib_metadata')
     @patch("httpx.Client.get")
-    def test_check_version_no_version(self, get):
+    def test_check_version_no_version(self, get, meta):
+        meta.version.return_value = 'v6.0.0'
         get().is_error = None
         get().json.return_value = {"apiVersion": "v6.1", "releaseVersion": "6.0.1+10"}
         api_version, os_version = self.ipf.check_version(None, 'TEST')
