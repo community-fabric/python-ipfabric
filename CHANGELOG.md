@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.0.8 (2022-12-21)
+
+### Fix
+
+* Updated dependencies
+* Allow string for verify option in environment
+
 ## 6.0.7 (2022-12-13)
 
 ### Fix
