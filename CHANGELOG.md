@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.1.0 (2023-##-##)
+
+### Feature
+
+* Removed custom authentication package
+* Added new initialization variable `auth` to replace `token` and `username`/`password`
+* To use new auth: `auth=<TOKEN>` or `auth=(<USER>, (<PASS>)` or custom auth to pass directly to httpx
+* Token and username/password will be removed in 7.0
+
 ## 6.0.8 (2022-12-21)
 
 ### Fix

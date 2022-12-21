@@ -1,7 +1,7 @@
 import logging
 import re
 from json import loads
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Any
 from urllib.parse import urlparse
 
 from ipfabric.api import IPFabricAPI
@@ -35,11 +35,10 @@ class IPFClient(IPFabricAPI):
         self,
         base_url: Optional[str] = None,
         api_version: Optional[str] = None,
-        token: Optional[str] = None,
+        auth: Any = None,
         snapshot_id: str = DEFAULT_ID,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
         unloaded: bool = False,
+        verify: bool = True,
         **kwargs,
     ):
         """
@@ -49,7 +48,8 @@ class IPFClient(IPFabricAPI):
         :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
         :param kwargs: dict: Keyword args to pass to httpx
         """
-        super().__init__(base_url, api_version, token, snapshot_id, username, password, unloaded, **kwargs)
+        super().__init__(base_url=base_url, api_version=api_version, auth=auth, snapshot_id=snapshot_id,
+                         unloaded=unloaded, verify=verify, **kwargs)
         self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)

@@ -225,18 +225,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "ipfabric-httpx-auth"
-version = "6.0.0"
-description = "Authentication plugin for IP Fabric"
-category = "main"
-optional = false
-python-versions = ">=3.7.1,<4.0.0"
-
-[package.dependencies]
-httpx = ">=0.23.0,<0.24.0"
-PyJWT = ">=2.4.0,<3.0.0"
-
-[[package]]
 name = "macaddress"
 version = "2.0.2"
 description = "Like ``ipaddress``, but for hardware identifiers such as MAC addresses."
@@ -392,20 +380,6 @@ description = "passive checker of Python programs"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
-
-[[package]]
-name = "pyjwt"
-version = "2.6.0"
-description = "JSON Web Token implementation in Python"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.extras]
-crypto = ["cryptography (>=3.4.0)"]
-dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.4.0)", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
-docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
-tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pytest"
@@ -572,7 +546,7 @@ examples = ["tabulate", "pandas", "openpyxl", "python-json-logger", "pyyaml"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "29cefd0709fc3f1151e3344795cdc5d8bc23e0a04fd018e5acf6f187c5aba72f"
+content-hash = "4cabb1d8af23fba80872a17db0a57ff56c3792f0ee1a40c1b04dbbb6ea655deb"
 
 [metadata.files]
 anyio = [
@@ -701,10 +675,6 @@ importlib-metadata = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
-]
-ipfabric-httpx-auth = [
-    {file = "ipfabric_httpx_auth-6.0.0-py3-none-any.whl", hash = "sha256:3b8939acafa976815a12ea4bd4c3190d832029f3158d338ad8de02f01313fe64"},
-    {file = "ipfabric_httpx_auth-6.0.0.tar.gz", hash = "sha256:45766be4976c63d3d9684a57911e4b6b6fc85a0b6437b88b97bfe0d066a97d4d"},
 ]
 macaddress = [
     {file = "macaddress-2.0.2-py3-none-any.whl", hash = "sha256:6f4a0430f9b5af6d98a582b8d527ba2cd3f0825fce5503a9ce5c73acb772c30f"},
@@ -875,10 +845,6 @@ pydantic = [
 pyflakes = [
     {file = "pyflakes-2.5.0-py2.py3-none-any.whl", hash = "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2"},
     {file = "pyflakes-2.5.0.tar.gz", hash = "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"},
-]
-pyjwt = [
-    {file = "PyJWT-2.6.0-py3-none-any.whl", hash = "sha256:d83c3d892a77bbb74d3e1a2cfa90afaadb60945205d1095d9221f04466f64c14"},
-    {file = "PyJWT-2.6.0.tar.gz", hash = "sha256:69285c7e31fc44f68a1feb309e948e0df53259d579295e6cfe2b1792329f05fd"},
 ]
 pytest = [
     {file = "pytest-7.2.0-py3-none-any.whl", hash = "sha256:892f933d339f068883b6fd5a459f03d85bfcb355e4981e146d2c7616c21fef71"},
