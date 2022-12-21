@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     ipf_url: str = ""
     ipf_version: str = ""
     ipf_token: str = ""
-    ipf_verify: bool = True
+    ipf_verify: Union[bool, str] = True
     ipf_dev: bool = False
     ipf_username: str = ""
     ipf_password: str = ""
