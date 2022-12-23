@@ -141,7 +141,7 @@ class Table(BaseModel):
         return cols_for_return
 
     @staticmethod
-    def _hash_data(json_data: list[dict], unique_keys: Union[list, set] = None):
+    def _hash_data(json_data: list[dict], unique_keys=None):
         """
         Hashes data. Turns any data into a string and hashes it, then returns the hash as a key for the data
         Args:
