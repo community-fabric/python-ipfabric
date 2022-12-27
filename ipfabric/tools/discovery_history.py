@@ -14,7 +14,7 @@ COLUMNS = ["id", "sn", "hostname", "loginIp", "loginType", "ts", "username", "us
 class DiscoveryHistory:
     ipf: Any
 
-    def get_all_history(self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc") -> list[dict]:
+    def get_all_history(self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc") -> list:
         """returns information about the discovery process
 
         Args:
@@ -42,7 +42,7 @@ class DiscoveryHistory:
 
     def get_snapshot_history(
         self, snapshot_id: str = None, columns: list = None, sort: dict = None, ts_format: str = "utc"
-    ) -> tuple[list[Any], list[Any]]:
+    ) -> tuple:
         """returns information about a specific snapshot
         
         Args: 
@@ -72,7 +72,7 @@ class DiscoveryHistory:
 
     def get_history_date(
         self, daterange: Union[tuple, str, int], columns: list = None, sort: dict = None, ts_format: str = "utc"
-    ) -> list[dict]:
+    ) -> list:
         """get a full history of a snapshot
         
         Args:

@@ -27,7 +27,7 @@ class Config(BaseModel):
 class DeviceConfigs:
     ipf: Any
 
-    def get_all_configurations(self, device: Optional[str] = None, sn: Optional[str] = None) -> dict[str:[Config, Config]]:
+    def get_all_configurations(self, device: Optional[str] = None, sn: Optional[str] = None) -> dict:
         """Get all configurations in IP Fabric
 
         Args:
