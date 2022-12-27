@@ -7,7 +7,7 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, Dict, List, Any
 from urllib.parse import urljoin
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
