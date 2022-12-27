@@ -13,6 +13,14 @@ Use it as a reference for the technical implementation of the IP Fabric Python S
 ::: ipfabric.intent_models
 
 ## [Settings](Settings.md)
+::: ipfabric.api
+
+::: ipfabric.client
+
+::: ipfabric.intent
+
+::: ipfabric.intent_models
+
 ::: ipfabric.settings.attributes
 
 ::: ipfabric.settings.authentication
