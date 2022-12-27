@@ -1,7 +1,7 @@
 import logging
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
-import datetime
+from datetime import datetime
 
 import deepdiff
 from pydantic import BaseModel, Field
