@@ -3,7 +3,7 @@ from time import sleep
 from typing import Optional, Any, Dict, List, Union
 
 import deepdiff
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ipfabric.technology import *
 
