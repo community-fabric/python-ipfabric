@@ -193,41 +193,14 @@ class IPFClient(IPFabricAPI):
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot_id: Optional[str] = None,
         snapshot: bool = True,
-        payload: dict,
-        data: Optional[Union[list, None]] = None,
-        limit: int = 1000,
-        start: int = 0,
-    ) -> list:
-        """Loops through and collects all the data from the tables
-
-        Args:
-        url: Full URL to post to
-        payload: Data to submit to IP Fabric
-        data: List of data to append subsequent calls
-        start: Where to start for the data
-
-        Returns:
-            list: List of dictionaries
-        """
-        data = data or list()
-
-        payload["pagination"] = dict(limit=limit, start=start)
-        r = self.post(url, json=payload)
-        r.raise_for_status()
-        r_data = r.json()["data"]
-        data.extend(r_data)
-        if limit == len(r_data):
-            self._ipf_pager(url, payload, data, limit=limit, start=start + limit)
-        return data
-
-    def get_count(self, url: str, filters: Optional[Union[dict, str]] = None, snapshot_id: Optional[str] = None) -> int:
+    ) -> int:
         """Get a total number of rows
-
         Args:
             url: Full URL to post to
             filters: Optional dictionary of filters
+            attr_filters: Optional dictionary of attribute filters
             snapshot_id: Optional snapshot_id to override default
-
+            snapshot: Set to False for some tables like management endpoints.
         Returns:
             int: a count of rows
         """
