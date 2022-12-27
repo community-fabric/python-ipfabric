@@ -9,6 +9,8 @@ from ipfabric.technology import *
 
 logger = logging.getLogger("ipfabric")
 
+IGNORE_COLUMNS = {"id"}
+
 
 class Table(BaseModel):
     endpoint: str
@@ -106,97 +108,149 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
+    @staticmethod
+    def _ignore_columns(columns: set, columns_ignore: set):
         """
         Determines which columns to use in the query.
         Args:
-            table_columns: set : Set of columns in the table
             columns: set : Set of columns to use
             columns_ignore: set : Set of columns to ignore
 
         Returns:
             list[str]: List of columns to use
         """
+        cols_for_return = set()
+        for col in columns:
+            if col in columns_ignore and col != "id":
+                logger.debug(f"Column {col} in columns_ignore, ignoring")
+                continue
+            cols_for_return.add(col)
+        return cols_for_return
 
-        # Must always ignore 'id' column
-        columns_ignore.add("id")
+    def _compare_determine_columns(self, columns: set, columns_ignore: set, unique_keys: set):
+        """
+        Determines which columns to use in the query.
+        Args:
+            columns: set : Set of columns to use
+            columns_ignore: set : Set of columns to ignore
+            unique_keys: set : Set of columns for unique keys
 
-        cols_for_return = list()
+        Returns:
+            list[str]: List of columns to use
+        """
+        # get all columns for the table
+        table_columns = set(self.client.get_columns(self.endpoint))
+
+        # Must always ignore some columns
+        columns_ignore.update(IGNORE_COLUMNS)
+
+        cols_for_return = set()
+        # user passes unique_keys
+        if unique_keys:
+            if not table_columns.issuperset(unique_keys):
+                raise ValueError(f"Unique Key(s) {unique_keys - table_columns} not in table {self.name}")
+            [cols_for_return.add(u) for u in unique_keys]
         # user passes columns
         if columns:
             if not table_columns.issuperset(columns):
                 raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
-            for col in columns:
-                if col in columns_ignore and col != "id":
-                    logger.debug(f"Column {col} in columns_ignore, ignoring")
-                    continue
-                cols_for_return.append(col)
+            cols_for_return.update(self._ignore_columns(columns, columns_ignore))
         # user does not pass columns
         else:
-            for col in table_columns:
-                if col in columns_ignore and col != "id":
-                    logger.debug(f"Column {col} in columns_ignore, ignoring")
-                    continue
-                cols_for_return.append(col)
-        return cols_for_return
+            cols_for_return.update(self._ignore_columns(table_columns, columns_ignore))
+        return list(cols_for_return)
 
     @staticmethod
-    def _hash_data(json_data):
+    def _hash_data(json_data, unique_keys=None):
         """
         Hashes data. Turns any data into a string and hashes it, then returns the hash as a key for the data
         Args:
             json_data: list[dict] : List of dictionaries to hash
+            unique_keys: list[str] : List of keys to use for hashing
 
         Returns:
-            list[dict]: List of dictionaries with hash as key
+            dict[str]: dictionary with hash as key and values as the original data
         """
         # loop over each obj, turn the obj into a string, and hash it
         return_json = dict()
-        for dict_obj in json_data:
-            return_json[deepdiff.DeepHash(dict_obj)[dict_obj]] = dict_obj
+        if unique_keys:
+            for dict_obj in json_data:
+                hash_key = {key: dict_obj[key] for key in unique_keys}
+                unique_hash = deepdiff.DeepHash(hash_key)[hash_key]
+                if unique_hash in return_json:
+                    raise KeyError(f"Unique Key(s) {unique_keys} are not unique, please adjust unique_keys input.")
+                return_json[unique_hash] = dict_obj
+        else:
+            for dict_obj in json_data:
+                return_json[deepdiff.DeepHash(dict_obj)[dict_obj]] = dict_obj
         return return_json
+
+    @staticmethod
+    def _make_set(data: Union[list, set, str] = None):
+        if isinstance(data, str):
+            return {data}
+        elif data is None:
+            return set()
+        else:
+            return set(data)
 
     def compare(
         self,
         snapshot_id: str = None,
-        reverse: bool = False,
         columns: Union[list, set] = None,
-        columns_ignore: Union[list, set] = None,
+        columns_ignore: Union[list, set, str] = None,
+        unique_keys: Union[list, set, str] = None,
         **kwargs,
     ):
         """
         Compares a table from the current snapshot to the snapshot_id passed.
         Args:
             snapshot_id: str : The snapshot_id to compare to.
-            reverse: bool : If True, will compare the snapshot_id to the current snapshot.
             columns: list : List of columns to compare. If None, will compare all columns.
             columns_ignore: list : List of columns to ignore. If None, will always ignore 'id' column.
+            unique_keys: list : List of columns to use as unique keys. If None, will use all columns as primary key.
             **kwargs: dict : Optional Table.all() arguments to apply to the table before comparing.
 
         Returns:
-            list : List of dictionaries containing the differences between the two snapshots.
+            dict : dictionary containing the differences between the two snapshots.
+                   Possible keys are 'added', 'removed' and 'changed'.
         """
-
-        # get all columns for the table
-        table_cols = set(self.client._get_columns(self.endpoint))
+        return_dict = dict()
 
         # determine which columns to use in query
-        columns = set() if columns is None else set(columns)
-        columns_ignore = set() if columns_ignore is None else set(columns_ignore)
-        cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
+        columns = self._make_set(columns)
+        columns_ignore = self._make_set(columns_ignore)
+        unique_keys = self._make_set(unique_keys)
+        cols_for_query = self._compare_determine_columns(columns, columns_ignore, unique_keys)
 
-        if reverse:
-            data = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
-            data_compare = self.all(columns=cols_for_query, **kwargs)
-        else:
-            data = self.all(columns=cols_for_query, **kwargs)
-            data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+        data = self.all(columns=cols_for_query, **kwargs)
+        data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
+
+        # since we turned the values into a hash, we can just compare the keys
+        if unique_keys:
+            hashed_data_unique = self._hash_data(data, unique_keys)
+            hashed_data_compare_unique = self._hash_data(data_compare, unique_keys)
+            changed = [
+                hashed_data_unique[hashed_str]
+                for hashed_str in hashed_data_unique.keys()
+                if hashed_str not in hashed_data_compare_unique.keys()
+            ]
+            return_dict["changed"] = changed
+            return return_dict
+        # compare both ways
         hashed_data = self._hash_data(data)
         hashed_data_compare = self._hash_data(data_compare)
-        # since we turned the values into a hash, we can just compare the keys
-        return [
+        added = [
             hashed_data[hashed_str] for hashed_str in hashed_data.keys() if hashed_str not in hashed_data_compare.keys()
         ]
+        removed = [
+            hashed_data_compare[hashed_str]
+            for hashed_str in hashed_data_compare.keys()
+            if hashed_str not in hashed_data.keys()
+        ]
+        return_dict["added"] = added
+        return_dict["removed"] = removed
+        return return_dict
 
 
 class Inventory(BaseModel):
