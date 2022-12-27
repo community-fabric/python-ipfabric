@@ -117,7 +117,7 @@ class Table(BaseModel):
         sort: Optional[dict] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
-    ) -> list[dict]:
+    ) -> list[dict[str]]:
         """Gets all data from corresponding endpoint
 
         Args:
