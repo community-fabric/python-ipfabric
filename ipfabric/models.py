@@ -139,7 +139,7 @@ class Table(BaseModel):
             list[str]: List of columns to use
         """
         # get all columns for the table
-        table_columns = set(self.client._get_columns(self.endpoint))
+        table_columns = set(self.client.get_columns(self.endpoint))
 
         # Must always ignore some columns
         columns_ignore.update(IGNORE_COLUMNS)

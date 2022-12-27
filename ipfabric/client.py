@@ -153,6 +153,12 @@ class IPFClient(IPFabricAPI):
             return res.json()["data"]
 
     def _get_columns(self, url: str):
+        logger.warning(
+            """Use of _get_columns will be deprecated in a future release, please use get_columns"""
+        )
+        return self.get_columns(url)
+
+    def get_columns(self, url: str):
         """
         Submits malformed payload and extracts column names from it
         :param url: str: API url to post
