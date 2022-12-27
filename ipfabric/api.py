@@ -135,7 +135,7 @@ class IPFabricAPI(Client):
         resp.raise_for_status()
         return User(**resp.json())
 
-    def check_version(self, api_version:str = None, base_url:str = None, dev=False) -> tuple[str, Any]:
+    def check_version(self, api_version:str = None, base_url:str = None, dev=False) -> tuple:
         """Checks API Version and returns the version to use in the URL and the OS Version
 
         Args:
