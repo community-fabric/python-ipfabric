@@ -9,6 +9,8 @@ from ipfabric.technology import *
 
 logger = logging.getLogger("ipfabric")
 
+IGNORE_COLUMNS = {"id"}
+
 
 class Table(BaseModel):
     endpoint: str
@@ -106,39 +108,57 @@ class Table(BaseModel):
             snapshot=self.snapshot,
         )
 
-    def _compare_determine_columns(self, table_columns: set, columns: set, columns_ignore: set):
+    @staticmethod
+    def _ignore_columns(columns: set, columns_ignore: set):
         """
         Determines which columns to use in the query.
         Args:
-            table_columns: set : Set of columns in the table
             columns: set : Set of columns to use
             columns_ignore: set : Set of columns to ignore
 
         Returns:
             list[str]: List of columns to use
         """
+        cols_for_return = set()
+        for col in columns:
+            if col in columns_ignore and col != "id":
+                logger.debug(f"Column {col} in columns_ignore, ignoring")
+                continue
+            cols_for_return.add(col)
+        return cols_for_return
 
-        # Must always ignore 'id' column
-        columns_ignore.add("id")
+    def _compare_determine_columns(self, columns: set, columns_ignore: set, unique_keys: set):
+        """
+        Determines which columns to use in the query.
+        Args:
+            columns: set : Set of columns to use
+            columns_ignore: set : Set of columns to ignore
+            unique_keys: set : Set of columns for unique keys
 
-        cols_for_return = list()
+        Returns:
+            list[str]: List of columns to use
+        """
+        # get all columns for the table
+        table_columns = set(self.client._get_columns(self.endpoint))
+
+        # Must always ignore some columns
+        columns_ignore.update(IGNORE_COLUMNS)
+
+        cols_for_return = set()
+        # user passes unique_keys
+        if unique_keys:
+            if not table_columns.issuperset(unique_keys):
+                raise ValueError(f"Unique Key(s) {unique_keys - table_columns} not in table {self.name}")
+            [cols_for_return.add(u) for u in unique_keys]
         # user passes columns
         if columns:
             if not table_columns.issuperset(columns):
                 raise ValueError(f"Column(s) {columns - table_columns} not in table {self.name}")
-            for col in columns:
-                if col in columns_ignore and col != "id":
-                    logger.debug(f"Column {col} in columns_ignore, ignoring")
-                    continue
-                cols_for_return.append(col)
+            cols_for_return.update(self._ignore_columns(columns, columns_ignore))
         # user does not pass columns
         else:
-            for col in table_columns:
-                if col in columns_ignore and col != "id":
-                    logger.debug(f"Column {col} in columns_ignore, ignoring")
-                    continue
-                cols_for_return.append(col)
-        return cols_for_return
+            cols_for_return.update(self._ignore_columns(table_columns, columns_ignore))
+        return list(cols_for_return)
 
     @staticmethod
     def _hash_data(json_data, unique_keys=None):
@@ -155,21 +175,31 @@ class Table(BaseModel):
         return_json = dict()
         if unique_keys:
             for dict_obj in json_data:
-                hash_key = dict()
-                for key in unique_keys:
-                    hash_key[key] = dict_obj[key]
-                return_json[deepdiff.DeepHash(hash_key)[hash_key]] = dict_obj
+                hash_key = {key: dict_obj[key] for key in unique_keys}
+                unique_hash = deepdiff.DeepHash(hash_key)[hash_key]
+                if unique_hash in return_json:
+                    raise KeyError(f"Unique Key(s) {unique_keys} are not unique, please adjust unique_keys input.")
+                return_json[unique_hash] = dict_obj
         else:
             for dict_obj in json_data:
                 return_json[deepdiff.DeepHash(dict_obj)[dict_obj]] = dict_obj
         return return_json
 
+    @staticmethod
+    def _make_set(data: Union[list, set, str] = None):
+        if isinstance(data, str):
+            return {data}
+        elif data is None:
+            return set()
+        else:
+            return set(data)
+
     def compare(
         self,
         snapshot_id: str = None,
         columns: Union[list, set] = None,
-        columns_ignore: Union[list, set] = None,
-        unique_keys: Union[list, set] = None,
+        columns_ignore: Union[list, set, str] = None,
+        unique_keys: Union[list, set, str] = None,
         **kwargs,
     ):
         """
@@ -182,24 +212,22 @@ class Table(BaseModel):
             **kwargs: dict : Optional Table.all() arguments to apply to the table before comparing.
 
         Returns:
-            dict : dictionary containing the differences between the two snapshots. Possible keys are 'added', 'removed' and 'changed'.
+            dict : dictionary containing the differences between the two snapshots.
+                   Possible keys are 'added', 'removed' and 'changed'.
         """
         return_dict = dict()
-        # get all columns for the table
-        table_cols = set(self.client._get_columns(self.endpoint))
 
         # determine which columns to use in query
-        columns = set() if columns is None else set(columns)
-        columns_ignore = set() if columns_ignore is None else set(columns_ignore)
-        cols_for_query = self._compare_determine_columns(table_cols, columns, columns_ignore)
+        columns = self._make_set(columns)
+        columns_ignore = self._make_set(columns_ignore)
+        unique_keys = self._make_set(unique_keys)
+        cols_for_query = self._compare_determine_columns(columns, columns_ignore, unique_keys)
 
         data = self.all(columns=cols_for_query, **kwargs)
         data_compare = self.all(snapshot_id=snapshot_id, columns=cols_for_query, **kwargs)
 
         # since we turned the values into a hash, we can just compare the keys
         if unique_keys:
-            if not set(unique_keys).issubset(columns):
-                raise ValueError(f"unique_keys: {unique_keys} not in columns {columns}")
             hashed_data_unique = self._hash_data(data, unique_keys)
             hashed_data_compare_unique = self._hash_data(data_compare, unique_keys)
             changed = [
