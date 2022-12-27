@@ -294,10 +294,10 @@ class IPFabricAPI(Client):
         return ae_tasks
 
     def get_snapshots(self):
-         """Gets all snapshots from IP Fabric and returns a dictionary of {ID:   Snapshot_info}
+        """Gets all snapshots from IP Fabric and returns a dictionary of {ID:   Snapshot_info}
 
-         Returns:
-             Dictionary with ID as key and dictionary with info as the value
+        Returns:
+            Dictionary with ID as key and dictionary with info as the value
         """
         payload = {"columns": snapshot_models.SNAPSHOT_COLUMNS, "sort": {"order": "desc", "column": "tsEnd"}}
         if not self.unloaded:
