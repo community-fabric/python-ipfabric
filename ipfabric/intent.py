@@ -49,7 +49,7 @@ class Intent:
         self.intent_checks = self.get_intent_checks(snapshot_id)
         self.groups = self.get_groups()
 
-    def get_groups(self) -> list[Group]:
+    def get_groups(self) -> list:
         """
 
         Returns:
@@ -135,7 +135,7 @@ class Intent:
             filters={intent.column: ["color", "eq", color]},
         )
 
-    def compare_snapshot(self, snapshot_id: str, reverse: bool = False) -> list[dict]:
+    def compare_snapshot(self, snapshot_id: str, reverse: bool = False) -> list:
         """Compares all intents against another snapshot.
         Current is the snapshot loaded into the class
         Other is the snapshot specified in this method.  Use reverse=True to flip them.
