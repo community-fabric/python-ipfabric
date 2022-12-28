@@ -1,7 +1,7 @@
 import logging
+from datetime import datetime
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
-from datetime import datetime
 
 import deepdiff
 from pydantic import BaseModel, Field
@@ -11,9 +11,11 @@ from ipfabric.technology import *
 logger = logging.getLogger("ipfabric")
 
 IGNORE_COLUMNS = {"id"}
+
+
 class Site(BaseModel):
-    """model for a site
-    """
+    """model for a site"""
+
     _sitename: str = Field(alias="siteName")
     _name: str = Field(alias="name")
     uid: str
@@ -25,15 +27,15 @@ class Site(BaseModel):
 
 
 class Error(BaseModel):
-    """model for errors
-    """
+    """model for errors"""
+
     error_type: str = Field(alias="errorType")
     count: int
 
 
 class Snapshot(BaseModel):
-    """model for a snapshot
-    """
+    """model for a snapshot"""
+
     snapshot_id: str = Field(alias="id")
     name: Optional[str]
     note: Optional[str]
@@ -87,10 +89,10 @@ class Snapshot(BaseModel):
 
     def attributes(self, ipf):
         """Load attributes of a Snapshot
-        
+
         Args:
             ipf: IPFClient
-        
+
         Returns:
             bool type that indicates the snapshot was successfully unloaded
         """
@@ -99,6 +101,7 @@ class Snapshot(BaseModel):
 
 class Table(BaseModel):
     """model for table data"""
+
     endpoint: str
     client: Any
     snapshot: bool = True
@@ -343,8 +346,8 @@ class Table(BaseModel):
 
 
 class Inventory(BaseModel):
-    """model for inventories
-    """
+    """model for inventories"""
+
     client: Any
 
     @property

@@ -7,7 +7,7 @@ try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
     import importlib_metadata
-from typing import Optional, Union, Dict, List, Any
+from typing import Optional, Union, Dict, List
 from urllib.parse import urljoin
 from httpx import Client
 from ipfabric_httpx_auth import PasswordCredentials, HeaderApiKey
@@ -135,12 +135,13 @@ class IPFabricAPI(Client):
         resp.raise_for_status()
         return User(**resp.json())
 
-    def check_version(self, api_version:str = None, base_url:str = None, dev=False) -> tuple:
+    def check_version(self, api_version: str = None, base_url: str = None, dev: bool = False) -> tuple:
         """Checks API Version and returns the version to use in the URL and the OS Version
 
         Args:
             api_version: User defined API Version or None
             base_url: URL of IP Fabric
+            dev: Internal Use Only
 
         Returns:
             api_version, os_version
@@ -178,14 +179,12 @@ class IPFabricAPI(Client):
         return return_version, resp.json()["releaseVersion"]
 
     def update(self):
-        """get all snapshots and assigns them to an attribute
-        """
+        """get all snapshots and assigns them to an attribute"""
         self.snapshots = self.get_snapshots()
 
     @property
     def loaded_snapshots(self) -> dict:
-        """get only loaded snapshots
-        """
+        """get only loaded snapshots"""
         return {k: v for k, v in self.snapshots.items() if v.loaded}
 
     @property
@@ -198,8 +197,7 @@ class IPFabricAPI(Client):
 
     @property
     def snapshot_id(self):
-        """get snapshot Id
-        """
+        """get snapshot Id"""
         return self._snapshot_id
 
     @property

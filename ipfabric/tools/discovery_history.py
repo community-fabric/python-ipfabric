@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Union, List, Tuple
+from typing import Any, Union, List
 
 from pydantic.dataclasses import dataclass
 
@@ -14,17 +14,19 @@ COLUMNS = ["id", "sn", "hostname", "loginIp", "loginType", "ts", "username", "us
 class DiscoveryHistory:
     ipf: Any
 
-    def get_all_history(self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc") -> list:
+    def get_all_history(
+        self, columns: list = None, sort: dict = None, filters: dict = None, ts_format: str = "utc"
+    ) -> list:
         """returns information about the discovery process
 
         Args:
-        
+
         columns: columns for discovery-history table
         sort: Default timestamp descending
         filters: filter for discovery-history table
         ts_format: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
-        
-        Returns: 
+
+        Returns:
             List[Dict]
         """
         columns = columns or COLUMNS
@@ -44,14 +46,14 @@ class DiscoveryHistory:
         self, snapshot_id: str = None, columns: list = None, sort: dict = None, ts_format: str = "utc"
     ) -> tuple:
         """returns information about a specific snapshot
-        
-        Args: 
+
+        Args:
             snapshot_id: Specific ID or defaults to class initialized ID
             columns: Default All
             sort: Default timestamp descending
             ts_format: Valid formats ['utc', 'datetime', 'int']; datetime will return python datetime object
-        
-        Returns: 
+
+        Returns:
             First list has history of devices in the snapshot, second list has device that
             did not have history usually because it is an AP or API connection
         """
@@ -74,7 +76,7 @@ class DiscoveryHistory:
         self, daterange: Union[tuple, str, int], columns: list = None, sort: dict = None, ts_format: str = "utc"
     ) -> list:
         """get a full history of a snapshot
-        
+
         Args:
             daterange: Date can be string or int in seconds "11/22/ 1:30" or 1637629200
                         This will filter from that date to now
