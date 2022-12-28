@@ -103,7 +103,7 @@ class IPFClient(IPFabricAPI):
             list: List of Dictionary objects.
         """
         payload = dict(
-            columns=columns or self._get_columns(url),
+            columns=columns or self.get_columns(url),
             pagination=dict(start=start, limit=limit),
             snapshot=snapshot_id or self.snapshot_id,
         )
@@ -138,7 +138,7 @@ class IPFClient(IPFabricAPI):
         Returns:
             list: List of Dictionary objects.
         """
-        payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
+        payload = dict(columns=columns or self.get_columns(url), snapshot=snapshot_id or self.snapshot_id)
         payload = self._check_payload(payload, snapshot, filters, reports, sort, attr_filters)
         return self._ipf_pager(url, payload)
 
