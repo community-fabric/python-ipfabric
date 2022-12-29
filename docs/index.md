@@ -18,6 +18,5 @@ The IPFabric python module allows you to quickly gather data from your network i
 Founded in 2015, [IP Fabric](https://ipfabric.io/) develops network infrastructure visibility and analytics solution to
 help enterprise network and security teams with network assurance and automation across multi-domain heterogeneous
 environments. From in-depth discovery, through graph visualization, to packet walks and complete network history, IP
-Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless
-digital transformation. 
+Fabric enables to confidently replace manual tasks necessary to handle growing network complexity driven by relentless digital transformation.
 
