@@ -1,0 +1,27 @@
+name: Build Docs
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/build_docs.yml'
+jobs:
+  build_docs:
+    if: |
+      github.repository == 'community-fabric/python-ipfabric'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Install Python Poetry
+        uses: abatilo/actions-poetry@v2.2.0
+        with:
+          poetry-version: 1.3.1
+      - name: Configure poetry
+        run: poetry -C ./docs/ config experimental.new-installer false
+      - name: Install dependencies
+        run: poetry -C ./docs/ install --no-interaction --no-root
+      - name: Build docs
+        run: poetry -C ./docs/ run mkdocs gh-deploy
