@@ -22,7 +22,10 @@ markdown_extensions:
   - mdx_truly_sane_lists
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ipfabric
   - search:
   - social:
 
