@@ -34,6 +34,7 @@ class SystemProxy(BaseModel):
     """
     support for Proxy Servers when utilizing Vendor APIs
     """
+
     respectSystemProxyConfiguration: bool = True
 
 
@@ -41,6 +42,7 @@ class RejectUnauthorized(SystemProxy, BaseModel):
     """
     support for credentials when utilizing Vendor APIs
     """
+
     rejectUnauthorized: bool = True
 
 
@@ -48,6 +50,7 @@ class UserAuthBaseUrl(BaseModel):
     """
     support for authentication when utilizing Vendor APIs
     """
+
     username: str
     password: str
     baseUrl: AnyHttpUrl
@@ -58,6 +61,7 @@ class AWS(SystemProxy, BaseModel):
     """
     AWS vendor api support
     """
+
     apiKey: str
     apiSecret: str
     regions: list
@@ -89,6 +93,7 @@ class Azure(SystemProxy, BaseModel):
     """
     Azure vendor api support
     """
+
     clientId: str
     clientSecret: str
     subscriptionId: str
@@ -101,6 +106,7 @@ class CheckPointApiKey(RejectUnauthorized, BaseModel):
     """
     Checkpoint vendor api support
     """
+
     apiKey: str
     baseUrl: AnyHttpUrl
     domains: Optional[List[str]] = Field(default_factory=list)
@@ -112,6 +118,7 @@ class CheckPointUserAuth(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     checkpoint authentication vendor api support
     """
+
     domains: Optional[List[str]] = Field(default_factory=list)
     type: str = Field(default="checkpoint-mgmt-api", const=True)
 
@@ -120,6 +127,7 @@ class CiscoFMC(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     Cisco FMC vendor api support
     """
+
     type: str = Field(default="ciscofmc", const=True)
 
 
@@ -127,6 +135,7 @@ class Merakiv1(RejectUnauthorized, BaseModel):
     """
     Meraki v1 vendor api support
     """
+
     apiKey: str
     baseUrl: AnyHttpUrl
     organizations: Optional[List[str]] = Field(default_factory=list)
@@ -139,6 +148,7 @@ class NSXT(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     NSXT vendor api support
     """
+
     type: str = Field(default="nsxT", const=True)
 
 
@@ -146,6 +156,7 @@ class SilverPeak(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     SilverPeak vendor api support
     """
+
     type: str = Field(default="nsxT", const=True)
 
 
@@ -153,6 +164,7 @@ class Versa(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     Versa vendor api support
     """
+
     type: str = Field(default="versa", const=True)
 
 
@@ -160,4 +172,5 @@ class Viptela(RejectUnauthorized, UserAuthBaseUrl, BaseModel):
     """
     Viptela vendor api support
     """
+
     type: str = Field(default="viptela", const=True)

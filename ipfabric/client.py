@@ -40,7 +40,7 @@ class IPFClient(IPFabricAPI):
         username: Optional[str] = None,
         password: Optional[str] = None,
         unloaded: bool = False,
-        **kwargs: Optional[dict]
+        **kwargs: Optional[dict],
     ):
         """Initializes the IP Fabric Client
 
@@ -97,13 +97,14 @@ class IPFClient(IPFabricAPI):
             snapshot_id: Optional snapshot_id to override default
             reports: String of frontend URL where the reports are displayed
             sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            attr_filters: Optional dictionary to apply an Attribute filter
             snapshot: Set to False for some tables like management endpoints.
 
         Returns:
             list: List of Dictionary objects.
         """
         payload = dict(
-            columns=columns or self._get_columns(url),
+            columns=columns or self.get_columns(url),
             pagination=dict(start=start, limit=limit),
             snapshot=snapshot_id or self.snapshot_id,
         )
@@ -123,7 +124,7 @@ class IPFClient(IPFabricAPI):
         sort: Optional[dict] = None,
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
-    )-> list:
+    ) -> list:
         """Gets all data from IP Fabric for specified endpoint
 
         Args:
@@ -132,13 +133,14 @@ class IPFClient(IPFabricAPI):
             filters: Optional dictionary of filters
             snapshot_id: Optional snapshot_id to override default
             reports: String of frontend URL where the reports are displayed
-            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            sort: Optional dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            attr_filters: Optional dictionary to apply an Attribute filter
             snapshot: Set to False for some tables like management endpoints.
 
         Returns:
             list: List of Dictionary objects.
         """
-        payload = dict(columns=columns or self._get_columns(url), snapshot=snapshot_id or self.snapshot_id)
+        payload = dict(columns=columns or self.get_columns(url), snapshot=snapshot_id or self.snapshot_id)
         payload = self._check_payload(payload, snapshot, filters, reports, sort, attr_filters)
         return self._ipf_pager(url, payload)
 
@@ -147,7 +149,7 @@ class IPFClient(IPFabricAPI):
         """Submits a query, does no formatting on the parameters.  Use for copy/pasting from the webpage.
 
         Args:
-            url Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary
+            url: Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary or tables/vlan/device-summary
             payload: Dictionary to submit in POST or can be JSON string (i.e. read from file).
             all: Default use pager to get all results and ignore pagination information in the payload
 
@@ -165,9 +167,7 @@ class IPFClient(IPFabricAPI):
             return res.json()["data"]
 
     def _get_columns(self, url: str):
-        logger.warning(
-            """Use of _get_columns will be deprecated in a future release, please use get_columns"""
-        )
+        logger.warning("""Use of _get_columns will be deprecated in a future release, please use get_columns""")
         return self.get_columns(url)
 
     def get_columns(self, url: str):
