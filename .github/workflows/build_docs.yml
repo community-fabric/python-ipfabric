@@ -24,4 +24,4 @@ jobs:
       - name: Install dependencies
         run: poetry -C ./docs/ install --no-interaction --no-root
       - name: Build docs
-        run: poetry -C ./docs/ run mkdocs gh-deploy
+        run: poetry -C ./docs/ run mkdocs gh-deploy --force
