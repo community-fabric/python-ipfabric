@@ -19,6 +19,8 @@ class Intent:
         """Gets all intent checks and returns a list of them.  You can also:
 
         Examples:
+            >>> from ipfabric import IPFabric
+            >>> ipf = IPFabric()
             >>> ipf.load_intent()  # Loads the intents to intent_checks
             >>> print(len(ipf.intent.intent_checks))
         Args:

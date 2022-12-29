@@ -85,7 +85,7 @@ class IPFClient(IPFabricAPI):
         sort: Optional[dict] = None,
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
-    ) -> list:
+    ) -> List:
         """Gets data from IP Fabric for specified endpoint
 
         Args:
@@ -117,14 +117,14 @@ class IPFClient(IPFabricAPI):
     def fetch_all(
         self,
         url: str,
-        columns: Optional[list] = None,
+        columns: Optional[List] = None,
         filters: Optional[Union[dict, str]] = None,
         snapshot_id: Optional[str] = None,
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
         attr_filters: Optional[Dict[str, List[str]]] = None,
         snapshot: bool = True,
-    ) -> list:
+    ) -> List:
         """Gets all data from IP Fabric for specified endpoint
 
         Args:

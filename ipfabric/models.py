@@ -4,99 +4,13 @@ from time import sleep
 from typing import Optional, Any, Dict, List, Union
 
 import deepdiff
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from ipfabric.technology import *
 
 logger = logging.getLogger("ipfabric")
 
 IGNORE_COLUMNS = {"id"}
-
-
-class Site(BaseModel):
-    """model for a site"""
-
-    _sitename: str = Field(alias="siteName")
-    _name: str = Field(alias="name")
-    uid: str
-    site_id: Optional[str] = Field(None, alias="id")
-
-    @property
-    def site_name(self):
-        return self._name or self._sitename
-
-
-class Error(BaseModel):
-    """model for errors"""
-
-    error_type: str = Field(alias="errorType")
-    count: int
-
-
-class Snapshot(BaseModel):
-    """model for a snapshot"""
-
-    snapshot_id: str = Field(alias="id")
-    name: Optional[str]
-    note: Optional[str]
-    count: int = Field(alias="totalDevCount")
-    licensed_count: int = Field(alias="licensedDevCount")
-    status: str
-    state: str
-    locked: bool
-    start: datetime = Field(alias="tsStart")
-    end: Optional[datetime] = Field(alias="tsEnd")
-    version: Optional[str] = None
-    initial_version: Optional[str] = Field(alias="initialVersion")
-    sites: List[Site]
-    errors: Optional[List[Error]]
-
-    @property
-    def loaded(self):
-        return self.state == "loaded"
-
-    def unload(self, ipf) -> bool:
-        """unload a Snapshot
-        Args:
-            ipf: IPFClient
-        Returns:
-            bool type that indicates the snapshot was successfully unloaded
-        """
-        if self.loaded:
-            res = ipf.post(
-                "snapshots/unload", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already unloaded.")
-        return True
-
-    def load(self, ipf) -> bool:
-        """load a Snapshot
-        Args:
-            ipf: IPFClient
-        Returns:
-            bool type that indicates the snapshot was successfully unloaded
-        """
-        if not self.loaded:
-            res = ipf.post(
-                "snapshots/load", json=[dict(jobDetail=int(datetime.now().timestamp() * 1000), id=self.snapshot_id)]
-            )
-            res.raise_for_status()
-        else:
-            logger.warning(f"Snapshot {self.snapshot_id} is already loaded.")
-        return True
-
-    def attributes(self, ipf):
-        """Load attributes of a Snapshot
-
-        Args:
-            ipf: IPFClient
-
-        Returns:
-            bool type that indicates the snapshot was successfully unloaded
-        """
-        return ipf.fetch_all("tables/snapshot-attributes", snapshot_id=self.snapshot_id)
 
 
 class Table(BaseModel):
@@ -125,7 +39,7 @@ class Table(BaseModel):
 
         Args:
             columns: Optional columns to return, default is all
-            filters: Optional filters
+            filters: Optional filters'
             snapshot_id: Optional snapshot ID to override class
             reports: String of frontend URL where the reports are displayed
             sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}

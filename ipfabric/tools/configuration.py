@@ -107,8 +107,8 @@ class DeviceConfigs:
         sn: Serial Number
         sanitized: Default True to mask passwords
         date: Defaults to latest config. Values in [$last, $prev, $first] or can be a
-                                        tuple of a date range to get the latest snapshot in that range.
-                                        Date can be string or int in seconds ("11/22/ 1:30", 1637629200)
+            tuple of a date range to get the latest snapshot in that range.
+            Date can be string or int in seconds ("11/22/ 1:30", 1637629200)
         Returns:
             Returns a result or None
         """
