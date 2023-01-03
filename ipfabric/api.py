@@ -94,10 +94,8 @@ class IPFabricAPI(Client):
         with Settings() as settings:
             cookie_jar = CookieJar()
             super().__init__(
-                timeout=kwargs.get("timeout", True),
-                verify=kwargs.get("verify", settings.ipf_verify),
                 cookies=cookie_jar,
-                **self._httpx_kwargs(kwargs, self.verify)
+                **self._httpx_kwargs(kwargs, kwargs.get("verify", settings.ipf_verify))
             )
             base_url = base_url or settings.ipf_url
             if not base_url:
@@ -133,11 +131,10 @@ class IPFabricAPI(Client):
         )
 
     @staticmethod
-    def _httpx_kwargs(kwargs: dict, verify: bool):
+    def _httpx_kwargs(kwargs: dict, verify):
         httpx_kwargs = kwargs.copy()
-        remove = ['base_url', 'api_version', 'snapshot_id', 'auth', 'unloaded', 'cookies',
-                  'token', 'username', 'password']  # TODO: Remove 'token', 'username', 'password' in v7.0
-        [httpx_kwargs.pop(h, None) for h in remove]
+        # TODO: Remove 'token', 'username', 'password' in v7.0
+        [httpx_kwargs.pop(h, None) for h in ['cookies', 'token', 'username', 'password']]
         httpx_kwargs['verify'] = verify
         return httpx_kwargs
 
