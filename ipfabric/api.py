@@ -92,10 +92,10 @@ class IPFabricAPI(Client):
         # find env file
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
-            self.verify = kwargs.get('verify', settings.ipf_verify)  # TODO: To be removed when httpx fixes multipart
             cookie_jar = CookieJar()
             super().__init__(
-                headers={"Content-Type": "application/json"},
+                timeout=kwargs.get("timeout", True),
+                verify=kwargs.get("verify", settings.ipf_verify),
                 cookies=cookie_jar,
                 **self._httpx_kwargs(kwargs, self.verify)
             )
