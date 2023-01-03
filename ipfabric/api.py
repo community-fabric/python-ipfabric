@@ -69,7 +69,6 @@ class IPFabricAPI(Client):
         auth: Any = None,
         snapshot_id: Optional[str] = LAST_ID,
         unloaded: bool = False,
-        verify: bool = True,
         **kwargs: Optional[dict],
     ):
         """Initializes the IP Fabric Client
@@ -80,7 +79,6 @@ class IPFabricAPI(Client):
             auth: API token, tuple (username, password), or custom Auth to pass to httpx
             snapshot_id: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
             unloaded: True to load metadata from unloaded snapshots
-            verify: Set to False ignore SSL verification
             **kwargs: Keyword args to pass to httpx
         """
         if kwargs.get("token", None) or kwargs.get("username", None) or kwargs.get("password", None):
@@ -94,7 +92,7 @@ class IPFabricAPI(Client):
         # find env file
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
-            self.verify = verify or settings.ipf_verify  # TODO: To be removed when httpx adds streaming support
+            self.verify = kwargs.get('verify', settings.ipf_verify)  # TODO: To be removed when httpx fixes multipart
             cookie_jar = CookieJar()
             super().__init__(
                 headers={"Content-Type": "application/json"},
@@ -138,7 +136,7 @@ class IPFabricAPI(Client):
     def _httpx_kwargs(kwargs: dict, verify: bool):
         httpx_kwargs = kwargs.copy()
         remove = ['base_url', 'api_version', 'snapshot_id', 'auth', 'unloaded', 'cookies',
-                  'token', 'username', 'password']  # TODO: Remove this in v7.0
+                  'token', 'username', 'password']  # TODO: Remove 'token', 'username', 'password' in v7.0
         [httpx_kwargs.pop(h, None) for h in remove]
         httpx_kwargs['verify'] = verify
         return httpx_kwargs
@@ -191,8 +189,6 @@ class IPFabricAPI(Client):
         Returns:
             api_version, os_version
         """
-        if api_version == "v1":
-            raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
         api_version = (
             api_version.lstrip("v").split(".")
             if api_version

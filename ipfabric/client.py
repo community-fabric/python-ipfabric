@@ -38,7 +38,6 @@ class IPFClient(IPFabricAPI):
         auth: Any = None,
         snapshot_id: str = DEFAULT_ID,
         unloaded: bool = False,
-        verify: bool = True,
         **kwargs: Optional[dict],
     ):
         """Initializes the IP Fabric Client
@@ -49,11 +48,10 @@ class IPFClient(IPFabricAPI):
             auth: API token, tuple (username, password), or custom Auth to pass to httpx
             snapshot_id: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
             unloaded: True to load metadata from unloaded snapshots
-            verify: Set to False ignore SSL verification
             **kwargs: Keyword args to pass to httpx
         """
         super().__init__(base_url=base_url, api_version=api_version, auth=auth, snapshot_id=snapshot_id,
-                         unloaded=unloaded, verify=verify, **kwargs)
+                         unloaded=unloaded, **kwargs)
         self.inventory = Inventory(client=self)
         self.intent = Intent(client=self)
         self.technology = Technology(client=self)

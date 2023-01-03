@@ -18,8 +18,11 @@ class MyTestCase(unittest.TestCase):
         self.assertIsInstance(str(ipf.os_version), str)
 
     def test_bad_token(self):
+        token = os.environ["IPF_TOKEN"]
+        os.environ["IPF_TOKEN"] = "BAD"
         with self.assertRaises(HTTPStatusError) as err:
-            IPFClient(auth="BAD")
+            IPFClient()
+        os.environ["IPF_TOKEN"] = token
 
     def test_inventory(self):
         ipf = IPFClient(timeout=15)
