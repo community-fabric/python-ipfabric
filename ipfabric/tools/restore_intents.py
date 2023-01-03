@@ -132,7 +132,7 @@ class RestoreIntents:
         for src_group, dst_group in group_mapping.items():
             raw_dashboard = raw_dashboard.replace(src_group, dst_group)
 
-        res = self.ipf.put("settings/dashboard", data=raw_dashboard)
+        res = self.ipf.put("settings/dashboard", json=json.loads(raw_dashboard))
         res.raise_for_status()
         logger.info("Created Dashboard.")
         return True

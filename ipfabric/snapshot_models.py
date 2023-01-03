@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from ipfabric.api import IPFabricAPI
 
 import logging
-import httpx
 from datetime import datetime
 from typing import Optional, List, Union
 from httpx import HTTPError
@@ -15,7 +14,6 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 from ipfabric.models import Jobs
-from urllib.parse import urljoin
 
 logger = logging.getLogger("ipfabric")
 
@@ -47,9 +45,7 @@ SNAPSHOT_COLUMNS = [
 
 def snapshot_upload(ipf: IPFClient, filename: str):
     data = {"file": (Path(filename).name, open(filename, "rb"), "application/x-tar")}
-    resp = httpx.request(
-        "POST", urljoin(str(ipf.base_url), "snapshots/upload"), files=data, auth=ipf.auth, verify=ipf.verify
-    )
+    resp = ipf.post("snapshots/upload", files=data)
     resp.raise_for_status()
     return resp.json()
 

@@ -19,7 +19,7 @@ keywords = ["ipfabric", "ip-fabric", "community-fabric"]
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-httpx = "^0.23.0"
+httpx = "^0.23.2"
 python-dateutil = "^2.8.2"
 pydantic = "^1.8.2"
 pytz = "^2022.4"
