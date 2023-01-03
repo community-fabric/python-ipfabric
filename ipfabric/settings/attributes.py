@@ -50,12 +50,15 @@ class Attributes:
         filters: Optional[dict] = None,
         sort: Optional[dict] = None,
     ):
-        """
-        Gets all data from corresponding endpoint
-        :param columns: list: Optional columns to return, default is all
-        :param filters: dict: Optional filters
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :return: list: List of Dictionaries
+        """Gets all data from corresponding endpoint
+
+        Args:
+            columns: Optional columns to return, default is all
+            filters: Optional filters
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+
+        Returns:
+            list: List of Dictionaries
         """
         return self.client.fetch_all(
             self.post_endpoint,
@@ -111,19 +114,19 @@ class Attributes:
         return self.set_attribute_by_sn(serial_number, "siteName", site_name)
 
     def set_sites_by_sn(self, sites: List[dict]):
-        """
-        Sets a list of sites for devices based on serial numbers.
-        :param sites: list: [{'sn': 'IPF SERIAL NUMBER', 'value': 'SITE NAME'}]
-        :return:
+        """Sets a list of sites for devices based on serial numbers.
+
+        Args:
+            sites: [{'sn': 'IPF SERIAL NUMBER', 'value': 'SITE NAME'}]
         """
         [a.update(dict(name="siteName")) for a in sites]
         return self.set_attributes_by_sn(sites)
 
     def delete_attribute_by_sn(self, *serial_numbers):
-        """
-        Deletes Attributes by Unique IP Fabric Serial Number(s)
-        :param serial_numbers: str: Serial Numbers
-        :return:
+        """Deletes attributes by Unique IP Fabric Serial Number(s)
+
+        Args:
+            serial_numbers: Serial Numbers
         """
         payload = dict(attributes=dict(sn=[str(i) for i in serial_numbers]))
         if self.snapshot_id:
@@ -133,10 +136,10 @@ class Attributes:
         return True
 
     def delete_attribute_by_id(self, *attribute_ids):
-        """
-        Deletes Attributes by Attribute ID(s)
-        :param attribute_ids: str: Attribute IDs
-        :return:
+        """Deletes attributes by Attribute ID(s)
+
+        Args:
+            attribute_ids: Attribute IDs
         """
         payload = dict(attributes=dict(id=[str(i) for i in attribute_ids]))
         if self.snapshot_id:

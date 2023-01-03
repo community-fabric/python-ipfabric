@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from time import sleep
 from typing import Optional, Any, Dict, List, Union
 
@@ -13,6 +14,8 @@ IGNORE_COLUMNS = {"id"}
 
 
 class Table(BaseModel):
+    """model for table data"""
+
     endpoint: str
     client: Any
     snapshot: bool = True
@@ -31,18 +34,20 @@ class Table(BaseModel):
         sort: Optional[dict] = None,
         limit: Optional[int] = 1000,
         start: Optional[int] = 0,
-    ):
-        """
-        Gets all data from corresponding endpoint
-        :param columns: list: Optional columns to return, default is all
-        :param filters: dict: Optional filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param snapshot_id: str: Optional snapshot ID to override class
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :param limit: int: Default to 1,000 rows
-        :param start: int: Starts at 0
-        :return: list: List of Dictionaries
+    ) -> list:
+        """Gets all data from corresponding endpoint
+
+        Args:
+            columns: Optional columns to return, default is all
+            filters: Optional filters'
+            snapshot_id: Optional snapshot ID to override class
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+            limit: Default to 1,000 rows
+            start: Starts at 0
+
+        Returns:
+            list: List of Dictionaries
         """
         return self.client.fetch(
             self.endpoint,
@@ -66,15 +71,16 @@ class Table(BaseModel):
         reports: Optional[str] = None,
         sort: Optional[dict] = None,
     ):
-        """
-        Gets all data from corresponding endpoint
-        :param columns: list: Optional columns to return, default is all
-        :param filters: dict: Optional filters
-        :param attr_filters: dict: Optional dictionary of Attribute filters
-        :param snapshot_id: str: Optional snapshot ID to override class
-        :param reports: str: String of frontend URL where the reports are displayed
-        :param sort: dict: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
-        :return: list: List of Dictionaries
+        """Gets all data from corresponding endpoint
+
+        Args:
+            columns: Optional columns to return, default is all
+            filters: Optional filters
+            snapshot_id: Optional snapshot ID to override class
+            reports: String of frontend URL where the reports are displayed
+            sort: Dictionary to apply sorting: {"order": "desc", "column": "lastChange"}
+        Returns:
+            list: List of Dictionaries
         """
         return self.client.fetch_all(
             self.endpoint,
@@ -254,6 +260,8 @@ class Table(BaseModel):
 
 
 class Inventory(BaseModel):
+    """model for inventories"""
+
     client: Any
 
     @property

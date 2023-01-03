@@ -35,13 +35,15 @@ class NIST(Client):
             "resultsPerPage": self.cve_limit,
         }
 
-    def check_cve(self, vendor: str, family: str, version: str):
-        """
+    def check_cve(self, vendor: str, family: str, version: str) -> CVEs:
+        """returns CVE data about a specific product line
 
-        :param vendor: str: Vendor for the device to be checked
-        :param family: str: Family of the device to be checked
-        :param version: str: Software version of the device to be checked
-        :return:
+        Args:
+        vendor: Vendor for the device to be checked
+        family: Family of the device to be checked
+        version: Software version of the device to be checked
+        Returns:
+            a list of CVEs
         """
         params = self.params
         if vendor in ["azure", "aws"]:

@@ -272,7 +272,7 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.post")
     def test_query(self, post):
         post().json.return_value = {"data": list()}
-        self.assertEqual(self.ipf.query("test", '{"data": "hello"}', all=False), [])
+        self.assertEqual(self.ipf.query("test", '{"data": "hello"}', get_all=False), [])
 
     @patch("ipfabric.IPFClient._ipf_pager")
     def test_query_all(self, pager):

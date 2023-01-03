@@ -15,13 +15,19 @@ class Intent:
         self.groups: List[Group] = list()
         self.snapshot_id: str = self.client.snapshot_id
 
-    def get_intent_checks(self, snapshot_id: str = None):
-        """
-        Gets all intent checks and returns a list of them.  You can also:
-            ipf.load_intent()  # Loads the intents to intent_checks
-            print(len(ipf.intent.intent_checks))
-        :param snapshot_id: str: Optional snapshot ID to get different data
-        :return: list: List of intent checks
+    def get_intent_checks(self, snapshot_id: str = None) -> list:
+        """Gets all intent checks and returns a list of them.  You can also:
+
+        Examples:
+            >>> from ipfabric import IPFabric
+            >>> ipf = IPFabric()
+            >>> ipf.load_intent()  # Loads the intents to intent_checks
+            >>> print(len(ipf.intent.intent_checks))
+        Args:
+        snapshot_id: Optional snapshot ID to get different data
+
+        Returns:
+            list: List of intent checks
         """
         snapshot = self.client.snapshots[snapshot_id] if snapshot_id else self.client.snapshot
         if not snapshot.loaded:
@@ -36,16 +42,21 @@ class Intent:
         return [IntentCheck(**check) for check in res.json()]
 
     def load_intent(self, snapshot_id: str = None):
-        """
-        Loads intent checks into the class.
-        :param snapshot_id: str: Uses a different Snapshot ID then client
-        :return:
+        """Loads intent checks into the class.
+
+        Args:
+            snapshot_id: Uses a different Snapshot ID then client
         """
         self.snapshot_id = snapshot_id or self.snapshot_id
         self.intent_checks = self.get_intent_checks(snapshot_id)
         self.groups = self.get_groups()
 
-    def get_groups(self):
+    def get_groups(self) -> list:
+        """
+
+        Returns:
+            list: list of groups
+        """
         res = self.client.get("reports/groups")
         res.raise_for_status()
         return [Group(**group) for group in res.json()]
@@ -86,13 +97,32 @@ class Intent:
             self.load_intent()
         return {g.name: g for g in self.groups}
 
-    def get_results(self, intent: IntentCheck, color: Union[str, int], snapshot_id: str = None):
+    def get_results(self, intent: IntentCheck, color: Union[str, int], snapshot_id: str = None) -> list:
+        """Get the outcome of an Intent Check by a specific color
+
+        Args:
+            intent: an IntentCheck, please see the Intent Check Model
+            color: color of intent check
+            snapshot_id: Uses a different Snapshot ID then client
+
+        Returns:
+            list: List of Dictionary objects.
+        """
         if isinstance(color, str):
             color = COLOR_DICT[color]
         snapshot_id = snapshot_id or self.snapshot_id
         return self._get_data(intent, snapshot_id, color)
 
     def get_all_results(self, intent: IntentCheck, snapshot_id: str = None):
+        """set the intent check attributes
+
+        Args:
+            intent: an IntentCheck, please see the Intent Check Model
+            snapshot_id: Uses a different Snapshot ID then client
+
+        Returns:
+            list: List of Dictionary objects.
+        """
         snapshot_id = snapshot_id or self.snapshot_id
         for color_str, color_int in COLOR_DICT.items():
             if getattr(intent.result.checks, color_str):
@@ -107,14 +137,16 @@ class Intent:
             filters={intent.column: ["color", "eq", color]},
         )
 
-    def compare_snapshot(self, snapshot_id: str, reverse: bool = False):
-        """
-        Compares all intents against another snapshot.
+    def compare_snapshot(self, snapshot_id: str, reverse: bool = False) -> list:
+        """Compares all intents against another snapshot.
         Current is the snapshot loaded into the class
         Other is the snapshot specified in this method.  Use reverse=True to flip them.
-        :param snapshot_id: str: Snapshot ID to compare against this will be the "other" key
-        :param reverse: bool: Default False, setting to true will flip current and other.
-        :return: list: List of dictionaries
+
+        Args:
+            snapshot_id: Snapshot ID to compare against this will be the "other" key
+            reverse: Default False, setting to true will flip current and other.
+        Returns:
+            list: List of dictionaries
         """
         new_intents = {i.name: i for i in self.get_intent_checks(snapshot_id)}
         comparison = list()

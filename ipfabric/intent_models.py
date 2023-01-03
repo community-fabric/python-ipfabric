@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 
 
 class Checks(BaseModel):
+    """model for intent checks"""
+
     green: Union[int, str, dict] = Field(alias="0", default=None)
     blue: Union[int, str, dict] = Field(alias="10", default=None)
     amber: Union[int, str, dict] = Field(alias="20", default=None)
@@ -11,15 +13,27 @@ class Checks(BaseModel):
 
 
 class Description(BaseModel):
+    """model for description of intent check"""
+
     general: Union[None, str]
     checks: Checks = Field(default_factory=Checks)
 
 
 class Result(BaseModel):
+    """model for results of intent check"""
+
     count: Union[int, None]
     checks: Checks = Field(default_factory=Checks)
 
-    def compare(self, other):
+    def compare(self, other: Union[int, str, dict]) -> dict:
+        """
+
+        Args:
+            other: intent check
+
+        Returns:
+            diction to use to compare intent checks
+        """
 
         old = self.checks
         new = other.checks
@@ -44,11 +58,15 @@ class Result(BaseModel):
 
 
 class Child(BaseModel):
+    """model for child of intent check"""
+
     weight: int
     intent_id: str = Field(alias="id")
 
 
 class Group(BaseModel):
+    """model of a group of intent checks"""
+
     custom: bool
     name: str
     group_id: str = Field(alias="id")
@@ -56,6 +74,8 @@ class Group(BaseModel):
 
 
 class IntentCheck(BaseModel):
+    """model for intent checks"""
+
     groups: List[Group]
     checks: Checks
     column: str
