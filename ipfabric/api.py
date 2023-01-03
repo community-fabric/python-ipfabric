@@ -71,11 +71,9 @@ class IPFabricAPI(Client):
         # find env file
         dotenv.load_dotenv(dotenv.find_dotenv())
         with Settings() as settings:
-            self.verify = kwargs.get("verify", settings.ipf_verify)
             super().__init__(
                 timeout=kwargs.get("timeout", True),
-                headers={"Content-Type": "application/json"},
-                verify=self.verify,
+                verify=kwargs.get("verify", settings.ipf_verify),
             )
             base_url = base_url or settings.ipf_url
             if not base_url:
