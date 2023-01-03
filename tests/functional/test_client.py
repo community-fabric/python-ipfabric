@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_bad_token(self):
         with self.assertRaises(HTTPStatusError) as err:
-            IPFClient(token="BAD")
+            IPFClient(auth="BAD")
 
     def test_inventory(self):
         ipf = IPFClient(timeout=15)
@@ -53,7 +53,7 @@ class MyTestCase(unittest.TestCase):
             "sort": {"order": "desc", "column": "hostname"},
             "reports": "/inventory/devices",
         }
-        devices = ipf.query("/tables/inventory/devices", payload, all=False)
+        devices = ipf.query("/tables/inventory/devices", payload, get_all=False)
         self.assertIsInstance(devices, list)
         self.assertIsInstance(devices[0], dict)
 
