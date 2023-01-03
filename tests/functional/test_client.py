@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_bad_token(self):
         with self.assertRaises(HTTPStatusError) as err:
-            IPFClient(token="BAD")
+            IPFClient(auth="BAD")
 
     def test_inventory(self):
         ipf = IPFClient(timeout=15)

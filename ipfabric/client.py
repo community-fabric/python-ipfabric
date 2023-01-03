@@ -45,11 +45,11 @@ class IPFClient(IPFabricAPI):
 
         Args:
             base_url: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
-            api_version: Version of IP Fabric API
-            token: API token or 'IPF_TOKEN' environment variable
+            api_version: [Optional] Version of IP Fabric API
+            auth: API token, tuple (username, password), or custom Auth to pass to httpx
             snapshot_id: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
-            username: username to authenticate against IP Fabric
-            password: password to authenticate against IP Fabric
+            unloaded: True to load metadata from unloaded snapshots
+            verify: Set to False ignore SSL verification
             **kwargs: Keyword args to pass to httpx
         """
         super().__init__(base_url=base_url, api_version=api_version, auth=auth, snapshot_id=snapshot_id,
