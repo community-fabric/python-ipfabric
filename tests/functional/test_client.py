@@ -53,7 +53,7 @@ class MyTestCase(unittest.TestCase):
             "sort": {"order": "desc", "column": "hostname"},
             "reports": "/inventory/devices",
         }
-        devices = ipf.query("/tables/inventory/devices", payload, all=False)
+        devices = ipf.query("/tables/inventory/devices", payload, get_all=False)
         self.assertIsInstance(devices, list)
         self.assertIsInstance(devices[0], dict)
 
