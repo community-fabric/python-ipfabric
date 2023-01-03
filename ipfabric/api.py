@@ -9,7 +9,6 @@ except ModuleNotFoundError:
     import importlib_metadata
 from typing import Optional, Union, Dict, List, Generator, Any
 from urllib.parse import urljoin
-
 from httpx import Client
 from http.cookiejar import CookieJar
 from pydantic import BaseSettings
@@ -71,14 +70,18 @@ class IPFabricAPI(Client):
         snapshot_id: Optional[str] = LAST_ID,
         unloaded: bool = False,
         verify: bool = True,
-        **kwargs,
+        **kwargs: Optional[dict],
     ):
-        """
-        Initializes the IP Fabric Client
-        :param base_url: str: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
-        :param auth: Union[str, tuple, Auth]: API token, tuple (username, password), or custom Auth to pass to httpx
-        :param snapshot_id: str: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
-        :param kwargs: dict: Keyword args to pass to httpx
+        """Initializes the IP Fabric Client
+
+        Args:
+            base_url: IP Fabric instance provided in 'base_url' parameter, or the 'IPF_URL' environment variable
+            api_version: [Optional] Version of IP Fabric API
+            auth: API token, tuple (username, password), or custom Auth to pass to httpx
+            snapshot_id: IP Fabric snapshot ID to use by default for database actions - defaults to '$last'
+            unloaded: True to load metadata from unloaded snapshots
+            verify: Set to False ignore SSL verification
+            **kwargs: Keyword args to pass to httpx
         """
         if kwargs.get("token", None) or kwargs.get("username", None) or kwargs.get("password", None):
             logger.warning(
@@ -167,21 +170,26 @@ class IPFabricAPI(Client):
             )
         self._attribute_filters = attribute_filters
 
-    def get_user(self):
-        """
-        Gets current logged in user information.
-        :return: User: User model of logged in user
+    def get_user(self) -> User:
+        """Gets current logged in user information.
+
+        Returns:
+            User: User model of logged in user
         """
         resp = self.get("users/me")
         resp.raise_for_status()
         return User(**resp.json())
 
-    def check_version(self, api_version, base_url, dev=False):
-        """
-        Checks API Version and returns the version to use in the URL and the OS Version
-        :param api_version: str: User defined API Version or None
-        :param base_url: str: URL of IP Fabric
-        :return: api_version, os_version
+    def check_version(self, api_version: str = None, base_url: str = None, dev: bool = False) -> tuple:
+        """Checks API Version and returns the version to use in the URL and the OS Version
+
+        Args:
+            api_version: User defined API Version or None
+            base_url: URL of IP Fabric
+            dev: Internal Use Only
+
+        Returns:
+            api_version, os_version
         """
         if api_version == "v1":
             raise RuntimeError("IP Fabric Version < 5.0 support has been dropped, please use ipfabric==4.4.3")
@@ -216,10 +224,12 @@ class IPFabricAPI(Client):
         return return_version, resp.json()["releaseVersion"]
 
     def update(self):
+        """get all snapshots and assigns them to an attribute"""
         self.snapshots = self.get_snapshots()
 
     @property
-    def loaded_snapshots(self):
+    def loaded_snapshots(self) -> dict:
+        """get only loaded snapshots"""
         return {k: v for k, v in self.snapshots.items() if v.loaded}
 
     @property
@@ -232,6 +242,7 @@ class IPFabricAPI(Client):
 
     @property
     def snapshot_id(self):
+        """get snapshot Id"""
         return self._snapshot_id
 
     @property
@@ -326,9 +337,10 @@ class IPFabricAPI(Client):
         return ae_tasks
 
     def get_snapshots(self):
-        """
-        Gets all snapshots from IP Fabric and returns a dictionary of {ID: Snapshot_info}
-        :return: dict[str, Snapshot]: Dictionary with ID as key and dictionary with info as the value
+        """Gets all snapshots from IP Fabric and returns a dictionary of {ID:   Snapshot_info}
+
+        Returns:
+            Dictionary with ID as key and dictionary with info as the value
         """
         payload = {"columns": snapshot_models.SNAPSHOT_COLUMNS, "sort": {"order": "desc", "column": "tsEnd"}}
         if not self.unloaded:

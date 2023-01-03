@@ -41,5 +41,5 @@ class Models(unittest.TestCase):
     @patch("ipfabric.IPFClient")
     def test_compare(self, MockClient):
         c = models.Table(client=MockClient, endpoint="/network/ip")
-        MockClient.compare.return_value = list()
-        self.assertEqual(c.compare(), list())
+        MockClient.compare.return_value = dict(added=list(), removed=list())
+        self.assertEqual(c.compare(), dict(added=list(), removed=list()))

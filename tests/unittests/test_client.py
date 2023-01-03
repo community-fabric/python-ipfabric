@@ -274,7 +274,7 @@ class Client(unittest.TestCase):
     @patch("httpx.Client.post")
     def test_query(self, post):
         post().json.return_value = {"data": list()}
-        self.assertEqual(self.ipf.query("test", '{"data": "hello"}', all=False), [])
+        self.assertEqual(self.ipf.query("test", '{"data": "hello"}', get_all=False), [])
 
     @patch("ipfabric.IPFClient._ipf_pager")
     def test_query_all(self, pager):
@@ -285,14 +285,14 @@ class Client(unittest.TestCase):
     def test_get_columns(self, post):
         post().status_code = 422
         post().json.return_value = {"errors": [{"message": '"hello" [name, id]'}]}
-        self.assertEqual(self.ipf._get_columns("test"), ["name", "id"])
+        self.assertEqual(self.ipf.get_columns("test"), ["name", "id"])
 
     @patch("httpx.Client.post")
     def test_get_columns_failed(self, post):
         post().status_code = 400
         post().raise_for_status.side_effect = ConnectionError()
         with self.assertRaises(ConnectionError) as err:
-            self.ipf._get_columns("test")
+            self.ipf.get_columns("test")
 
     @patch("httpx.Client.post")
     def test_ipf_pager(self, post):

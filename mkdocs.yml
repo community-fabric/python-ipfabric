@@ -1,0 +1,41 @@
+site_name: Python IP Fabric
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - mdx_truly_sane_lists
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ipfabric
+  - search:
+  - social:
+
+extra:
+  social:
+    - icon: fontawesome/brands/facebook
+      link: https://www.facebook.com/ipfabric.io
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCLztlukjD9RKFGkrKgxMT1w/featured
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/IPFabric
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/ip-fabric/
