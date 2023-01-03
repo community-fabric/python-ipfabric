@@ -145,13 +145,13 @@ class IPFClient(IPFabricAPI):
         return self._ipf_pager(url, payload)
 
     @check_format
-    def query(self, url: str, payload: Union[str, dict], all: bool = True) -> list:
+    def query(self, url: str, payload: Union[str, dict], get_all: bool = True) -> list:
         """Submits a query, does no formatting on the parameters.  Use for copy/pasting from the webpage.
 
         Args:
             url: Example: https://demo1.ipfabric.io/api/v1/tables/vlan/device-summary or tables/vlan/device-summary
             payload: Dictionary to submit in POST or can be JSON string (i.e. read from file).
-            all: Default use pager to get all results and ignore pagination information in the payload
+            get_all: Default use pager to get all results and ignore pagination information in the payload
 
 
         Returns:
@@ -159,7 +159,7 @@ class IPFClient(IPFabricAPI):
         """
         if isinstance(payload, str):
             payload = loads(payload)
-        if all:
+        if get_all:
             return self._ipf_pager(url, payload)
         else:
             res = self.post(url, json=payload)
