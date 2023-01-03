@@ -1,5 +1,18 @@
 # Changelog
 
+## 6.0.9 (2023-01-03)
+
+### Fix
+
+* Updated dependencies
+* Fix for httpx and streaming multipart upload for `snapshot_upload` function
+* Standardize docstrings for documentation
+
+### Feature
+
+* `get_columns` function will return a list of column names for an endpoint (`_get_columns` is being deprecated)
+* Compare tables between snapshots
+
 ## 6.0.8 (2022-12-21)
 
 ### Fix
